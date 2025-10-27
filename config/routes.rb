@@ -11,4 +11,35 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+  Rails.application.routes.draw do
+    namespace :api do
+      namespace :v1 do
+        post   'auth/login', to: 'auth#login'
+        resources :organizations, only: [:create, :show] do
+          resources :datasets, only: [:index, :create] do
+            post 'upload', on: :member
+          end
+          resources :policies, only: [:index, :update]
+        end
+        resources :datasets, only: [] do
+          get 'budget', on: :member
+        end
+        resources :queries, only: [:create, :show] do
+          post 'validate', on: :collection
+          post 'execute', on: :member
+        end
+        resources :runs, only: [:show] do
+          get 'result', on: :member
+          get 'attestation', on: :member
+          get 'transcript', on: :member
+        end
+        resources :data_rooms, only: [:create] do
+          post 'invite', 'attest', 'execute', on: :member
+        end
+        resources :audit_events, only: [:index]
+      end
+    end
+  end
+
 end
