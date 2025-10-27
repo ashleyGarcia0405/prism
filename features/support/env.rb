@@ -51,3 +51,23 @@ end
 # The :transaction strategy is faster, but might give you threading problems.
 # See https://github.com/cucumber/cucumber-rails/blob/master/features/choose_javascript_database_strategy.feature
 Cucumber::Rails::Database.javascript_strategy = :truncation
+
+# ActiveJob test helpers for Solid Queue
+require 'active_job/test_helper'
+World(ActiveJob::TestHelper)
+World(Rack::Test::Methods)
+
+# Configure ActiveJob to run jobs inline during tests
+Before do
+  ActiveJob::Base.queue_adapter = :test
+  clear_enqueued_jobs
+end
+
+After do
+  clear_enqueued_jobs
+end
+
+# Rack::Test app configuration
+def app
+  Rails.application
+end
