@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_28_074128) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_28_082912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -63,6 +63,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_28_074128) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "estimated_epsilon", precision: 10, scale: 6
     t.index ["dataset_id"], name: "index_queries_on_dataset_id"
     t.index ["user_id"], name: "index_queries_on_user_id"
   end
@@ -73,7 +74,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_28_074128) do
     t.text "result"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "backend_used"
+    t.decimal "epsilon_consumed", precision: 10, scale: 6
+    t.jsonb "proof_artifacts", default: {}
+    t.integer "execution_time_ms"
+    t.text "error_message"
+    t.bigint "user_id"
+    t.index ["backend_used"], name: "index_runs_on_backend_used"
     t.index ["query_id"], name: "index_runs_on_query_id"
+    t.index ["status"], name: "index_runs_on_status"
+    t.index ["user_id"], name: "index_runs_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -93,5 +103,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_28_074128) do
   add_foreign_key "queries", "datasets"
   add_foreign_key "queries", "users"
   add_foreign_key "runs", "queries"
+  add_foreign_key "runs", "users"
   add_foreign_key "users", "organizations"
 end

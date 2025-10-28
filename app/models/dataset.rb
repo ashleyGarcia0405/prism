@@ -1,6 +1,7 @@
 class Dataset < ApplicationRecord
   belongs_to :organization
   has_one :privacy_budget, dependent: :destroy
+  has_many :queries, dependent: :destroy
 
   after_create :create_default_privacy_budget
 
