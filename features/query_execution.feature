@@ -9,13 +9,13 @@ Feature: Query Execution
     And a dataset "Patient Data" exists with default budget
 
   Scenario: Create a query
-    When I create a query with SQL "SELECT COUNT(*) FROM patients"
+    When I create a query with SQL "SELECT state, COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25"
     Then the response status is 201
     And the query should be stored with estimated epsilon
     And the query should belong to the dataset
 
   Scenario: Execute query asynchronously
-    Given a query "SELECT AVG(age) FROM patients" exists for the dataset
+    Given a query "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25" exists for the dataset
     When I execute the query
     Then the response status is 202
     And a run should be created with status "pending"

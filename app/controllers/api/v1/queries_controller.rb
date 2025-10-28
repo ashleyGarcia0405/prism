@@ -31,6 +31,32 @@ module Api
         }, status: :ok
       end
 
+      def validate
+        sql = params[:sql]
+
+        unless sql
+          return render json: {
+            valid: false,
+            errors: ['SQL parameter is required']
+          }, status: :bad_request
+        end
+
+        validation = QueryValidator.validate(sql)
+
+        if validation[:valid]
+          render json: {
+            valid: true,
+            estimated_epsilon: validation[:estimated_epsilon],
+            estimated_time_seconds: 2
+          }, status: :ok
+        else
+          render json: {
+            valid: false,
+            errors: validation[:errors]
+          }, status: :unprocessable_entity
+        end
+      end
+
       def execute
         query = Query.find(params[:id])
 

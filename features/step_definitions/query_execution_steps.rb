@@ -21,7 +21,7 @@ end
 
 Given('a query with estimated epsilon {float} exists') do |epsilon|
   @query = Query.create!(
-    sql: 'SELECT AVG(age) FROM patients',
+    sql: 'SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25',
     dataset: @dataset,
     user: @user,
     estimated_epsilon: epsilon
@@ -31,7 +31,7 @@ end
 
 Given('a query needing epsilon {float} exists') do |epsilon|
   @query = Query.create!(
-    sql: 'SELECT COUNT(*) FROM patients',
+    sql: 'SELECT state, COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25',
     dataset: @dataset,
     user: @user,
     estimated_epsilon: epsilon
@@ -47,7 +47,7 @@ end
 
 Given('a completed run exists for a query') do
   @query = Query.create!(
-    sql: 'SELECT COUNT(*) FROM patients',
+    sql: 'SELECT state, COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25',
     dataset: @dataset,
     user: @user,
     estimated_epsilon: 0.5

@@ -23,6 +23,9 @@ gem "bcrypt", "~> 3.1.7"
 # Use JWT for authentication tokens
 gem "jwt"
 
+# Use pg_query for SQL parsing and validation
+gem "pg_query"
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 

@@ -5,30 +5,25 @@ class Query < ApplicationRecord
 
   validates :sql, presence: true
 
+  before_validation :validate_sql_safety, on: :create
   before_validation :set_estimated_epsilon, on: :create
-
-  # simple epsilon estimation based on aggregate functions
-  # MVP: COUNT/MIN/MAX = 0.1, AVG/SUM = 0.5
-  def estimate_epsilon
-    return 0.5 unless sql
-
-    sql_upper = sql.upcase
-    epsilon = 0.0
-
-    # count occurrences of different aggregates
-    epsilon += 0.1 * sql_upper.scan(/\bCOUNT\b/).length
-    epsilon += 0.1 * sql_upper.scan(/\bMIN\b/).length
-    epsilon += 0.1 * sql_upper.scan(/\bMAX\b/).length
-    epsilon += 0.5 * sql_upper.scan(/\bAVG\b/).length
-    epsilon += 0.5 * sql_upper.scan(/\bSUM\b/).length
-
-    # minimum epsilon for any query
-    [epsilon, 0.1].max
-  end
 
   private
 
+  def validate_sql_safety
+    return unless sql
+
+    validation = QueryValidator.validate(sql)
+
+    unless validation[:valid]
+      validation[:errors].each { |error| errors.add(:sql, error) }
+    end
+  end
+
   def set_estimated_epsilon
-    self.estimated_epsilon ||= estimate_epsilon
+    return unless sql
+
+    validation = QueryValidator.validate(sql)
+    self.estimated_epsilon ||= validation[:estimated_epsilon] if validation[:valid]
   end
 end
