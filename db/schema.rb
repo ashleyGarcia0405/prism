@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_27_005527) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_28_074128) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -47,6 +47,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_27_005527) do
     t.index ["organization_id"], name: "index_policies_on_organization_id"
   end
 
+  create_table "privacy_budgets", force: :cascade do |t|
+    t.bigint "dataset_id", null: false
+    t.decimal "total_epsilon", precision: 10, scale: 6, default: "3.0", null: false
+    t.decimal "consumed_epsilon", precision: 10, scale: 6, default: "0.0", null: false
+    t.decimal "reserved_epsilon", precision: 10, scale: 6, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["dataset_id"], name: "index_privacy_budgets_on_dataset_id", unique: true
+  end
+
   create_table "queries", force: :cascade do |t|
     t.text "sql"
     t.bigint "dataset_id", null: false
@@ -79,6 +89,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_27_005527) do
   add_foreign_key "audit_events", "users"
   add_foreign_key "datasets", "organizations"
   add_foreign_key "policies", "organizations"
+  add_foreign_key "privacy_budgets", "datasets"
   add_foreign_key "queries", "datasets"
   add_foreign_key "queries", "users"
   add_foreign_key "runs", "queries"
