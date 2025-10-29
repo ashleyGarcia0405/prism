@@ -6,6 +6,9 @@ class AuditEvent < ApplicationRecord
   enum :action,
        { login: 'login',
          dataset_created: 'dataset_created',
-         query_created: 'query_created' },
+         query_created: 'query_created',
+         query_executed: 'query_executed',
+         query_failed: 'query_failed',
+         privacy_budget_exhausted: 'privacy_budget_exhausted' },
        suffix: true
 end
