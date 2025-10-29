@@ -5,6 +5,8 @@
 # files.
 
 # Code coverage - must be loaded before any application code
+ENV['JWT_SECRET'] ||= 'testsecret'
+
 if ENV['COVERAGE']
   require 'simplecov'
   SimpleCov.start 'rails' do

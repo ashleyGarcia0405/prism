@@ -21,6 +21,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_28_082912) do
     t.integer "target_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.index ["action"], name: "index_audit_events_on_action"
+    t.index ["created_at"], name: "index_audit_events_on_created_at"
+    t.index ["metadata"], name: "index_audit_events_on_metadata", using: :gin
+    t.index ["target_type", "target_id"], name: "index_audit_events_on_target_type_and_target_id"
     t.index ["user_id"], name: "index_audit_events_on_user_id"
   end
 

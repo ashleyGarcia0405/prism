@@ -7,6 +7,7 @@ class QueryExecutionJob < ApplicationJob
 
     query = run.query
     dataset = query.dataset
+    user    = run.user 
     reservation = nil
 
     # check and reserve privacy budget
@@ -19,6 +20,12 @@ class QueryExecutionJob < ApplicationJob
       run.update!(
         status: 'failed',
         error_message: reservation[:error]
+      )
+      AuditLogger.log(
+        user: user,
+        action: 'privacy_budget_exhausted',
+        target: dataset,
+        metadata: { query_id: query.id, needed: query.estimated_epsilon, error: reservation[:error] }
       )
       return
     end
@@ -48,6 +55,12 @@ class QueryExecutionJob < ApplicationJob
         epsilon: result[:epsilon_consumed]
       }
     )
+    AuditLogger.log(
+      user: user,
+      action: 'query_executed',
+      target: run,
+      metadata: { query_id: query.id, dataset_id: dataset.id, epsilon_consumed: run.epsilon_consumed }
+    )
 
   rescue => e
     # rollback budget reservation on error
@@ -62,6 +75,12 @@ class QueryExecutionJob < ApplicationJob
     run.update!(
       status: 'failed',
       error_message: e.message
+    )
+    AuditLogger.log(
+      user: user || query&.user,
+      action: 'query_failed',
+      target: run,
+      metadata: { query_id: query&.id, dataset_id: dataset&.id, error: e.message }.compact
     )
     raise
   end

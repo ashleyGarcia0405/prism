@@ -22,8 +22,8 @@ module Api
       def create
         organization = Organization.find(params[:organization_id])
         dataset = organization.datasets.new(dataset_params)
-
         if dataset.save
+          AuditLogger.log(user: current_user, action: 'dataset_created', target: dataset, metadata: { name: dataset.name })
           render json: {
             id: dataset.id,
             name: dataset.name,

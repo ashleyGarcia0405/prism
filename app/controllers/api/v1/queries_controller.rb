@@ -8,6 +8,16 @@ module Api
         query = dataset.queries.new(query_params.merge(user: current_user))
 
         if query.save
+          AuditLogger.log(
+            user: current_user,
+            action: 'query_created',
+            target: query,
+            metadata: {
+              dataset_id: query.dataset_id,
+              estimated_epsilon: query.estimated_epsilon,
+              sql: query.sql
+            }
+          )
           render json: {
             id: query.id,
             sql: query.sql,
