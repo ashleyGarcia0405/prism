@@ -34,3 +34,9 @@ Feature: API Authentication
     When I GET the organization endpoint without authentication
     Then the response status is 401
     And the response contains error "Authentication required"
+
+  Scenario: User registers with new organization
+    When I register as "Bob Jones" with email "bob@newcorp.com" and password "secure456" for organization "NewCorp Research"
+    Then the response status is 201
+    And the response contains a JWT token
+    And the response contains organization name "NewCorp Research"

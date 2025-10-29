@@ -41,6 +41,25 @@ When('I register as {string} with email {string} and password {string}') do |nam
   @response_body = JSON.parse(@response.body) rescue {}
 end
 
+When('I register as {string} with email {string} and password {string} for organization {string}') do |name, email, password, org_name|
+  post '/api/v1/auth/register',
+    {
+      user: {
+        name: name,
+        email: email,
+        password: password,
+        password_confirmation: password
+      },
+      organization: {
+        name: org_name
+      }
+    }.to_json,
+    { 'CONTENT_TYPE' => 'application/json' }
+
+  @response = last_response
+  @response_body = JSON.parse(@response.body) rescue {}
+end
+
 When('I login with email {string} and password {string}') do |email, password|
   post '/api/v1/auth/login',
     { email: email, password: password }.to_json,
@@ -104,4 +123,9 @@ end
 
 Then('the response contains error {string}') do |error_message|
   expect(@response_body['error']).to eq(error_message)
+end
+
+Then('the response contains organization name {string}') do |org_name|
+  expect(@response_body['organization']).not_to be_nil
+  expect(@response_body['organization']['name']).to eq(org_name)
 end
