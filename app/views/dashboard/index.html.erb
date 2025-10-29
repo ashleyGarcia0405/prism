@@ -1,0 +1,124 @@
+<% content_for :title, "Dashboard - Prism" %>
+
+<div class="mb-8">
+  <h1 class="text-3xl font-bold text-gray-100 mb-2">Dashboard</h1>
+  <p class="text-gray-400">Welcome back, <%= current_user.name %>!</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-700">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-gray-400 text-sm">Datasets</p>
+        <p class="text-3xl font-bold text-gray-100"><%= @datasets.count %></p>
+      </div>
+      <div class="bg-blue-900 bg-opacity-50 p-3 rounded-full">
+        <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1 3 3 3h10c2 0 3-1 3-3V7c0-2-1-3-3-3H7c-2 0-3 1-3 3z"></path>
+        </svg>
+      </div>
+    </div>
+    <%= link_to "View all datasets →", datasets_path, class: "text-blue-400 text-sm mt-4 inline-block hover:text-blue-300" %>
+  </div>
+
+  <div class="bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-700">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-gray-400 text-sm">Total Queries</p>
+        <p class="text-3xl font-bold text-gray-100"><%= @total_queries %></p>
+      </div>
+      <div class="bg-green-900 bg-opacity-50 p-3 rounded-full">
+        <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+      </div>
+    </div>
+    <%= link_to "View all queries →", queries_path, class: "text-green-400 text-sm mt-4 inline-block hover:text-green-300" %>
+  </div>
+
+  <div class="bg-slate-800 rounded-lg shadow-lg p-6 border border-slate-700">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-gray-400 text-sm">Privacy Budget Used</p>
+        <p class="text-3xl font-bold text-gray-100"><%= number_with_precision(@total_epsilon_consumed, precision: 2) %>ε</p>
+      </div>
+      <div class="bg-purple-900 bg-opacity-50 p-3 rounded-full">
+        <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+        </svg>
+      </div>
+    </div>
+    <p class="text-purple-400 text-sm mt-4">Across all datasets</p>
+  </div>
+</div>
+
+<!-- Recent Datasets -->
+<div class="bg-slate-800 rounded-lg shadow-lg border border-slate-700 mb-8">
+  <div class="px-6 py-4 border-b border-slate-700">
+    <div class="flex justify-between items-center">
+      <h2 class="text-xl font-bold text-gray-100">Your Datasets</h2>
+      <%= link_to "New Dataset", new_dataset_path, class: "bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition" %>
+    </div>
+  </div>
+
+  <% if @datasets.any? %>
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-slate-900">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Total Budget</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Consumed</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Remaining</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Created</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700">
+          <% @datasets.each do |dataset| %>
+            <% budget = dataset.privacy_budget %>
+            <tr class="hover:bg-slate-700 transition">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-gray-100"><%= dataset.name %></div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                <%= number_with_precision(budget&.total_epsilon || 3.0, precision: 1) %>ε
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                <%= number_with_precision(budget&.consumed_epsilon || 0, precision: 2) %>ε
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <% remaining = budget&.remaining_epsilon || 3.0 %>
+                <% percentage = ((budget&.consumed_epsilon || 0) / (budget&.total_epsilon || 3.0) * 100).round %>
+                <div class="flex items-center">
+                  <span class="text-sm text-gray-200 mr-2"><%= number_with_precision(remaining, precision: 2) %>ε</span>
+                  <div class="w-16 bg-slate-700 rounded-full h-2">
+                    <div class="bg-blue-500 h-2 rounded-full" style="width: <%= [100 - percentage, 0].max %>%"></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                <%= time_ago_in_words(dataset.created_at) %> ago
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <%= link_to "View", dataset_path(dataset), class: "text-blue-400 hover:text-blue-300" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="px-6 py-12 text-center">
+      <svg class="mx-auto h-12 w-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-200">No datasets</h3>
+      <p class="mt-1 text-sm text-gray-400">Get started by creating your first dataset.</p>
+      <div class="mt-6">
+        <%= link_to "New Dataset", new_dataset_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700" %>
+      </div>
+    </div>
+  <% end %>
+</div>

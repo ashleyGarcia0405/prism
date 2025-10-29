@@ -1,0 +1,60 @@
+<% content_for :title, "New Dataset - Prism" %>
+
+<div class="max-w-2xl mx-auto">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-100 mb-2">Create New Dataset</h1>
+    <p class="text-gray-400">Add a new dataset for privacy-preserving analytics</p>
+  </div>
+
+  <div class="bg-slate-800 border border-slate-700 rounded-lg shadow-lg p-6">
+    <%= form_with model: @dataset, class: "space-y-6" do |f| %>
+      <% if @dataset.errors.any? %>
+        <div class="bg-red-900 bg-opacity-50 border border-red-500 text-red-200 px-4 py-3 rounded">
+          <h3 class="font-bold">Errors:</h3>
+          <ul class="list-disc list-inside">
+            <% @dataset.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div>
+        <%= f.label :name, "Dataset Name", class: "block text-sm font-medium text-gray-300 mb-2" %>
+        <%= f.text_field :name,
+            class: "w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-100 placeholder-gray-500",
+            placeholder: "e.g., Patient Records 2024",
+            required: true %>
+        <p class="text-sm text-gray-500 mt-1">A descriptive name for your dataset</p>
+      </div>
+
+      <div>
+        <%= f.label :description, "Description (optional)", class: "block text-sm font-medium text-gray-300 mb-2" %>
+        <%= f.text_area :description,
+            rows: 4,
+            class: "w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-100 placeholder-gray-500",
+            placeholder: "Describe what data this dataset contains..." %>
+      </div>
+
+      <div class="bg-blue-900 bg-opacity-30 border-l-4 border-blue-500 p-4 rounded">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-blue-200">
+              <strong>Privacy Budget:</strong> A privacy budget of <strong>3.0 epsilon (ε)</strong> will be automatically created for this dataset.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-4">
+        <%= link_to "Cancel", datasets_path, class: "px-6 py-2 border border-slate-600 rounded-lg text-gray-300 hover:bg-slate-700 transition" %>
+        <%= f.submit "Create Dataset", class: "px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium" %>
+      </div>
+    <% end %>
+  </div>
+</div>

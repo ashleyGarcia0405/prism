@@ -1,0 +1,17 @@
+<% if flash.any? %>
+  <div class="mb-6">
+    <% flash.each do |type, message| %>
+      <%
+        css_class = case type.to_sym
+        when :notice then "bg-green-900 border-green-500 text-green-200"
+        when :alert then "bg-red-900 border-red-500 text-red-200"
+        when :warning then "bg-yellow-900 border-yellow-500 text-yellow-200"
+        else "bg-blue-900 border-blue-500 text-blue-200"
+        end
+      %>
+      <div class="<%= css_class %> border px-4 py-3 rounded relative mb-2" role="alert">
+        <span class="block sm:inline"><%= message %></span>
+      </div>
+    <% end %>
+  </div>
+<% end %>
