@@ -1,34 +1,29 @@
-# frozen_string_literal: true
-
+# lib/json_web_token.rb
 require 'jwt'
 
 class JsonWebToken
-  # Secret key for JWT encoding/decoding
-  # In production, use ENV['JWT_SECRET_KEY']
-  SECRET_KEY = Rails.application.credentials.secret_key_base || ENV['JWT_SECRET_KEY']
+  ALGO = 'HS256'.freeze
 
-  # Token expiration time (24 hours)
-  EXPIRATION_TIME = 24.hours.from_now.to_i
-
-  # Encode a payload into a JWT token
-  # @param payload [Hash] The data to encode (e.g., { user_id: 1 })
-  # @param exp [Integer] Optional expiration time (default: 24 hours)
-  # @return [String] JWT token
-  def self.encode(payload, exp = EXPIRATION_TIME)
-    payload[:exp] = exp
-    JWT.encode(payload, SECRET_KEY, 'HS256')
+  def self.secret
+    ENV['JWT_SECRET'].presence || Rails.application.secret_key_base
   end
 
-  # Decode a JWT token
-  # @param token [String] The JWT token to decode
-  # @return [Hash] The decoded payload with symbolized keys
-  # @raise [JWT::DecodeError] If token is invalid or expired
+  # Works with:
+  #   JsonWebToken.encode(user_id: 1)
+  #   JsonWebToken.encode({ user_id: 1 })
+  def self.encode(payload = {}, exp: 24.hours.from_now, **kw)
+    data = payload.is_a?(Hash) ? payload.dup : {}
+    data.merge!(kw) unless kw.empty?
+    data[:exp] = exp.to_i
+    JWT.encode(data, secret, ALGO)
+  end
+
+  # Returns decoded payload hash
   def self.decode(token)
-    body = JWT.decode(token, SECRET_KEY, true, { algorithm: 'HS256' })[0]
-    HashWithIndifferentAccess.new(body)
-  rescue JWT::ExpiredSignature => e
-    raise JWT::DecodeError, 'Token has expired'
-  rescue JWT::DecodeError => e
-    raise JWT::DecodeError, 'Invalid token'
+    decoded, = JWT.decode(token, secret, true, { algorithm: ALGO })
+    # convert "user_id" to :user_id etc., so test steps using symbol keys work
+    decoded.transform_keys! { |k| k.to_sym rescue k }
+    decoded
   end
+
 end

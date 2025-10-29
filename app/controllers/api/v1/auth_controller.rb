@@ -20,6 +20,7 @@ module Api
 
         if user.save
           token = JsonWebToken.encode(user_id: user.id)
+          AuditLogger.log(user: user, action: 'login', metadata: { via: 'register', ua: request.user_agent })
           render json: {
             token: token,
             user: {
@@ -45,6 +46,7 @@ module Api
 
         if user&.authenticate(params[:password])
           token = JsonWebToken.encode(user_id: user.id)
+          AuditLogger.log(user: user, action: 'login', metadata: { ua: request.user_agent })
           render json: {
             token: token,
             user: {
