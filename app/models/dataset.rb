@@ -3,6 +3,8 @@ class Dataset < ApplicationRecord
   has_one :privacy_budget, dependent: :destroy
   has_many :queries, dependent: :destroy
 
+  validates :name, presence: true
+
   after_create :create_default_privacy_budget
 
   private

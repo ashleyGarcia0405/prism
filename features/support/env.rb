@@ -4,6 +4,24 @@
 # instead of editing this one. Cucumber will automatically load all features/**/*.rb
 # files.
 
+# Code coverage - must be loaded before any application code
+if ENV['COVERAGE']
+  require 'simplecov'
+  SimpleCov.start 'rails' do
+    command_name 'Cucumber'
+    merge_timeout 3600
+
+    add_filter '/spec/'
+    add_filter '/features/'
+    add_filter '/config/'
+    add_filter '/db/'
+
+    add_group 'Controllers', 'app/controllers'
+    add_group 'Models', 'app/models'
+    add_group 'Services', 'app/services'
+    add_group 'Jobs', 'app/jobs'
+  end
+end
 
 require 'cucumber/rails'
 
