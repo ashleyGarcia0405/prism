@@ -16,24 +16,18 @@ Prism is a privacy-preserving analytics platform that allows organizations to:
 ## Grading
 The rest is just for thorough documentation but basically to run it and test coverage:
 ```
-# From a fresh clone
-# 1) Install dependencies and set up databases
-bin/setup
 
-# 2) Start the app (development)
-bin/dev
-# or
+bin/setup
 bin/rails server
 
-# 3) Run tests
+# run tests
 bundle exec rspec
 bundle exec cucumber
 
-# 4) Generate combined coverage (RSpec + Cucumber)
-COVERAGE=true bundle exec rspec
-COVERAGE=true bundle exec cucumber
-# Then open the HTML report at:
-# coverage/index.html
+# i get coverage by runnng this 
+COVERAGE=true bundle exec rspec && COVERAGE=true bundle exec cucumber
+
+# you can look at coverage/index.html
 ```
 
 ## Ruby Version
