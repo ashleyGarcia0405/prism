@@ -1,0 +1,52 @@
+<% content_for :title, "Datasets - Prism" %>
+
+<div class="flex justify-between items-center mb-8">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-100 mb-2">Datasets</h1>
+    <p class="text-gray-400">Manage your privacy-preserving datasets</p>
+  </div>
+  <%= link_to "New Dataset", new_dataset_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium" %>
+</div>
+
+<% if @datasets.any? %>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% @datasets.each do |dataset| %>
+      <% budget = dataset.privacy_budget %>
+      <div class="bg-slate-800 border border-slate-700 rounded-lg shadow-lg hover:shadow-2xl transition cursor-pointer" onclick="window.location='<%= dataset_path(dataset) %>'">
+        <div class="p-6">
+          <h3 class="text-xl font-bold text-gray-100 mb-2"><%= dataset.name %></h3>
+          <p class="text-gray-400 text-sm mb-4"><%= dataset.description || "No description" %></p>
+
+          <div class="border-t border-slate-700 pt-4">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm text-gray-400">Privacy Budget</span>
+              <span class="text-sm font-medium text-gray-200">
+                <%= number_with_precision(budget&.remaining_epsilon || 3.0, precision: 2) %>ε / <%= number_with_precision(budget&.total_epsilon || 3.0, precision: 1) %>ε
+              </span>
+            </div>
+            <% consumed = budget&.consumed_epsilon || 0 %>
+            <% total = budget&.total_epsilon || 3.0 %>
+            <% percentage = (consumed / total * 100).round %>
+            <div class="w-full bg-slate-700 rounded-full h-2">
+              <div class="<%= percentage > 80 ? 'bg-red-500' : percentage > 50 ? 'bg-yellow-500' : 'bg-blue-500' %> h-2 rounded-full transition-all duration-300" style="width: <%= percentage %>%"></div>
+            </div>
+            <p class="text-xs text-gray-500 mt-2"><%= percentage %>% consumed</p>
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-slate-700">
+            <p class="text-xs text-gray-500">Created <%= time_ago_in_words(dataset.created_at) %> ago</p>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="bg-slate-800 border border-slate-700 rounded-lg shadow-lg p-12 text-center">
+    <svg class="mx-auto h-16 w-16 text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+    </svg>
+    <h3 class="text-xl font-medium text-gray-200 mb-2">No datasets yet</h3>
+    <p class="text-gray-400 mb-6">Create your first dataset to start running privacy-preserving queries.</p>
+    <%= link_to "Create Dataset", new_dataset_path, class: "inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700" %>
+  </div>
+<% end %>

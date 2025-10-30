@@ -20,9 +20,15 @@
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="bg-slate-900 text-gray-100">
+    <%= render "shared/navbar" if defined?(current_user) && current_user %>
+
+    <main class="container mx-auto px-4 py-8">
+      <%= render "shared/flash" %>
+      <%= yield %>
+    </main>
   </body>
 </html>

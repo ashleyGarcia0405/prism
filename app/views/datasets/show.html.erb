@@ -1,0 +1,127 @@
+<% content_for :title, "#{@dataset.name} - Prism" %>
+
+<div class="mb-8">
+  <div class="flex justify-between items-start">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-100 mb-2"><%= @dataset.name %></h1>
+      <p class="text-gray-400"><%= @dataset.description || "No description provided" %></p>
+    </div>
+    <%= link_to "Run Query", new_dataset_query_path(@dataset), class: "bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium" %>
+  </div>
+</div>
+
+<!-- Privacy Budget Card -->
+<div class="bg-slate-800 border border-slate-700 rounded-lg shadow-lg p-6 mb-8">
+  <h2 class="text-xl font-bold text-gray-100 mb-4">Privacy Budget</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+    <div>
+      <p class="text-sm text-gray-400 mb-1">Total Budget</p>
+      <p class="text-2xl font-bold text-gray-100"><%= number_with_precision(@budget.total_epsilon, precision: 1) %>ε</p>
+    </div>
+    <div>
+      <p class="text-sm text-gray-400 mb-1">Consumed</p>
+      <p class="text-2xl font-bold text-red-400"><%= number_with_precision(@budget.consumed_epsilon, precision: 2) %>ε</p>
+    </div>
+    <div>
+      <p class="text-sm text-gray-400 mb-1">Reserved</p>
+      <p class="text-2xl font-bold text-yellow-400"><%= number_with_precision(@budget.reserved_epsilon, precision: 2) %>ε</p>
+    </div>
+    <div>
+      <p class="text-sm text-gray-400 mb-1">Remaining</p>
+      <p class="text-2xl font-bold text-blue-400"><%= number_with_precision(@budget.remaining_epsilon, precision: 2) %>ε</p>
+    </div>
+  </div>
+
+  <div class="relative">
+    <div class="w-full bg-slate-700 rounded-full h-6">
+      <% consumed_pct = (@budget.consumed_epsilon / @budget.total_epsilon * 100).round %>
+      <% reserved_pct = (@budget.reserved_epsilon / @budget.total_epsilon * 100).round %>
+      <div class="flex h-6 rounded-full overflow-hidden">
+        <div class="bg-red-500 flex items-center justify-center text-white text-xs font-medium" style="width: <%= consumed_pct %>%">
+          <% if consumed_pct > 10 %><%= consumed_pct %>%<% end %>
+        </div>
+        <div class="bg-yellow-500 flex items-center justify-center text-white text-xs font-medium" style="width: <%= reserved_pct %>%">
+          <% if reserved_pct > 10 %><%= reserved_pct %>%<% end %>
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-between mt-2 text-xs text-gray-400">
+      <span>0ε</span>
+      <span><%= number_with_precision(@budget.total_epsilon, precision: 1) %>ε</span>
+    </div>
+  </div>
+
+  <% if @budget.remaining_epsilon < 0.5 %>
+    <div class="mt-4 bg-red-900 bg-opacity-30 border border-red-500 rounded-lg p-4">
+      <p class="text-sm text-red-200">
+        <strong>Warning:</strong> Your privacy budget is nearly exhausted. You may not be able to run more queries.
+      </p>
+    </div>
+  <% end %>
+</div>
+
+<!-- Recent Queries -->
+<div class="bg-slate-800 border border-slate-700 rounded-lg shadow-lg">
+  <div class="px-6 py-4 border-b border-slate-700">
+    <h2 class="text-xl font-bold text-gray-100">Recent Queries</h2>
+  </div>
+
+  <% if @queries.any? %>
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-slate-900">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">SQL</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Estimated ε</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Created</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-700">
+          <% @queries.each do |query| %>
+            <% last_run = query.runs.order(created_at: :desc).first %>
+            <tr class="hover:bg-slate-700 transition">
+              <td class="px-6 py-4">
+                <code class="text-xs bg-slate-900 text-blue-300 p-1 rounded"><%= truncate(query.sql, length: 60) %></code>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-200">
+                <%= number_with_precision(query.estimated_epsilon, precision: 2) %>ε
+              </td>
+              <td class="px-6 py-4">
+                <% if last_run %>
+                  <% status_class = case last_run.status
+                      when 'completed' then 'bg-green-900 bg-opacity-50 text-green-300 border border-green-700'
+                      when 'pending' then 'bg-yellow-900 bg-opacity-50 text-yellow-300 border border-yellow-700'
+                      when 'failed' then 'bg-red-900 bg-opacity-50 text-red-300 border border-red-700'
+                      else 'bg-slate-700 text-gray-300'
+                      end %>
+                  <span class="px-2 py-1 text-xs font-medium rounded-full <%= status_class %>">
+                    <%= last_run.status %>
+                  </span>
+                <% else %>
+                  <span class="text-sm text-gray-500">Not executed</span>
+                <% end %>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-400">
+                <%= time_ago_in_words(query.created_at) %> ago
+              </td>
+              <td class="px-6 py-4 text-sm font-medium">
+                <%= link_to "View", query_path(query), class: "text-blue-400 hover:text-blue-300 mr-3" %>
+                <% if last_run %>
+                  <%= link_to "Results", run_path(last_run), class: "text-green-400 hover:text-green-300" %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="px-6 py-12 text-center">
+      <p class="text-gray-400 mb-4">No queries yet for this dataset</p>
+      <%= link_to "Create First Query", new_dataset_query_path(@dataset), class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700" %>
+    </div>
+  <% end %>
+</div>

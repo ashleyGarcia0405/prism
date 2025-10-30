@@ -9,37 +9,55 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # Web UI Routes
+  root "dashboard#index"
 
-  Rails.application.routes.draw do
-    namespace :api do
-      namespace :v1 do
-        post   'auth/register', to: 'auth#register'
-        post   'auth/login', to: 'auth#login'
-        resources :organizations, only: [:create, :show] do
-          resources :datasets, only: [:index, :create] do
-            post 'upload', on: :member
-          end
-          resources :policies, only: [:index, :update]
+  get    'login',    to: 'sessions#new'
+  post   'login',    to: 'sessions#create'
+  get    'register', to: 'sessions#new_register'
+  post   'register', to: 'sessions#create_register'
+  delete 'logout',   to: 'sessions#destroy'
+
+  get 'dashboard', to: 'dashboard#index'
+
+  resources :datasets do
+    resources :queries, only: [:new, :create]
+  end
+
+  resources :queries, only: [:index, :show] do
+    post 'execute', on: :member
+  end
+
+  resources :runs, only: [:show]
+  resources :audit_events, only: [:index]
+
+  # API Routes
+  namespace :api do
+    namespace :v1 do
+      post   'auth/register', to: 'auth#register'
+      post   'auth/login', to: 'auth#login'
+      resources :organizations, only: [:create, :show] do
+        resources :datasets, only: [:index, :create] do
+          post 'upload', on: :member
         end
-        resources :datasets, only: [] do
-          get 'budget', on: :member
-        end
-        resources :queries, only: [:create, :show] do
-          post 'validate', on: :collection
-          post 'execute', on: :member
-        end
-        resources :runs, only: [:show] do
-          get 'result', on: :member
-          get 'attestation', on: :member
-          get 'transcript', on: :member
-        end
-        resources :data_rooms, only: [:create] do
-          post 'invite', 'attest', 'execute', on: :member
-        end
-        resources :audit_events, only: [:index]
+        resources :policies, only: [:index, :update]
       end
+      resources :datasets, only: [] do
+        get 'budget', on: :member
+      end
+      resources :queries, only: [:create, :show] do
+        post 'validate', on: :collection
+        post 'execute', on: :member
+      end
+      resources :runs, only: [:show] do
+        get 'result', on: :member
+        get 'attestation', on: :member
+        get 'transcript', on: :member
+      end
+      resources :data_rooms, only: [:create] do
+        post 'invite', 'attest', 'execute', on: :member
+      end
+      resources :audit_events, only: [:index]
     end
   end
 
