@@ -26,7 +26,7 @@ module Api
 
         if run.completed?
           render json: {
-            result: run.result,
+            data: run.result,
             epsilon_consumed: run.epsilon_consumed
           }, status: :ok
         else

@@ -92,10 +92,18 @@
           <table class="w-full">
             <thead class="bg-slate-900">
               <tr>
-                <% @run.result.first.each do |key, _| %>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    <%= key %>
-                  </th>
+                <% if @run.result.is_a?(Hash) %>
+                  <% @run.result.keys.each do |key| %>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      <%= key %>
+                    </th>
+                  <% end %>
+                <% elsif @run.result.is_a?(Array) && @run.result.first.is_a?(Hash) %>
+                  <% @run.result.first.keys.each do |key| %>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      <%= key %>
+                    </th>
+                  <% end %>
                 <% end %>
               </tr>
             </thead>

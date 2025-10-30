@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :run do
-    query { nil }
-    status { "MyString" }
-    result { "MyText" }
+    association :query
+    association :user
+    status { "pending" }
   end
 end

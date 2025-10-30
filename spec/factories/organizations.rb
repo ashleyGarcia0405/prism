@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :organization do
-    name { "MyString" }
+    name { "Org #{SecureRandom.hex(2)}" }
   end
 end
