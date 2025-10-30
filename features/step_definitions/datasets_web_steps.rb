@@ -88,31 +88,3 @@ end
 Then('the success message shows {string}') do |message|
   expect(page).to have_content(message)
 end
-
-
-# Query setup step
-Given('{int} query exists for dataset {string} with SQL {string}') do |count, dataset_name, sql|
-  dataset = Dataset.find_by(name: dataset_name, organization: @organization) ||
-            Dataset.create!(name: dataset_name, organization: @organization)
-  user = @user || User.first || (raise "no user available")
-
-  count.times do |i|
-    q = Query.new(
-      sql: sql,
-      dataset: dataset,
-      user: user,
-      estimated_epsilon: 0.1
-    )
-    q.save!(validate: false)
-
-    q.runs.create!(
-      status: 'completed',
-      user: user,
-      backend_used: 'dp_sandbox',
-      result: { ok: true },
-      epsilon_consumed: 0.1,
-      execution_time_ms: 10
-    )
-    q.reload
-  end
-end
