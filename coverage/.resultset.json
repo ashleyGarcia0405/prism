@@ -1,1163 +1,7 @@
 {
-  "RSpec": {
-    "coverage": {
-      "/Users/ashleygarcia/Workspace/prism/prism/app/helpers/application_helper.rb": {
-        "lines": [
-          1,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/base_controller.rb": {
-        "lines": [
-          null,
-          null,
-          1,
-          1,
-          1,
-          null,
-          1,
-          null,
-          1,
-          null,
-          1,
-          72,
-          null,
-          72,
-          3,
-          3,
-          null,
-          null,
-          69,
-          null,
-          null,
-          69,
-          67,
-          null,
-          2,
-          null,
-          1,
-          null,
-          null,
-          null,
-          1,
-          null,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/audit_events_controller.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          1,
-          13,
-          13,
-          13,
-          null,
-          13,
-          13,
-          null,
-          13,
-          null,
-          13,
-          null,
-          null,
-          null,
-          null,
-          44,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/auth_controller.rb": {
-        "lines": [
-          null,
-          null,
-          1,
-          1,
-          1,
-          1,
-          null,
-          1,
-          null,
-          10,
-          5,
-          5,
-          2,
-          null,
-          3,
-          3,
-          null,
-          null,
-          7,
-          null,
-          7,
-          7,
-          7,
-          7,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          0,
-          null,
-          null,
-          0,
-          null,
-          null,
-          1,
-          6,
-          null,
-          6,
-          3,
-          3,
-          3,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          3,
-          null,
-          null,
-          null,
-          1,
-          null,
-          1,
-          14,
-          null,
-          null,
-          1,
-          5,
-          null,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/datasets_controller.rb": {
-        "lines": [
-          null,
-          null,
-          1,
-          1,
-          1,
-          1,
-          2,
-          2,
-          null,
-          2,
-          null,
-          null,
-          4,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          6,
-          6,
-          6,
-          4,
-          4,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          2,
-          null,
-          null,
-          null,
-          1,
-          2,
-          2,
-          null,
-          2,
-          0,
-          null,
-          null,
-          2,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          null,
-          1,
-          6,
-          null,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/organizations_controller.rb": {
-        "lines": [
-          null,
-          null,
-          1,
-          1,
-          1,
-          1,
-          4,
-          2,
-          null,
-          null,
-          null,
-          null,
-          null,
-          2,
-          null,
-          null,
-          1,
-          6,
-          null,
-          6,
-          3,
-          null,
-          null,
-          null,
-          null,
-          null,
-          3,
-          null,
-          null,
-          null,
-          1,
-          null,
-          1,
-          6,
-          null,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/queries_controller.rb": {
-        "lines": [
-          null,
-          null,
-          1,
-          1,
-          1,
-          1,
-          7,
-          7,
-          null,
-          7,
-          4,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          4,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          3,
-          null,
-          null,
-          null,
-          1,
-          2,
-          2,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          5,
-          null,
-          5,
-          0,
-          null,
-          null,
-          null,
-          null,
-          null,
-          5,
-          null,
-          5,
-          3,
-          null,
-          null,
-          null,
-          null,
-          null,
-          2,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          5,
-          null,
-          null,
-          5,
-          null,
-          null,
-          null,
-          null,
-          null,
-          5,
-          null,
-          5,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          null,
-          1,
-          7,
-          null,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/runs_controller.rb": {
-        "lines": [
-          null,
-          null,
-          1,
-          1,
-          1,
-          1,
-          9,
-          null,
-          9,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          3,
-          null,
-          3,
-          3,
-          null,
-          null,
-          null,
-          null,
-          0,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/jobs/query_execution_job.rb": {
-        "lines": [
-          1,
-          1,
-          null,
-          1,
-          16,
-          16,
-          null,
-          16,
-          16,
-          16,
-          16,
-          null,
-          null,
-          16,
-          null,
-          null,
-          null,
-          null,
-          16,
-          4,
-          null,
-          null,
-          null,
-          4,
-          null,
-          null,
-          null,
-          null,
-          null,
-          4,
-          null,
-          null,
-          null,
-          12,
-          12,
-          8,
-          null,
-          null,
-          8,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          8,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          8,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          4,
-          4,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          4,
-          null,
-          null,
-          null,
-          4,
-          null,
-          null,
-          null,
-          null,
-          null,
-          4,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/jobs/application_job.rb": {
-        "lines": [
-          1,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/audit_event.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null,
-          null,
-          1,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/application_record.rb": {
-        "lines": [
-          1,
-          1,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/dataset.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          1,
-          null,
-          1,
-          null,
-          1,
-          null,
-          1,
-          null,
-          1,
-          106,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/organization.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null,
-          1,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/policy.rb": {
-        "lines": [
-          1,
-          1,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/privacy_budget.rb": {
-        "lines": [
-          null,
-          null,
-          1,
-          1,
-          null,
-          1,
-          1,
-          1,
-          1,
-          null,
-          1,
-          null,
-          1,
-          38,
-          null,
-          null,
-          1,
-          27,
-          null,
-          null,
-          1,
-          null,
-          1,
-          172,
-          null,
-          172,
-          1,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/query.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          1,
-          null,
-          1,
-          null,
-          1,
-          1,
-          null,
-          1,
-          null,
-          1,
-          60,
-          null,
-          57,
-          null,
-          57,
-          17,
-          null,
-          null,
-          null,
-          1,
-          60,
-          null,
-          57,
-          57,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/run.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          null,
-          null,
-          1,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          null,
-          null,
-          1,
-          6,
-          null,
-          null,
-          1,
-          1,
-          null,
-          null,
-          1,
-          1,
-          null,
-          null,
-          1,
-          1,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/user.rb": {
-        "lines": [
-          1,
-          1,
-          1,
-          1,
-          null,
-          1,
-          null,
-          1,
-          1,
-          148,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/services/audit_logger.rb": {
-        "lines": [
-          null,
-          1,
-          1,
-          1,
-          46,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/services/privacy_budget_service.rb": {
-        "lines": [
-          null,
-          null,
-          1,
-          1,
-          1,
-          24,
-          null,
-          24,
-          0,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          24,
-          24,
-          null,
-          7,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          17,
-          null,
-          null,
-          17,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          11,
-          null,
-          11,
-          11,
-          null,
-          null,
-          null,
-          null,
-          null,
-          11,
-          null,
-          null,
-          1,
-          7,
-          null,
-          7,
-          7,
-          null,
-          null,
-          null,
-          null,
-          7,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/services/query_validator.rb": {
-        "lines": [
-          1,
-          null,
-          1,
-          1,
-          1,
-          null,
-          1,
-          1,
-          147,
-          null,
-          null,
-          147,
-          null,
-          null,
-          147,
-          null,
-          147,
-          0,
-          0,
-          null,
-          null,
-          null,
-          147,
-          null,
-          null,
-          147,
-          147,
-          null,
-          null,
-          147,
-          2,
-          null,
-          null,
-          null,
-          147,
-          5,
-          null,
-          null,
-          null,
-          147,
-          null,
-          null,
-          337,
-          147,
-          0,
-          null,
-          null,
-          147,
-          null,
-          null,
-          120,
-          null,
-          null,
-          120,
-          null,
-          null,
-          null,
-          null,
-          0,
-          0,
-          null,
-          null,
-          null,
-          1,
-          null,
-          1,
-          null,
-          27,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          147,
-          null,
-          147,
-          147,
-          null,
-          147,
-          null,
-          null,
-          1,
-          147,
-          null,
-          147,
-          341,
-          null,
-          341,
-          341,
-          null,
-          147,
-          294,
-          null,
-          null,
-          null,
-          1,
-          147,
-          null,
-          null,
-          147,
-          147,
-          341,
-          null,
-          341,
-          341,
-          null,
-          190,
-          190,
-          190,
-          null,
-          null,
-          null,
-          147,
-          null,
-          null,
-          1,
-          315,
-          null,
-          630,
-          null,
-          null,
-          1,
-          274,
-          null,
-          null,
-          1,
-          129,
-          null,
-          null,
-          125,
-          null,
-          null,
-          1,
-          125,
-          null,
-          null,
-          125,
-          125,
-          125,
-          null,
-          null,
-          125,
-          null,
-          null,
-          125,
-          125,
-          125,
-          125,
-          null,
-          null,
-          125,
-          null,
-          125,
-          null,
-          null,
-          null,
-          null,
-          0,
-          0,
-          0,
-          null,
-          null,
-          0,
-          null,
-          null,
-          1,
-          null,
-          147,
-          147,
-          341,
-          341,
-          null,
-          null,
-          null,
-          null,
-          null,
-          143,
-          282,
-          null,
-          null,
-          null,
-          143,
-          2,
-          null,
-          null,
-          143,
-          null,
-          null,
-          1,
-          343,
-          null,
-          null,
-          343,
-          null,
-          null,
-          339,
-          90852,
-          90852,
-          null,
-          339,
-          0,
-          339,
-          0,
-          null,
-          null,
-          null,
-          339,
-          null,
-          null,
-          1,
-          120,
-          null,
-          120,
-          181,
-          null,
-          121,
-          null,
-          60,
-          null,
-          null,
-          null,
-          120,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/application_controller.rb": {
-        "lines": [
-          1,
-          null,
-          1,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/lib/json_web_token.rb": {
-        "lines": [
-          null,
-          1,
-          null,
-          1,
-          1,
-          null,
-          1,
-          148,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          79,
-          79,
-          79,
-          79,
-          null,
-          null,
-          null,
-          1,
-          69,
-          null,
-          201,
-          67,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/services/dp_sandbox.rb": {
-        "lines": [
-          1,
-          1,
-          12,
-          null,
-          null,
-          1,
-          null,
-          null,
-          null,
-          8,
-          8,
-          null,
-          8,
-          8,
-          null,
-          null,
-          8,
-          null,
-          null,
-          8,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          1,
-          null,
-          1,
-          null,
-          8,
-          8,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          null,
-          null,
-          0,
-          null,
-          null,
-          null
-        ]
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/audits_controller.rb": {
-        "lines": [
-          null,
-          null,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        "branches": {}
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/data_rooms_controller.rb": {
-        "lines": [
-          null,
-          null,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        "branches": {}
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/policies_controller.rb": {
-        "lines": [
-          null,
-          null,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
-        ],
-        "branches": {}
-      },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/mailers/application_mailer.rb": {
-        "lines": [
-          0,
-          0,
-          0,
-          0
-        ],
-        "branches": {}
-      }
-    },
-    "timestamp": 1761770845
-  },
   "Cucumber": {
     "coverage": {
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/organization.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/organization.rb": {
         "lines": [
           1,
           1,
@@ -1167,14 +11,14 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/application_record.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/application_record.rb": {
         "lines": [
           1,
           1,
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/auth_controller.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/auth_controller.rb": {
         "lines": [
           null,
           null,
@@ -1253,7 +97,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/base_controller.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/base_controller.rb": {
         "lines": [
           null,
           null,
@@ -1292,7 +136,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/user.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/user.rb": {
         "lines": [
           1,
           1,
@@ -1307,7 +151,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/lib/json_web_token.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/lib/json_web_token.rb": {
         "lines": [
           null,
           1,
@@ -1340,7 +184,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/services/audit_logger.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/services/audit_logger.rb": {
         "lines": [
           null,
           1,
@@ -1358,7 +202,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/audit_event.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/audit_event.rb": {
         "lines": [
           1,
           1,
@@ -1376,7 +220,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/organizations_controller.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/organizations_controller.rb": {
         "lines": [
           null,
           null,
@@ -1418,7 +262,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/datasets_controller.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/datasets_controller.rb": {
         "lines": [
           null,
           null,
@@ -1484,7 +328,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/dataset.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/dataset.rb": {
         "lines": [
           1,
           1,
@@ -1507,7 +351,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/privacy_budget.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/privacy_budget.rb": {
         "lines": [
           null,
           null,
@@ -1541,7 +385,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/services/privacy_budget_service.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/services/privacy_budget_service.rb": {
         "lines": [
           null,
           null,
@@ -1609,7 +453,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/queries_controller.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/queries_controller.rb": {
         "lines": [
           null,
           null,
@@ -1711,7 +555,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/query.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/query.rb": {
         "lines": [
           1,
           1,
@@ -1744,7 +588,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/services/query_validator.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/services/query_validator.rb": {
         "lines": [
           1,
           null,
@@ -1974,7 +818,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/run.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/run.rb": {
         "lines": [
           1,
           1,
@@ -2009,7 +853,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/jobs/query_execution_job.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/jobs/query_execution_job.rb": {
         "lines": [
           1,
           1,
@@ -2100,7 +944,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/jobs/application_job.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/jobs/application_job.rb": {
         "lines": [
           1,
           null,
@@ -2111,7 +955,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/services/dp_sandbox.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/services/dp_sandbox.rb": {
         "lines": [
           1,
           1,
@@ -2162,7 +1006,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/runs_controller.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/runs_controller.rb": {
         "lines": [
           null,
           null,
@@ -2207,7 +1051,7 @@
           null
         ]
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/audit_events_controller.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/audit_events_controller.rb": {
         "lines": [
           0,
           0,
@@ -2240,7 +1084,7 @@
         ],
         "branches": {}
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/audits_controller.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/audits_controller.rb": {
         "lines": [
           null,
           null,
@@ -2253,7 +1097,7 @@
         ],
         "branches": {}
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/data_rooms_controller.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/data_rooms_controller.rb": {
         "lines": [
           null,
           null,
@@ -2266,7 +1110,7 @@
         ],
         "branches": {}
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/api/v1/policies_controller.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/policies_controller.rb": {
         "lines": [
           null,
           null,
@@ -2279,23 +1123,248 @@
         ],
         "branches": {}
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/controllers/application_controller.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/application_controller.rb": {
         "lines": [
           0,
           null,
           0,
+          null,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
           0
         ],
         "branches": {}
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/helpers/application_helper.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/audit_events_controller.rb": {
+        "lines": [
+          null,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/dashboard_controller.rb": {
+        "lines": [
+          null,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/datasets_controller.rb": {
+        "lines": [
+          null,
+          null,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/queries_controller.rb": {
+        "lines": [
+          null,
+          null,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/runs_controller.rb": {
+        "lines": [
+          null,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/sessions_controller.rb": {
+        "lines": [
+          null,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          null,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          null,
+          0,
+          null,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/helpers/application_helper.rb": {
         "lines": [
           0,
           0
         ],
         "branches": {}
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/mailers/application_mailer.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/mailers/application_mailer.rb": {
         "lines": [
           0,
           0,
@@ -2304,7 +1373,7 @@
         ],
         "branches": {}
       },
-      "/Users/ashleygarcia/Workspace/prism/prism/app/models/policy.rb": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/policy.rb": {
         "lines": [
           0,
           0,
@@ -2313,6 +1382,1834 @@
         "branches": {}
       }
     },
-    "timestamp": 1761770846
+    "timestamp": 1761792167
+  },
+  "RSpec": {
+    "coverage": {
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/helpers/application_helper.rb": {
+        "lines": [
+          1,
+          null
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/base_controller.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          null,
+          1,
+          85,
+          null,
+          85,
+          6,
+          6,
+          null,
+          null,
+          79,
+          null,
+          null,
+          79,
+          77,
+          null,
+          2,
+          null,
+          1,
+          null,
+          null,
+          null,
+          1,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:unless, 0, 14, 6, 17, 9]": {
+            "[:else, 1, 14, 6, 17, 9]": 79,
+            "[:then, 2, 15, 8, 16, 14]": 6
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/audit_events_controller.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          1,
+          15,
+          15,
+          15,
+          null,
+          15,
+          15,
+          null,
+          15,
+          null,
+          15,
+          null,
+          null,
+          null,
+          null,
+          47,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 7, 8, 7, 92]": {
+            "[:then, 1, 7, 8, 7, 58]": 3,
+            "[:else, 2, 7, 8, 7, 92]": 12
+          },
+          "[:if, 3, 9, 15, 9, 62]": {
+            "[:then, 4, 9, 40, 9, 58]": 1,
+            "[:else, 5, 9, 61, 9, 62]": 14
+          },
+          "[:if, 6, 10, 15, 10, 73]": {
+            "[:then, 7, 10, 45, 10, 68]": 2,
+            "[:else, 8, 10, 71, 10, 73]": 13
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/auth_controller.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          10,
+          5,
+          5,
+          2,
+          null,
+          3,
+          3,
+          null,
+          null,
+          7,
+          null,
+          7,
+          7,
+          7,
+          7,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          0,
+          null,
+          null,
+          0,
+          null,
+          null,
+          1,
+          6,
+          null,
+          6,
+          3,
+          3,
+          3,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          3,
+          null,
+          null,
+          null,
+          1,
+          null,
+          1,
+          14,
+          null,
+          null,
+          1,
+          5,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 10, 23, 17, 11]": {
+            "[:then, 1, 11, 10, 11, 51]": 5,
+            "[:else, 2, 12, 8, 16, 16]": 5
+          },
+          "[:if, 3, 12, 8, 16, 16]": {
+            "[:then, 4, 13, 10, 13, 58]": 2,
+            "[:else, 5, 15, 10, 16, 16]": 3
+          },
+          "[:if, 6, 21, 8, 39, 11]": {
+            "[:then, 7, 22, 10, 36, 29]": 7,
+            "[:else, 8, 38, 10, 38, 91]": 0
+          },
+          "[:\"&.\", 9, 47, 11, 47, 48]": {
+            "[:then, 10, 47, 11, 47, 48]": 5,
+            "[:else, 11, 47, 11, 47, 48]": 1
+          },
+          "[:if, 12, 47, 8, 61, 11]": {
+            "[:then, 13, 48, 10, 58, 24]": 3,
+            "[:else, 14, 60, 10, 60, 84]": 3
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/datasets_controller.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          1,
+          1,
+          1,
+          2,
+          2,
+          null,
+          2,
+          null,
+          null,
+          4,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          6,
+          6,
+          6,
+          4,
+          4,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          2,
+          null,
+          null,
+          null,
+          1,
+          2,
+          2,
+          null,
+          2,
+          0,
+          null,
+          null,
+          2,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          1,
+          6,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 25, 8, 35, 11]": {
+            "[:then, 1, 26, 10, 32, 29]": 4,
+            "[:else, 2, 34, 10, 34, 94]": 2
+          },
+          "[:unless, 3, 42, 8, 44, 11]": {
+            "[:else, 4, 42, 8, 44, 11]": 2,
+            "[:then, 5, 43, 10, 43, 104]": 0
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/organizations_controller.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          1,
+          1,
+          1,
+          4,
+          2,
+          null,
+          null,
+          null,
+          null,
+          null,
+          2,
+          null,
+          null,
+          1,
+          6,
+          null,
+          6,
+          3,
+          null,
+          null,
+          null,
+          null,
+          null,
+          3,
+          null,
+          null,
+          null,
+          1,
+          null,
+          1,
+          6,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 20, 8, 28, 11]": {
+            "[:then, 1, 21, 10, 25, 29]": 3,
+            "[:else, 2, 27, 10, 27, 99]": 3
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/queries_controller.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          1,
+          1,
+          1,
+          9,
+          9,
+          null,
+          9,
+          5,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          5,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          4,
+          null,
+          null,
+          null,
+          1,
+          3,
+          3,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          7,
+          null,
+          7,
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          7,
+          null,
+          7,
+          4,
+          null,
+          null,
+          null,
+          null,
+          null,
+          3,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          6,
+          null,
+          null,
+          6,
+          null,
+          null,
+          null,
+          null,
+          null,
+          6,
+          null,
+          6,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          1,
+          9,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 10, 8, 30, 11]": {
+            "[:then, 1, 11, 10, 27, 29]": 5,
+            "[:else, 2, 29, 10, 29, 92]": 4
+          },
+          "[:unless, 3, 47, 8, 52, 11]": {
+            "[:else, 4, 47, 8, 52, 11]": 7,
+            "[:then, 5, 48, 10, 51, 33]": 0
+          },
+          "[:if, 6, 56, 8, 67, 11]": {
+            "[:then, 7, 57, 10, 61, 24]": 4,
+            "[:else, 8, 63, 10, 66, 42]": 3
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/runs_controller.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          1,
+          1,
+          1,
+          10,
+          null,
+          10,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          4,
+          null,
+          4,
+          4,
+          null,
+          null,
+          null,
+          null,
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 27, 8, 37, 11]": {
+            "[:then, 1, 28, 10, 31, 24]": 4,
+            "[:else, 2, 33, 10, 36, 30]": 0
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/jobs/query_execution_job.rb": {
+        "lines": [
+          1,
+          1,
+          null,
+          1,
+          16,
+          16,
+          null,
+          16,
+          16,
+          16,
+          16,
+          null,
+          null,
+          16,
+          null,
+          null,
+          null,
+          null,
+          16,
+          4,
+          null,
+          null,
+          null,
+          4,
+          null,
+          null,
+          null,
+          null,
+          null,
+          4,
+          null,
+          null,
+          null,
+          12,
+          12,
+          8,
+          null,
+          null,
+          8,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          8,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          8,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          4,
+          4,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          4,
+          null,
+          null,
+          null,
+          4,
+          null,
+          null,
+          null,
+          null,
+          null,
+          4,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 67, 4, 73, 7]": {
+            "[:then, 1, 68, 6, 72, 7]": 4,
+            "[:else, 2, 67, 4, 73, 7]": 0
+          },
+          "[:\"&.\", 3, 80, 20, 80, 31]": {
+            "[:then, 4, 80, 20, 80, 31]": 0,
+            "[:else, 5, 80, 20, 80, 31]": 0
+          },
+          "[:\"&.\", 6, 83, 28, 83, 37]": {
+            "[:then, 7, 83, 28, 83, 37]": 4,
+            "[:else, 8, 83, 28, 83, 37]": 0
+          },
+          "[:\"&.\", 9, 83, 51, 83, 62]": {
+            "[:then, 10, 83, 51, 83, 62]": 4,
+            "[:else, 11, 83, 51, 83, 62]": 0
+          },
+          "[:unless, 12, 19, 4, 31, 7]": {
+            "[:else, 13, 19, 4, 31, 7]": 12,
+            "[:then, 14, 20, 6, 30, 12]": 4
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/jobs/application_job.rb": {
+        "lines": [
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/audit_event.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          null,
+          null,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/application_record.rb": {
+        "lines": [
+          1,
+          1,
+          null
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/dataset.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          null,
+          1,
+          null,
+          1,
+          118,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/organization.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          null,
+          1,
+          null
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/policy.rb": {
+        "lines": [
+          1,
+          1,
+          null
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/privacy_budget.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          1,
+          null,
+          1,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          38,
+          null,
+          null,
+          1,
+          27,
+          null,
+          null,
+          1,
+          null,
+          1,
+          184,
+          null,
+          184,
+          1,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:unless, 0, 24, 4, 24, 71]": {
+            "[:else, 1, 24, 4, 24, 71]": 184,
+            "[:then, 2, 24, 4, 24, 10]": 0
+          },
+          "[:if, 3, 26, 4, 28, 7]": {
+            "[:then, 4, 27, 6, 27, 84]": 1,
+            "[:else, 5, 26, 4, 28, 7]": 183
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/query.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          69,
+          null,
+          66,
+          null,
+          66,
+          20,
+          null,
+          null,
+          null,
+          1,
+          69,
+          null,
+          66,
+          66,
+          null,
+          null
+        ],
+        "branches": {
+          "[:unless, 0, 14, 4, 14, 21]": {
+            "[:else, 1, 14, 4, 14, 21]": 66,
+            "[:then, 2, 14, 4, 14, 10]": 3
+          },
+          "[:unless, 3, 18, 4, 20, 7]": {
+            "[:else, 4, 18, 4, 20, 7]": 59,
+            "[:then, 5, 19, 6, 19, 66]": 7
+          },
+          "[:unless, 6, 24, 4, 24, 21]": {
+            "[:else, 7, 24, 4, 24, 21]": 66,
+            "[:then, 8, 24, 4, 24, 10]": 3
+          },
+          "[:if, 9, 27, 4, 27, 83]": {
+            "[:then, 10, 27, 4, 27, 61]": 59,
+            "[:else, 11, 27, 4, 27, 83]": 7
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/run.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          null,
+          null,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          null,
+          1,
+          7,
+          null,
+          null,
+          1,
+          1,
+          null,
+          null,
+          1,
+          1,
+          null,
+          null,
+          1,
+          1,
+          null,
+          null
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/models/user.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          1,
+          164,
+          null
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/services/audit_logger.rb": {
+        "lines": [
+          null,
+          1,
+          1,
+          1,
+          47,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:\"&.\", 0, 8, 21, 8, 34]": {
+            "[:then, 1, 8, 21, 8, 34]": 32,
+            "[:else, 2, 8, 21, 8, 34]": 15
+          },
+          "[:\"&.\", 3, 8, 21, 8, 40]": {
+            "[:then, 4, 8, 21, 8, 40]": 32,
+            "[:else, 5, 8, 21, 8, 40]": 15
+          },
+          "[:\"&.\", 6, 9, 21, 9, 31]": {
+            "[:then, 7, 9, 21, 9, 31]": 32,
+            "[:else, 8, 9, 21, 9, 31]": 15
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/services/privacy_budget_service.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          1,
+          1,
+          24,
+          null,
+          24,
+          0,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          24,
+          24,
+          null,
+          7,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          17,
+          null,
+          null,
+          17,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          11,
+          null,
+          11,
+          11,
+          null,
+          null,
+          null,
+          null,
+          null,
+          11,
+          null,
+          null,
+          1,
+          7,
+          null,
+          7,
+          7,
+          null,
+          null,
+          null,
+          null,
+          7,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:unless, 0, 8, 6, 13, 9]": {
+            "[:else, 1, 8, 6, 13, 9]": 24,
+            "[:then, 2, 9, 8, 12, 9]": 0
+          },
+          "[:unless, 3, 17, 8, 26, 11]": {
+            "[:else, 4, 17, 8, 26, 11]": 17,
+            "[:then, 5, 18, 10, 25, 11]": 7
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/services/query_validator.rb": {
+        "lines": [
+          1,
+          null,
+          1,
+          1,
+          1,
+          null,
+          1,
+          1,
+          167,
+          null,
+          null,
+          167,
+          null,
+          null,
+          167,
+          null,
+          167,
+          0,
+          0,
+          null,
+          null,
+          null,
+          167,
+          null,
+          null,
+          167,
+          167,
+          null,
+          null,
+          167,
+          2,
+          null,
+          null,
+          null,
+          167,
+          5,
+          null,
+          null,
+          null,
+          167,
+          null,
+          null,
+          375,
+          167,
+          0,
+          null,
+          null,
+          167,
+          null,
+          null,
+          137,
+          null,
+          null,
+          137,
+          null,
+          null,
+          null,
+          null,
+          0,
+          0,
+          null,
+          null,
+          null,
+          1,
+          null,
+          1,
+          null,
+          30,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          167,
+          null,
+          167,
+          167,
+          null,
+          167,
+          null,
+          null,
+          1,
+          167,
+          null,
+          167,
+          379,
+          null,
+          379,
+          379,
+          null,
+          167,
+          334,
+          null,
+          null,
+          null,
+          1,
+          167,
+          null,
+          null,
+          167,
+          167,
+          379,
+          null,
+          379,
+          379,
+          null,
+          208,
+          208,
+          208,
+          null,
+          null,
+          null,
+          167,
+          null,
+          null,
+          1,
+          350,
+          null,
+          700,
+          null,
+          null,
+          1,
+          311,
+          null,
+          null,
+          1,
+          146,
+          null,
+          null,
+          142,
+          null,
+          null,
+          1,
+          142,
+          null,
+          null,
+          142,
+          142,
+          142,
+          null,
+          null,
+          142,
+          null,
+          null,
+          142,
+          142,
+          142,
+          142,
+          null,
+          null,
+          142,
+          null,
+          142,
+          null,
+          null,
+          null,
+          null,
+          0,
+          0,
+          0,
+          null,
+          null,
+          0,
+          null,
+          null,
+          1,
+          null,
+          167,
+          167,
+          379,
+          379,
+          null,
+          null,
+          null,
+          null,
+          null,
+          163,
+          322,
+          null,
+          null,
+          null,
+          163,
+          2,
+          null,
+          null,
+          163,
+          null,
+          null,
+          1,
+          381,
+          null,
+          null,
+          381,
+          null,
+          null,
+          377,
+          101036,
+          101036,
+          null,
+          377,
+          0,
+          377,
+          0,
+          null,
+          null,
+          null,
+          377,
+          null,
+          null,
+          1,
+          137,
+          null,
+          137,
+          199,
+          null,
+          138,
+          null,
+          61,
+          null,
+          null,
+          null,
+          137,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:unless, 0, 17, 8, 20, 11]": {
+            "[:else, 1, 17, 8, 20, 11]": 167,
+            "[:then, 2, 18, 10, 19, 46]": 0
+          },
+          "[:if, 3, 23, 8, 23, 96]": {
+            "[:then, 4, 23, 8, 23, 66]": 15,
+            "[:else, 5, 23, 8, 23, 96]": 152
+          },
+          "[:if, 6, 27, 8, 27, 74]": {
+            "[:then, 7, 27, 8, 27, 54]": 23,
+            "[:else, 8, 27, 8, 27, 74]": 144
+          },
+          "[:if, 9, 30, 8, 32, 11]": {
+            "[:then, 10, 31, 10, 31, 56]": 2,
+            "[:else, 11, 30, 8, 32, 11]": 165
+          },
+          "[:if, 12, 35, 8, 37, 11]": {
+            "[:then, 13, 36, 10, 36, 87]": 5,
+            "[:else, 14, 35, 8, 37, 11]": 162
+          },
+          "[:if, 15, 40, 8, 40, 76]": {
+            "[:then, 16, 40, 8, 40, 46]": 4,
+            "[:else, 17, 40, 8, 40, 76]": 163
+          },
+          "[:if, 18, 44, 8, 46, 11]": {
+            "[:then, 19, 45, 10, 45, 89]": 0,
+            "[:else, 20, 44, 8, 46, 11]": 167
+          },
+          "[:if, 21, 48, 8, 48, 59]": {
+            "[:then, 22, 48, 8, 48, 44]": 30,
+            "[:else, 23, 48, 8, 48, 59]": 137
+          },
+          "[:\"&.\", 24, 75, 24, 75, 47]": {
+            "[:then, 25, 75, 24, 75, 47]": 167,
+            "[:else, 26, 75, 24, 75, 47]": 0
+          },
+          "[:unless, 27, 75, 6, 75, 47]": {
+            "[:else, 28, 75, 6, 75, 47]": 167,
+            "[:then, 29, 75, 6, 75, 16]": 0
+          },
+          "[:unless, 30, 78, 6, 78, 37]": {
+            "[:else, 31, 78, 6, 78, 37]": 167,
+            "[:then, 32, 78, 6, 78, 16]": 0
+          },
+          "[:\"&.\", 33, 84, 26, 84, 55]": {
+            "[:then, 34, 84, 26, 84, 55]": 167,
+            "[:else, 35, 84, 26, 84, 55]": 0
+          },
+          "[:unless, 36, 84, 6, 84, 55]": {
+            "[:else, 37, 84, 6, 84, 55]": 167,
+            "[:then, 38, 84, 6, 84, 18]": 0
+          },
+          "[:unless, 39, 87, 8, 87, 42]": {
+            "[:else, 40, 87, 8, 87, 42]": 379,
+            "[:then, 41, 87, 8, 87, 12]": 0
+          },
+          "[:\"&.\", 42, 90, 20, 90, 46]": {
+            "[:then, 43, 90, 20, 90, 46]": 379,
+            "[:else, 44, 90, 20, 90, 46]": 0
+          },
+          "[:unless, 45, 90, 8, 90, 46]": {
+            "[:else, 46, 90, 8, 90, 46]": 167,
+            "[:then, 47, 90, 8, 90, 12]": 212
+          },
+          "[:\"&.\", 48, 101, 9, 101, 38]": {
+            "[:then, 49, 101, 9, 101, 38]": 167,
+            "[:else, 50, 101, 9, 101, 38]": 0
+          },
+          "[:if, 51, 101, 6, 112, 9]": {
+            "[:then, 52, 102, 8, 111, 11]": 167,
+            "[:else, 53, 101, 6, 112, 9]": 0
+          },
+          "[:unless, 54, 103, 10, 103, 44]": {
+            "[:else, 55, 103, 10, 103, 44]": 379,
+            "[:then, 56, 103, 10, 103, 14]": 0
+          },
+          "[:\"&.\", 57, 106, 22, 106, 47]": {
+            "[:then, 58, 106, 22, 106, 47]": 379,
+            "[:else, 59, 106, 22, 106, 47]": 0
+          },
+          "[:unless, 60, 106, 10, 106, 47]": {
+            "[:else, 61, 106, 10, 106, 47]": 208,
+            "[:then, 62, 106, 10, 106, 14]": 171
+          },
+          "[:if, 63, 110, 10, 110, 45]": {
+            "[:then, 64, 110, 10, 110, 32]": 208,
+            "[:else, 65, 110, 10, 110, 45]": 0
+          },
+          "[:\"&.\", 66, 118, 24, 118, 48]": {
+            "[:then, 67, 118, 24, 118, 48]": 350,
+            "[:else, 68, 118, 24, 118, 48]": 0
+          },
+          "[:unless, 69, 118, 6, 118, 48]": {
+            "[:else, 70, 118, 6, 118, 48]": 350,
+            "[:then, 71, 118, 6, 118, 16]": 0
+          },
+          "[:\"&.\", 72, 124, 6, 124, 36]": {
+            "[:then, 73, 124, 6, 124, 36]": 311,
+            "[:else, 74, 124, 6, 124, 36]": 0
+          },
+          "[:unless, 75, 128, 6, 128, 51]": {
+            "[:else, 76, 128, 6, 128, 51]": 142,
+            "[:then, 77, 128, 6, 128, 18]": 4
+          },
+          "[:unless, 78, 135, 6, 135, 30]": {
+            "[:else, 79, 135, 6, 135, 30]": 142,
+            "[:then, 80, 135, 6, 135, 18]": 0
+          },
+          "[:if, 81, 138, 6, 156, 9]": {
+            "[:then, 82, 139, 8, 155, 11]": 142,
+            "[:else, 83, 138, 6, 156, 9]": 0
+          },
+          "[:\"&.\", 84, 140, 19, 140, 35]": {
+            "[:then, 85, 140, 19, 140, 35]": 142,
+            "[:else, 86, 140, 19, 140, 35]": 0
+          },
+          "[:\"&.\", 87, 140, 19, 140, 43]": {
+            "[:then, 88, 140, 19, 140, 43]": 142,
+            "[:else, 89, 140, 19, 140, 43]": 0
+          },
+          "[:\"&.\", 90, 140, 19, 140, 49]": {
+            "[:then, 91, 140, 19, 140, 49]": 142,
+            "[:else, 92, 140, 19, 140, 49]": 0
+          },
+          "[:unless, 93, 143, 8, 143, 58]": {
+            "[:else, 94, 143, 8, 143, 58]": 142,
+            "[:then, 95, 143, 8, 143, 20]": 0
+          },
+          "[:\"&.\", 96, 146, 11, 146, 32]": {
+            "[:then, 97, 146, 11, 146, 32]": 142,
+            "[:else, 98, 146, 11, 146, 32]": 0
+          },
+          "[:if, 99, 146, 8, 155, 11]": {
+            "[:then, 100, 147, 10, 154, 69]": 142,
+            "[:else, 101, 146, 8, 155, 11]": 0
+          },
+          "[:\"&.\", 102, 149, 21, 149, 38]": {
+            "[:then, 103, 149, 21, 149, 38]": 142,
+            "[:else, 104, 149, 21, 149, 38]": 0
+          },
+          "[:\"&.\", 105, 152, 22, 152, 41]": {
+            "[:then, 106, 152, 22, 152, 41]": 142,
+            "[:else, 107, 152, 22, 152, 41]": 0
+          },
+          "[:\"&.\", 108, 152, 22, 152, 47]": {
+            "[:then, 109, 152, 22, 152, 47]": 142,
+            "[:else, 110, 152, 22, 152, 47]": 0
+          },
+          "[:\"&.\", 111, 152, 22, 152, 53]": {
+            "[:then, 112, 152, 22, 152, 53]": 142,
+            "[:else, 113, 152, 22, 152, 53]": 0
+          },
+          "[:if, 114, 159, 6, 162, 9]": {
+            "[:then, 115, 160, 8, 161, 63]": 0,
+            "[:else, 116, 159, 6, 162, 9]": 0
+          },
+          "[:\"&.\", 117, 161, 15, 161, 25]": {
+            "[:then, 118, 161, 15, 161, 25]": 0,
+            "[:else, 119, 161, 15, 161, 25]": 0
+          },
+          "[:\"&.\", 120, 169, 9, 169, 38]": {
+            "[:then, 121, 169, 9, 169, 38]": 167,
+            "[:else, 122, 169, 9, 169, 38]": 0
+          },
+          "[:if, 123, 169, 6, 175, 9]": {
+            "[:then, 124, 170, 8, 174, 11]": 167,
+            "[:else, 125, 169, 6, 175, 9]": 0
+          },
+          "[:\"&.\", 126, 171, 13, 171, 40]": {
+            "[:then, 127, 171, 13, 171, 40]": 379,
+            "[:else, 128, 171, 13, 171, 40]": 0
+          },
+          "[:if, 129, 171, 10, 173, 13]": {
+            "[:then, 130, 172, 12, 172, 74]": 379,
+            "[:else, 131, 171, 10, 173, 13]": 0
+          },
+          "[:if, 132, 172, 12, 172, 74]": {
+            "[:then, 133, 172, 12, 172, 23]": 4,
+            "[:else, 134, 172, 12, 172, 74]": 375
+          },
+          "[:\"&.\", 135, 178, 9, 178, 38]": {
+            "[:then, 136, 178, 9, 178, 38]": 163,
+            "[:else, 137, 178, 9, 178, 38]": 0
+          },
+          "[:if, 138, 178, 6, 180, 9]": {
+            "[:then, 139, 179, 8, 179, 93]": 161,
+            "[:else, 140, 178, 6, 180, 9]": 2
+          },
+          "[:if, 141, 179, 8, 179, 93]": {
+            "[:then, 142, 179, 8, 179, 19]": 0,
+            "[:else, 143, 179, 8, 179, 93]": 161
+          },
+          "[:if, 144, 183, 6, 185, 9]": {
+            "[:then, 145, 184, 8, 184, 68]": 2,
+            "[:else, 146, 183, 6, 185, 9]": 161
+          },
+          "[:if, 147, 184, 8, 184, 68]": {
+            "[:then, 148, 184, 8, 184, 19]": 0,
+            "[:else, 149, 184, 8, 184, 68]": 2
+          },
+          "[:unless, 150, 191, 6, 191, 30]": {
+            "[:else, 151, 191, 6, 191, 30]": 381,
+            "[:then, 152, 191, 6, 191, 18]": 0
+          },
+          "[:if, 153, 194, 6, 194, 34]": {
+            "[:then, 154, 194, 6, 194, 17]": 4,
+            "[:else, 155, 194, 6, 194, 34]": 377
+          },
+          "[:if, 156, 199, 8, 199, 26]": {
+            "[:then, 157, 199, 8, 199, 12]": 100659,
+            "[:else, 158, 199, 8, 199, 26]": 377
+          },
+          "[:if, 159, 201, 8, 205, 11]": {
+            "[:then, 160, 202, 10, 202, 72]": 0,
+            "[:else, 161, 203, 8, 204, 51]": 377
+          },
+          "[:if, 162, 202, 10, 202, 72]": {
+            "[:then, 163, 202, 10, 202, 21]": 0,
+            "[:else, 164, 202, 10, 202, 72]": 0
+          },
+          "[:if, 165, 203, 8, 204, 51]": {
+            "[:then, 166, 204, 10, 204, 51]": 0,
+            "[:else, 167, 203, 8, 204, 51]": 377
+          },
+          "[:if, 168, 204, 10, 204, 51]": {
+            "[:then, 169, 204, 10, 204, 21]": 0,
+            "[:else, 170, 204, 10, 204, 51]": 0
+          },
+          "[:case, 171, 215, 8, 220, 11]": {
+            "[:when, 172, 217, 10, 217, 24]": 138,
+            "[:when, 173, 219, 10, 219, 24]": 61,
+            "[:else, 174, 215, 8, 220, 11]": 0
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/application_controller.rb": {
+        "lines": [
+          1,
+          null,
+          1,
+          null,
+          1,
+          1,
+          null,
+          1,
+          null,
+          1,
+          0,
+          null,
+          null,
+          1,
+          3,
+          null,
+          null,
+          1,
+          3,
+          0,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 11, 4, 11, 78]": {
+            "[:then, 1, 11, 4, 11, 57]": 0,
+            "[:else, 2, 11, 4, 11, 78]": 0
+          },
+          "[:unless, 3, 19, 4, 21, 7]": {
+            "[:else, 4, 19, 4, 21, 7]": 3,
+            "[:then, 5, 20, 6, 20, 64]": 0
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/lib/json_web_token.rb": {
+        "lines": [
+          null,
+          1,
+          null,
+          1,
+          1,
+          null,
+          1,
+          158,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          79,
+          79,
+          79,
+          79,
+          null,
+          null,
+          null,
+          1,
+          79,
+          null,
+          231,
+          77,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 15, 11, 15, 49]": {
+            "[:then, 1, 15, 33, 15, 44]": 79,
+            "[:else, 2, 15, 47, 15, 49]": 0
+          },
+          "[:unless, 3, 16, 4, 16, 36]": {
+            "[:else, 4, 16, 4, 16, 36]": 1,
+            "[:then, 5, 16, 4, 16, 19]": 78
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/services/dp_sandbox.rb": {
+        "lines": [
+          1,
+          1,
+          12,
+          null,
+          null,
+          1,
+          null,
+          null,
+          null,
+          8,
+          8,
+          null,
+          8,
+          8,
+          null,
+          null,
+          8,
+          null,
+          null,
+          8,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          1,
+          null,
+          1,
+          null,
+          8,
+          8,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          null,
+          0,
+          null,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 32, 4, 45, 7]": {
+            "[:then, 1, 33, 6, 33, 37]": 8,
+            "[:else, 2, 34, 4, 44, 34]": 0
+          },
+          "[:if, 3, 34, 4, 44, 34]": {
+            "[:then, 4, 35, 6, 35, 48]": 0,
+            "[:else, 5, 36, 4, 44, 34]": 0
+          },
+          "[:if, 6, 36, 4, 44, 34]": {
+            "[:then, 7, 37, 6, 37, 37]": 0,
+            "[:else, 8, 38, 4, 44, 34]": 0
+          },
+          "[:if, 9, 38, 4, 44, 34]": {
+            "[:then, 10, 39, 6, 39, 30]": 0,
+            "[:else, 11, 40, 4, 44, 34]": 0
+          },
+          "[:if, 12, 40, 4, 44, 34]": {
+            "[:then, 13, 41, 6, 41, 32]": 0,
+            "[:else, 14, 44, 6, 44, 34]": 0
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/audit_events_controller.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          1,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/queries_controller.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          1,
+          1,
+          null,
+          null,
+          1,
+          0,
+          0,
+          null,
+          null,
+          1,
+          0,
+          0,
+          0,
+          null,
+          null,
+          1,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          null,
+          0,
+          0,
+          null,
+          null,
+          null,
+          1,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          null,
+          1,
+          null,
+          1,
+          0,
+          null,
+          null
+        ],
+        "branches": {
+          "[:if, 0, 16, 4, 16, 66]": {
+            "[:then, 1, 16, 4, 16, 43]": 0,
+            "[:else, 2, 16, 4, 16, 66]": 0
+          },
+          "[:if, 3, 24, 4, 29, 7]": {
+            "[:then, 4, 25, 6, 25, 75]": 0,
+            "[:else, 5, 27, 6, 28, 48]": 0
+          }
+        }
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/runs_controller.rb": {
+        "lines": [
+          null,
+          null,
+          1,
+          1,
+          1,
+          null,
+          null,
+          1,
+          1,
+          null,
+          null
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/audits_controller.rb": {
+        "lines": [
+          null,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/data_rooms_controller.rb": {
+        "lines": [
+          null,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/api/v1/policies_controller.rb": {
+        "lines": [
+          null,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/dashboard_controller.rb": {
+        "lines": [
+          null,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/datasets_controller.rb": {
+        "lines": [
+          null,
+          null,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/controllers/sessions_controller.rb": {
+        "lines": [
+          null,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          null,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          null,
+          0,
+          null,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0,
+          0,
+          null,
+          0,
+          null,
+          0,
+          0,
+          0,
+          null,
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      },
+      "/Users/kaikaizhang/Documents/25fall/EAAS-SaaS/prism/app/mailers/application_mailer.rb": {
+        "lines": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "branches": {}
+      }
+    },
+    "timestamp": 1761792170
   }
 }

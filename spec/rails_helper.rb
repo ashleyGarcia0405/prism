@@ -1,10 +1,31 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
+if ENV['COVERAGE']
+  require 'simplecov'
+  SimpleCov.start 'rails' do
+    command_name 'RSpec'
+    merge_timeout 3600
+
+    add_filter '/spec/'
+    add_filter '/features/'
+    add_filter '/config/'
+    add_filter '/db/'
+
+    add_group 'Controllers', 'app/controllers'
+    add_group 'Models',      'app/models'
+    add_group 'Services',    'app/services'
+    add_group 'Jobs',        'app/jobs'
+  end
+end
+
 require 'spec_helper'
 ENV['RAILS_ENV'] ||= 'test'
+# Load files in spec/support
+
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require 'rspec/rails'
+Dir[Rails.root.join('spec/support/**/*.rb')].sort.each { |f| require f }
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in

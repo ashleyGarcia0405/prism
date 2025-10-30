@@ -40,7 +40,8 @@ RSpec.describe Api::V1::RunsController, type: :controller do
       it 'includes result data' do
         get :show, params: { id: run.id }
         json = JSON.parse(response.body)
-        expect(json['result']).to be_present
+        expect(json['data']).to be_present 
+        expect(json['epsilon_consumed']).to be_present
       end
 
       it 'includes epsilon_consumed' do
@@ -118,7 +119,8 @@ RSpec.describe Api::V1::RunsController, type: :controller do
     it 'returns the result' do
       get :result, params: { id: run.id }
       json = JSON.parse(response.body)
-      expect(json['result']).to be_present
+      expect(json['data']).to be_present 
+      expect(json['epsilon_consumed']).to be_present
     end
 
     it 'includes epsilon_consumed' do

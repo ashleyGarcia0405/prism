@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :dataset do
-    name { "MyString" }
-    organization { nil }
+    association :organization
+    name { "Dataset #{SecureRandom.hex(2)}" }
   end
 end

@@ -13,7 +13,13 @@
 # it.
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
-
+require 'simplecov'
+SimpleCov.command_name 'RSpec'
+SimpleCov.start do
+  enable_coverage :branch
+  add_filter '/spec/'
+  add_filter '/features/'
+end
 # Code coverage - must be loaded before any application code
 if ENV['COVERAGE']
   require 'simplecov'

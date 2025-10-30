@@ -154,7 +154,8 @@ Then('the response contains result data') do
 end
 
 Then('the response contains epsilon consumed') do
-  expect(@response_body['epsilon_consumed']).not_to be_nil
+  body = JSON.parse(last_response.body)
+  expect(body['epsilon_consumed']).to be_present
 end
 
 Then('the response contains execution time') do
@@ -162,5 +163,7 @@ Then('the response contains execution time') do
 end
 
 Then('the response contains the result data') do
-  expect(@response_body['result']).not_to be_nil
+  body = JSON.parse(last_response.body)
+  # result endpoint returns { data: ..., epsilon_consumed: ... }
+  expect(body['data']).to be_present
 end
