@@ -1,27 +1,5 @@
 require 'json'
 
-Given('a dataset {string} exists for the organization with privacy budget consumed {float}') do |name, consumed|
-  org = @organization || (raise "No @organization: ensure 'Given an organization \"...\" exists' is in Background")
-  dataset = Dataset.find_or_create_by!(name: name, organization: org)
-  # create or update associated privacy_budget
-  if dataset.privacy_budget
-    dataset.privacy_budget.update!(total_epsilon: 3.0, consumed_epsilon: consumed)
-  else
-    dataset.create_privacy_budget!(total_epsilon: 3.0, consumed_epsilon: consumed)
-  end
-  dataset.reload
-  @dataset ||= dataset
-end
-
-Given('a dataset {string} exists for the organization without a privacy budget') do |name|
-  org = @organization || (raise "No @organization: ensure 'Given an organization \"...\" exists' is in Background")
-  dataset = Dataset.find_or_create_by!(name: name, organization: org)
-  # explicitly remove privacy_budget if exists to simulate nil
-  dataset.privacy_budget&.destroy
-  dataset.reload
-  @dataset ||= dataset
-end
-
 # Create a query record but skip SQL validation (useful for dashboard test)
 Given('1 query exists for dataset {string} with SQL {string}') do |dataset_name, sql|
   dataset = Dataset.find_by(name: dataset_name, organization: @organization) ||
