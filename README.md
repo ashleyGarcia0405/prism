@@ -18,18 +18,14 @@ Heroku link: https://prism-ef53c57bcfab.herokuapp.com/login
 
 The rest of this file is just for thorough documentation but basically to run it and test coverage:
 ```
-
-bin/setup
+# to start the server and play with local dev
 bin/rails server
 
 # run tests
-bundle exec rspec
-bundle exec cucumber
-
-# i get coverage by runnng this 
-COVERAGE=true bundle exec rspec && COVERAGE=true bundle exec cucumber
-
-# you can look at coverage/index.html
+rm -rf coverage
+COVERAGE=true bundle exec rspec
+rm -rf coverage
+COVERAGE=true bundle exec cucumber
 ```
 
 ## Ruby Version
