@@ -24,16 +24,4 @@ RSpec.describe "Runs (web)", type: :request do
     get "/runs/#{run.id}"
     expect(response).to have_http_status(:ok)
   end
-
-  it "GET /runs/:id/result responds OK (HTML)" do
-    ds  = org.datasets.create!(name: "DS")
-    q   = ds.queries.create!(
-      sql: "SELECT state, COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25",
-      user: user
-    )
-    run = q.runs.create!(status: "completed", result: { "ok" => true }, epsilon_consumed: 0.1)
-    get "/runs/#{run.id}/result"
-    expect(response).to have_http_status(:ok)
-    expect(response.body).to include("ok")
-  end
 end

@@ -5,6 +5,6 @@ class AuditEventsController < ApplicationController
     @audit_events = AuditEvent.joins(:user)
                                .where(users: { organization_id: current_user.organization_id })
                                .order(created_at: :desc)
-                               .page(params[:page]).per(50)
+                               .limit(50)
   end
 end
