@@ -14,7 +14,9 @@ Prism is a privacy-preserving analytics platform that allows organizations to:
 - John Dong (UNI: jzd2103)
 
 ## Grading
-The rest is just for thorough documentation but basically to run it and test coverage:
+Heroku link: https://prism-ef53c57bcfab.herokuapp.com/login
+
+The rest of this file is just for thorough documentation but basically to run it and test coverage:
 ```
 
 bin/setup
