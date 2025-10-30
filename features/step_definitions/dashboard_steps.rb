@@ -1,55 +1,9 @@
 require 'json'
 
-Given('a dataset {string} exists for the organization with privacy budget consumed {float}') do |name, consumed|
-  org = @organization || (raise "No @organization: ensure 'Given an organization \"...\" exists' is in Background")
-  dataset = Dataset.find_or_create_by!(name: name, organization: org)
-  # create or update associated privacy_budget
-  if dataset.privacy_budget
-    dataset.privacy_budget.update!(total_epsilon: 3.0, consumed_epsilon: consumed)
-  else
-    dataset.create_privacy_budget!(total_epsilon: 3.0, consumed_epsilon: consumed)
-  end
-  dataset.reload
-  @dataset ||= dataset
-end
+# Dataset setup steps are defined in datasets_steps.rb
+# Query setup steps are defined in datasets_web_steps.rb
 
-Given('a dataset {string} exists for the organization without a privacy budget') do |name|
-  org = @organization || (raise "No @organization: ensure 'Given an organization \"...\" exists' is in Background")
-  dataset = Dataset.find_or_create_by!(name: name, organization: org)
-  # explicitly remove privacy_budget if exists to simulate nil
-  dataset.privacy_budget&.destroy
-  dataset.reload
-  @dataset ||= dataset
-end
-
-# Create a query record but skip SQL validation (useful for dashboard test)
-Given('1 query exists for dataset {string} with SQL {string}') do |dataset_name, sql|
-  dataset = Dataset.find_by(name: dataset_name, organization: @organization) ||
-            Dataset.create!(name: dataset_name, organization: @organization)
-  user = @user || User.find_by(email: 'dashuser@dashorg.com') || @user || (User.first || raise("no user available"))
-
-  # Create the Query without running model validations that check SQL structure
-  q = Query.new(
-    sql: sql,
-    dataset: dataset,
-    user: user,
-    estimated_epsilon: 0.1
-  )
-  q.save!(validate: false)  # SKIP SQL validation so tests can create arbitrary queries
-
-  # Create an associated run to mimic completed execution (so dashboard recent_queries picks it up)
-  q.runs.create!(
-    status: 'completed',
-    user: user,
-    backend_used: 'dp_sandbox',
-    result: { ok: true },
-    epsilon_consumed: 0.1,
-    execution_time_ms: 10
-  )
-  q.reload
-end
-
-# convenience wrapper for two queries
+# convenience wrapper for two queries with different SQL
 Given('2 queries exist for dataset {string} with SQL {string} and {string}') do |dataset_name, sql1, sql2|
   step %{1 query exists for dataset "#{dataset_name}" with SQL "#{sql1}"}
   step %{1 query exists for dataset "#{dataset_name}" with SQL "#{sql2}"}
