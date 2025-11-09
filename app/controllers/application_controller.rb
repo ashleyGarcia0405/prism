@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
     if Rails.env.test? && params[:test_user_id].present?
       session[:user_id] = params[:test_user_id].to_i
     end
-    
+
     unless logged_in?
       redirect_to login_path, alert: "Please log in to continue"
     end

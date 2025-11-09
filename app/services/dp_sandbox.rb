@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'json'
-require 'open3'
+require "json"
+require "open3"
 
 class DpSandbox
-  PYTHON_PATH = ENV.fetch('PYTHON_PATH', 'python3')
-  DP_EXECUTOR_PATH = Rails.root.join('lib', 'python', 'dp_executor.py').to_s
+  PYTHON_PATH = ENV.fetch("PYTHON_PATH", "python3")
+  DP_EXECUTOR_PATH = Rails.root.join("lib", "python", "dp_executor.py").to_s
 
   def initialize(query)
     @query = query
@@ -22,19 +22,19 @@ class DpSandbox
     result = call_python_executor(input_data)
 
     # Handle errors from Python script
-    unless result['success']
+    unless result["success"]
       Rails.logger.error("DP execution failed: #{result['error']}")
       raise StandardError, "DP execution failed: #{result['error']}"
     end
 
     {
-      data: result['result'],
-      epsilon_consumed: result['epsilon_consumed'],
-      delta: result['delta'],
-      mechanism: result['mechanism'],
-      noise_scale: result['noise_scale'],
-      execution_time_ms: result['execution_time_ms'],
-      metadata: result['metadata']
+      data: result["result"],
+      epsilon_consumed: result["epsilon_consumed"],
+      delta: result["delta"],
+      mechanism: result["mechanism"],
+      noise_scale: result["noise_scale"],
+      execution_time_ms: result["execution_time_ms"],
+      metadata: result["metadata"]
     }
   rescue StandardError => e
     # Fallback to mock data if Python execution fails
@@ -66,41 +66,41 @@ class DpSandbox
     # Parse query to understand what data we need
     sql = @query.sql.downcase
 
-    if sql.include?('patients') || sql.include?('patient')
+    if sql.include?("patients") || sql.include?("patient")
       # Healthcare dataset
       {
-        columns: ['id', 'age', 'diagnosis', 'treatment_cost'],
+        columns: [ "id", "age", "diagnosis", "treatment_cost" ],
         rows: 1000.times.map do |i|
           [
             i + 1,
             rand(18..85),
-            ['diabetes', 'hypertension', 'asthma', 'arthritis'].sample,
+            [ "diabetes", "hypertension", "asthma", "arthritis" ].sample,
             rand(100.0..5000.0).round(2)
           ]
         end
       }
-    elsif sql.include?('employees') || sql.include?('employee')
+    elsif sql.include?("employees") || sql.include?("employee")
       # HR dataset
       {
-        columns: ['id', 'age', 'department', 'salary'],
+        columns: [ "id", "age", "department", "salary" ],
         rows: 500.times.map do |i|
           [
             i + 1,
             rand(22..65),
-            ['engineering', 'sales', 'marketing', 'hr'].sample,
+            [ "engineering", "sales", "marketing", "hr" ].sample,
             rand(40000..150000)
           ]
         end
       }
-    elsif sql.include?('customers') || sql.include?('customer')
+    elsif sql.include?("customers") || sql.include?("customer")
       # Customer dataset
       {
-        columns: ['id', 'age', 'state', 'purchases'],
+        columns: [ "id", "age", "state", "purchases" ],
         rows: 2000.times.map do |i|
           [
             i + 1,
             rand(18..75),
-            ['CA', 'NY', 'TX', 'FL', 'IL'].sample,
+            [ "CA", "NY", "TX", "FL", "IL" ].sample,
             rand(1..50)
           ]
         end
@@ -108,8 +108,8 @@ class DpSandbox
     else
       # Generic dataset
       {
-        columns: ['id', 'value'],
-        rows: 1000.times.map { |i| [i + 1, rand(1.0..100.0).round(2)] }
+        columns: [ "id", "value" ],
+        rows: 1000.times.map { |i| [ i + 1, rand(1.0..100.0).round(2) ] }
       }
     end
   end
@@ -119,14 +119,14 @@ class DpSandbox
     bounds = {}
 
     sample_data[:columns].each_with_index do |col, idx|
-      next if col == 'id' || col == 'diagnosis' || col == 'department' || col == 'state' # Skip non-numeric
+      next if col == "id" || col == "diagnosis" || col == "department" || col == "state" # Skip non-numeric
 
       # Extract values for this column
       values = sample_data[:rows].map { |row| row[idx] }.compact.select { |v| v.is_a?(Numeric) }
 
       if values.any?
         # Use min/max from sample data
-        bounds[col] = [values.min, values.max]
+        bounds[col] = [ values.min, values.max ]
       end
     end
 
@@ -159,28 +159,28 @@ class DpSandbox
     # Fallback mock results if Python executor fails
     sql = @query.sql.downcase
 
-    result_data = if sql.include?('count')
-                    { 'count' => rand(100..10_000) }
-                  elsif sql.include?('avg') || sql.include?('mean')
-                    { 'average' => rand(20.0..80.0).round(2) }
-                  elsif sql.include?('sum')
-                    { 'sum' => rand(1000..100_000) }
-                  elsif sql.include?('min')
-                    { 'min' => rand(1..50) }
-                  elsif sql.include?('max')
-                    { 'max' => rand(50..100) }
-                  else
-                    { 'value' => rand(1..1000) }
-                  end
+    result_data = if sql.include?("count")
+                    { "count" => rand(100..10_000) }
+    elsif sql.include?("avg") || sql.include?("mean")
+                    { "average" => rand(20.0..80.0).round(2) }
+    elsif sql.include?("sum")
+                    { "sum" => rand(1000..100_000) }
+    elsif sql.include?("min")
+                    { "min" => rand(1..50) }
+    elsif sql.include?("max")
+                    { "max" => rand(50..100) }
+    else
+                    { "value" => rand(1..1000) }
+    end
 
     {
       data: result_data,
       epsilon_consumed: epsilon,
       delta: 1e-5,
-      mechanism: 'laplace_mock',
+      mechanism: "laplace_mock",
       noise_scale: (epsilon * 2.0).round(3),
       execution_time_ms: rand(50..200),
-      metadata: { fallback: true, reason: 'Python executor unavailable' }
+      metadata: { fallback: true, reason: "Python executor unavailable" }
     }
   end
 end

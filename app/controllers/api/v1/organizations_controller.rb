@@ -11,7 +11,7 @@ module Api
           created_at: organization.created_at
         }, status: :ok
       rescue ActiveRecord::RecordNotFound
-        render json: { error: 'Organization not found' }, status: :not_found
+        render json: { error: "Organization not found" }, status: :not_found
       end
 
       def create

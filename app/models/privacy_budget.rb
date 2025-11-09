@@ -24,7 +24,7 @@ class PrivacyBudget < ApplicationRecord
     return unless total_epsilon && consumed_epsilon && reserved_epsilon
 
     if consumed_epsilon + reserved_epsilon > total_epsilon
-      errors.add(:base, 'Consumed and reserved epsilon cannot exceed total epsilon')
+      errors.add(:base, "Consumed and reserved epsilon cannot exceed total epsilon")
     end
   end
 end

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe "Api::V1::RunsController", type: :request do
@@ -11,7 +12,7 @@ RSpec.describe "Api::V1::RunsController", type: :request do
   describe "GET /api/v1/runs/:id" do
     it "returns run details" do
       run = create(:run, query: query, user: user, status: "completed",
-                  result: [{"state"=>"CA","count"=>123}],
+                  result: [ { "state"=>"CA", "count"=>123 } ],
                   epsilon_consumed: "0.5", execution_time_ms: 42)
       get "/api/v1/runs/#{run.id}", headers: headers
       expect(response).to have_http_status(:ok)
@@ -24,7 +25,7 @@ RSpec.describe "Api::V1::RunsController", type: :request do
   describe "GET /api/v1/runs/:id/result" do
     it "returns only the result payload" do
       run = create(:run, query: query, user: user, status: "completed",
-                  result: [{"state"=>"CA","count"=>123}],
+                  result: [ { "state"=>"CA", "count"=>123 } ],
                   epsilon_consumed: "0.5")
       get "/api/v1/runs/#{run.id}/result", headers: headers
       expect(response).to have_http_status(:ok)

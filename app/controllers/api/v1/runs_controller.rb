@@ -32,7 +32,7 @@ module Api
         else
           render json: {
             status: run.status,
-            message: 'Query execution not yet completed'
+            message: "Query execution not yet completed"
           }, status: :accepted
         end
       end

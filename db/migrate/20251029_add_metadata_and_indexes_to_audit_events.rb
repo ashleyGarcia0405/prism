@@ -4,7 +4,7 @@ class AddMetadataAndIndexesToAuditEvents < ActiveRecord::Migration[8.0]
     add_column :audit_events, :metadata, :jsonb, null: false, default: {}
     add_index  :audit_events, :action
     add_index  :audit_events, :created_at
-    add_index  :audit_events, [:target_type, :target_id]
+    add_index  :audit_events, [ :target_type, :target_id ]
     add_index  :audit_events, :metadata, using: :gin
   end
 end

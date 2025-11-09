@@ -3,7 +3,7 @@
 module Api
   module V1
     class AuthController < Api::BaseController
-      skip_before_action :authenticate_user!, only: [:login, :register]
+      skip_before_action :authenticate_user!, only: [ :login, :register ]
 
       def register
         # Create organization if organization params provided
@@ -12,7 +12,7 @@ module Api
         elsif user_params[:organization_id].present?
           Organization.find(user_params[:organization_id])
         else
-          render json: { errors: ['Organization is required'] }, status: :unprocessable_entity
+          render json: { errors: [ "Organization is required" ] }, status: :unprocessable_entity
           return
         end
 
@@ -20,7 +20,7 @@ module Api
 
         if user.save
           token = JsonWebToken.encode(user_id: user.id)
-          AuditLogger.log(user: user, action: 'login', metadata: { via: 'register', ua: request.user_agent })
+          AuditLogger.log(user: user, action: "login", metadata: { via: "register", ua: request.user_agent })
           render json: {
             token: token,
             user: {
@@ -38,7 +38,7 @@ module Api
           render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
         end
       rescue ActiveRecord::RecordInvalid => e
-        render json: { errors: [e.message] }, status: :unprocessable_entity
+        render json: { errors: [ e.message ] }, status: :unprocessable_entity
       end
 
       def login
@@ -46,7 +46,7 @@ module Api
 
         if user&.authenticate(params[:password])
           token = JsonWebToken.encode(user_id: user.id)
-          AuditLogger.log(user: user, action: 'login', metadata: { ua: request.user_agent })
+          AuditLogger.log(user: user, action: "login", metadata: { ua: request.user_agent })
           render json: {
             token: token,
             user: {
@@ -57,7 +57,7 @@ module Api
             }
           }, status: :ok
         else
-          render json: { error: 'Invalid email or password' }, status: :unauthorized
+          render json: { error: "Invalid email or password" }, status: :unauthorized
         end
       end
 

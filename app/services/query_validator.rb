@@ -1,4 +1,4 @@
-require 'pg_query'
+require "pg_query"
 
 module QueryValidator
   ALLOWED_AGGREGATES = %w[COUNT AVG SUM MIN MAX STDDEV].freeze
@@ -121,7 +121,7 @@ module QueryValidator
     def extract_function_name(func_call)
       return nil unless func_call.funcname&.any?
 
-      func_call.funcname.map { |name_node| name_node.string.sval }.join('.')
+      func_call.funcname.map { |name_node| name_node.string.sval }.join(".")
     end
 
     def has_group_by?(select_stmt)
@@ -165,13 +165,13 @@ module QueryValidator
         operator = expr.name&.first&.string&.sval
 
         # Check if it's >= or >
-        return false unless ['>=', '>'].include?(operator)
+        return false unless [ ">=", ">" ].include?(operator)
 
         # Check left side is COUNT(*)
         if expr.lexpr&.func_call
           left_func = expr.lexpr.func_call
           func_name = extract_function_name(left_func)
-          is_count = func_name&.upcase == 'COUNT'
+          is_count = func_name&.upcase == "COUNT"
 
           # Check right side is >= MIN_GROUP_SIZE
           right_val = expr.rexpr&.a_const&.ival&.ival
@@ -238,14 +238,14 @@ module QueryValidator
 
       agg_funcs.each do |func|
         case func.upcase
-        when 'COUNT', 'MIN', 'MAX'
+        when "COUNT", "MIN", "MAX"
           epsilon += 0.1
-        when 'AVG', 'SUM', 'STDDEV'
+        when "AVG", "SUM", "STDDEV"
           epsilon += 0.5
         end
       end
 
-      [epsilon, 0.1].max # Minimum epsilon
+      [ epsilon, 0.1 ].max # Minimum epsilon
     end
   end
 end

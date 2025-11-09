@@ -9,14 +9,14 @@ module Api
     private
 
     def authenticate_user!
-      header = request.headers['Authorization']
+      header = request.headers["Authorization"]
 
       unless header
-        render json: { error: 'Authentication required' }, status: :unauthorized
+        render json: { error: "Authentication required" }, status: :unauthorized
         return
       end
 
-      token = header.split(' ').last
+      token = header.split(" ").last
 
       begin
         decoded = JsonWebToken.decode(token)
@@ -24,7 +24,7 @@ module Api
       rescue JWT::DecodeError => e
         render json: { error: e.message }, status: :unauthorized
       rescue ActiveRecord::RecordNotFound
-        render json: { error: 'User not found' }, status: :unauthorized
+        render json: { error: "User not found" }, status: :unauthorized
       end
     end
 

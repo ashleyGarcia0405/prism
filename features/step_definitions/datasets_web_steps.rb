@@ -17,7 +17,7 @@ end
 When('I visit the dataset details page for {string}') do |dataset_name|
   dataset = Dataset.find_by(name: dataset_name, organization: @organization)
   raise "Dataset '#{dataset_name}' not found" unless dataset
-  
+
   set_session_and_visit "/datasets/#{dataset.id}"
 end
 
@@ -49,7 +49,7 @@ Then('the page displays dataset name {string}') do |dataset_name|
 end
 
 Then('the page displays privacy budget with total_epsilon {float}') do |epsilon|
-  expect(page).to have_content("Total Budget") 
+  expect(page).to have_content("Total Budget")
   expect(page).to have_content("#{epsilon}ε")
 end
 
