@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_29_223257) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_09_201349) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -70,6 +70,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_29_223257) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "estimated_epsilon", precision: 10, scale: 6
+    t.decimal "delta", precision: 10, scale: 10, default: "0.00001"
     t.index ["dataset_id"], name: "index_queries_on_dataset_id"
     t.index ["user_id"], name: "index_queries_on_user_id"
   end
@@ -86,6 +87,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_29_223257) do
     t.integer "execution_time_ms"
     t.text "error_message"
     t.bigint "user_id"
+    t.decimal "delta_consumed", precision: 10, scale: 10
     t.index ["backend_used"], name: "index_runs_on_backend_used"
     t.index ["query_id"], name: "index_runs_on_query_id"
     t.index ["status"], name: "index_runs_on_status"

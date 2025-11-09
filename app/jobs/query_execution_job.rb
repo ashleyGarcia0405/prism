@@ -32,7 +32,7 @@ class QueryExecutionJob < ApplicationJob
 
     # execute query in DP Sandbox
     start_time = Time.now
-    result = DpSandbox.new(query).execute(query.estimated_epsilon)
+    result = DpSandbox.new(query).execute(query.estimated_epsilon, delta: query.delta)
     execution_time = ((Time.now - start_time) * 1000).to_i
 
     # commit budget
@@ -48,11 +48,14 @@ class QueryExecutionJob < ApplicationJob
       backend_used: 'dp_sandbox',
       result: result[:data],
       epsilon_consumed: result[:epsilon_consumed],
+      delta_consumed: result[:delta],
       execution_time_ms: result[:execution_time_ms] || execution_time,
       proof_artifacts: {
         mechanism: result[:mechanism],
         noise_scale: result[:noise_scale],
-        epsilon: result[:epsilon_consumed]
+        epsilon: result[:epsilon_consumed],
+        delta: result[:delta],
+        metadata: result[:metadata]
       }
     )
     AuditLogger.log(

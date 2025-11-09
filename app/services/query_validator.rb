@@ -26,13 +26,17 @@ module QueryValidator
         agg_funcs = find_aggregate_functions(select_stmt)
         errors << "Query must use aggregate functions" if agg_funcs.empty?
 
-        # Rule 3: Aggregates require GROUP BY
-        if agg_funcs.any? && !has_group_by?(select_stmt)
-          errors << "Aggregates require GROUP BY clause"
+        # Rule 3: If there are non-aggregate columns in SELECT, must have GROUP BY
+        # (Global aggregates like COUNT(*) or AVG(col) without grouping are allowed)
+        has_group_by = has_group_by?(select_stmt)
+        has_non_agg_columns = has_non_aggregate_columns?(select_stmt, agg_funcs)
+
+        if has_non_agg_columns && !has_group_by
+          errors << "Queries with grouping columns require GROUP BY clause"
         end
 
-        # Rule 4: Must have HAVING COUNT(*) >= MIN_GROUP_SIZE for k-anonymity
-        if has_group_by?(select_stmt) && !has_valid_having_clause?(select_stmt)
+        # Rule 4: Must have HAVING COUNT(*) >= MIN_GROUP_SIZE for k-anonymity when grouping
+        if has_group_by && !has_valid_having_clause?(select_stmt)
           errors << "Must include HAVING COUNT(*) >= #{MIN_GROUP_SIZE} for k-anonymity"
         end
 
@@ -122,6 +126,27 @@ module QueryValidator
 
     def has_group_by?(select_stmt)
       select_stmt.group_clause&.any?
+    end
+
+    def has_non_aggregate_columns?(select_stmt, agg_funcs)
+      # Check if SELECT list has columns that are not aggregates
+      return false unless select_stmt.target_list&.any?
+
+      non_agg_count = 0
+
+      select_stmt.target_list.each do |target_node|
+        next unless target_node.res_target
+
+        res_target = target_node.res_target
+        next unless res_target.val
+
+        # If it's a column reference (not a function), it's a non-aggregate
+        if res_target.val.column_ref
+          non_agg_count += 1
+        end
+      end
+
+      non_agg_count > 0
     end
 
     def has_valid_having_clause?(select_stmt)

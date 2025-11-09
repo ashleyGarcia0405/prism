@@ -67,17 +67,26 @@ RSpec.describe QueryValidator do
       end
     end
 
-    context 'Rule 3: Aggregates require GROUP BY' do
+    context 'Rule 3: Global aggregates allowed without GROUP BY' do
       let(:sql) { "SELECT AVG(age), COUNT(*) FROM patients" }
 
-      it 'rejects the query' do
+      it 'accepts the query' do
+        result = QueryValidator.validate(sql)
+        expect(result[:valid]).to be true
+      end
+    end
+
+    context 'Rule 3: Grouping columns require GROUP BY' do
+      let(:sql) { "SELECT state, AVG(age) FROM patients" }
+
+      it 'rejects the query without GROUP BY' do
         result = QueryValidator.validate(sql)
         expect(result[:valid]).to be false
       end
 
       it 'includes appropriate error message' do
         result = QueryValidator.validate(sql)
-        expect(result[:errors]).to include("Aggregates require GROUP BY clause")
+        expect(result[:errors]).to include("Queries with grouping columns require GROUP BY clause")
       end
     end
 
