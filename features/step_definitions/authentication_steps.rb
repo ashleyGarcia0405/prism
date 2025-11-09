@@ -21,7 +21,7 @@ Given('I am authenticated as {string}') do |email|
     user.password = 'password123'
     user.organization = @organization
   end
-  
+
   @token = JsonWebToken.encode(user_id: @user.id)
   @headers = { 'Authorization' => "Bearer #{@token}" }
 end

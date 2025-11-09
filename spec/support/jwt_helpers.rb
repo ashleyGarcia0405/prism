@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module JwtHelpers
   def jwt_for(user, exp: 24.hours.from_now)
     payload = { user_id: user.id, exp: exp.to_i }

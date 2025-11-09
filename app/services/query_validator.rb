@@ -1,4 +1,4 @@
-require 'pg_query'
+require "pg_query"
 
 module QueryValidator
   ALLOWED_AGGREGATES = %w[COUNT AVG SUM MIN MAX STDDEV].freeze
@@ -26,13 +26,17 @@ module QueryValidator
         agg_funcs = find_aggregate_functions(select_stmt)
         errors << "Query must use aggregate functions" if agg_funcs.empty?
 
-        # Rule 3: Aggregates require GROUP BY
-        if agg_funcs.any? && !has_group_by?(select_stmt)
-          errors << "Aggregates require GROUP BY clause"
+        # Rule 3: If there are non-aggregate columns in SELECT, must have GROUP BY
+        # (Global aggregates like COUNT(*) or AVG(col) without grouping are allowed)
+        has_group_by = has_group_by?(select_stmt)
+        has_non_agg_columns = has_non_aggregate_columns?(select_stmt, agg_funcs)
+
+        if has_non_agg_columns && !has_group_by
+          errors << "Queries with grouping columns require GROUP BY clause"
         end
 
-        # Rule 4: Must have HAVING COUNT(*) >= MIN_GROUP_SIZE for k-anonymity
-        if has_group_by?(select_stmt) && !has_valid_having_clause?(select_stmt)
+        # Rule 4: Must have HAVING COUNT(*) >= MIN_GROUP_SIZE for k-anonymity when grouping
+        if has_group_by && !has_valid_having_clause?(select_stmt)
           errors << "Must include HAVING COUNT(*) >= #{MIN_GROUP_SIZE} for k-anonymity"
         end
 
@@ -117,11 +121,32 @@ module QueryValidator
     def extract_function_name(func_call)
       return nil unless func_call.funcname&.any?
 
-      func_call.funcname.map { |name_node| name_node.string.sval }.join('.')
+      func_call.funcname.map { |name_node| name_node.string.sval }.join(".")
     end
 
     def has_group_by?(select_stmt)
       select_stmt.group_clause&.any?
+    end
+
+    def has_non_aggregate_columns?(select_stmt, agg_funcs)
+      # Check if SELECT list has columns that are not aggregates
+      return false unless select_stmt.target_list&.any?
+
+      non_agg_count = 0
+
+      select_stmt.target_list.each do |target_node|
+        next unless target_node.res_target
+
+        res_target = target_node.res_target
+        next unless res_target.val
+
+        # If it's a column reference (not a function), it's a non-aggregate
+        if res_target.val.column_ref
+          non_agg_count += 1
+        end
+      end
+
+      non_agg_count > 0
     end
 
     def has_valid_having_clause?(select_stmt)
@@ -140,13 +165,13 @@ module QueryValidator
         operator = expr.name&.first&.string&.sval
 
         # Check if it's >= or >
-        return false unless ['>=', '>'].include?(operator)
+        return false unless [ ">=", ">" ].include?(operator)
 
         # Check left side is COUNT(*)
         if expr.lexpr&.func_call
           left_func = expr.lexpr.func_call
           func_name = extract_function_name(left_func)
-          is_count = func_name&.upcase == 'COUNT'
+          is_count = func_name&.upcase == "COUNT"
 
           # Check right side is >= MIN_GROUP_SIZE
           right_val = expr.rexpr&.a_const&.ival&.ival
@@ -213,14 +238,14 @@ module QueryValidator
 
       agg_funcs.each do |func|
         case func.upcase
-        when 'COUNT', 'MIN', 'MAX'
+        when "COUNT", "MIN", "MAX"
           epsilon += 0.1
-        when 'AVG', 'SUM', 'STDDEV'
+        when "AVG", "SUM", "STDDEV"
           epsilon += 0.5
         end
       end
 
-      [epsilon, 0.1].max # Minimum epsilon
+      [ epsilon, 0.1 ].max # Minimum epsilon
     end
   end
 end

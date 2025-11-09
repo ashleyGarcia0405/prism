@@ -3,11 +3,11 @@ class QueryExecutionJob < ApplicationJob
 
   def perform(run_id)
     run = Run.find(run_id)
-    run.update!(status: 'running')
+    run.update!(status: "running")
 
     query = run.query
     dataset = query.dataset
-    user    = run.user 
+    user    = run.user
     reservation = nil
 
     # check and reserve privacy budget
@@ -18,12 +18,12 @@ class QueryExecutionJob < ApplicationJob
 
     unless reservation[:success]
       run.update!(
-        status: 'failed',
+        status: "failed",
         error_message: reservation[:error]
       )
       AuditLogger.log(
         user: user,
-        action: 'privacy_budget_exhausted',
+        action: "privacy_budget_exhausted",
         target: dataset,
         metadata: { query_id: query.id, needed: query.estimated_epsilon, error: reservation[:error] }
       )
@@ -32,7 +32,7 @@ class QueryExecutionJob < ApplicationJob
 
     # execute query in DP Sandbox
     start_time = Time.now
-    result = DpSandbox.new(query).execute(query.estimated_epsilon)
+    result = DpSandbox.new(query).execute(query.estimated_epsilon, delta: query.delta)
     execution_time = ((Time.now - start_time) * 1000).to_i
 
     # commit budget
@@ -44,20 +44,23 @@ class QueryExecutionJob < ApplicationJob
 
     # store results
     run.update!(
-      status: 'completed',
-      backend_used: 'dp_sandbox',
+      status: "completed",
+      backend_used: "dp_sandbox",
       result: result[:data],
       epsilon_consumed: result[:epsilon_consumed],
+      delta_consumed: result[:delta],
       execution_time_ms: result[:execution_time_ms] || execution_time,
       proof_artifacts: {
         mechanism: result[:mechanism],
         noise_scale: result[:noise_scale],
-        epsilon: result[:epsilon_consumed]
+        epsilon: result[:epsilon_consumed],
+        delta: result[:delta],
+        metadata: result[:metadata]
       }
     )
     AuditLogger.log(
       user: user,
-      action: 'query_executed',
+      action: "query_executed",
       target: run,
       metadata: { query_id: query.id, dataset_id: dataset.id, epsilon_consumed: run.epsilon_consumed }
     )
@@ -73,12 +76,12 @@ class QueryExecutionJob < ApplicationJob
     end
 
     run.update!(
-      status: 'failed',
+      status: "failed",
       error_message: e.message
     )
     AuditLogger.log(
       user: user || query&.user,
-      action: 'query_failed',
+      action: "query_failed",
       target: run,
       metadata: { query_id: query&.id, dataset_id: dataset&.id, error: e.message }.compact
     )

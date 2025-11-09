@@ -16,16 +16,16 @@ end
 When('I POST to create a dataset with name {string}') do |name|
   path = "/api/v1/organizations/#{@organization.id}/datasets"
   payload = { dataset: { name: name } }.to_json
-  
+
   if @headers && @headers['Authorization']
-    post path, payload, { 
+    post path, payload, {
       'CONTENT_TYPE' => 'application/json',
       'HTTP_AUTHORIZATION' => @headers['Authorization']
     }
   else
     post path, payload, { 'CONTENT_TYPE' => 'application/json' }
   end
-  
+
   @response = last_response
   @response_body = JSON.parse(@response.body) rescue {}
 end
@@ -33,15 +33,15 @@ end
 When('I GET the privacy budget for the {string} dataset') do |dataset_name|
   dataset = Dataset.find_by(name: dataset_name, organization: @organization)
   raise "Dataset '#{dataset_name}' not found" unless dataset
-  
+
   path = "/api/v1/datasets/#{dataset.id}/budget"
-  
+
   if @headers && @headers['Authorization']
     get path, {}, { 'HTTP_AUTHORIZATION' => @headers['Authorization'] }
   else
     get path
   end
-  
+
   @response = last_response
   @response_body = JSON.parse(@response.body) rescue {}
 end
@@ -55,7 +55,7 @@ Then('the response contains dataset with name {string}') do |name|
   # Handle both single dataset response and array response
   if @response_body['datasets'].is_a?(Array)
     dataset_names = @response_body['datasets'].map { |d| d['name'] }
-    expect(dataset_names).to include(name), 
+    expect(dataset_names).to include(name),
       "expected dataset '#{name}' to be in response. Found: #{dataset_names.inspect}"
   elsif @response_body['name']
     # Single dataset response (from create endpoint)

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class SessionsController < ApplicationController
-  skip_before_action :authenticate_web_user!, only: [:new, :create, :new_register, :create_register]
-  layout 'application'
+  skip_before_action :authenticate_web_user!, only: [ :new, :create, :new_register, :create_register ]
+  layout "application"
 
   def new
     # Login form

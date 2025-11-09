@@ -10,7 +10,7 @@ module Api
         if query.save
           AuditLogger.log(
             user: current_user,
-            action: 'query_created',
+            action: "query_created",
             target: query,
             metadata: {
               dataset_id: query.dataset_id,
@@ -47,7 +47,7 @@ module Api
         unless sql
           return render json: {
             valid: false,
-            errors: ['SQL parameter is required']
+            errors: [ "SQL parameter is required" ]
           }, status: :bad_request
         end
 
@@ -72,7 +72,7 @@ module Api
 
         # create run record
         run = query.runs.create!(
-          status: 'pending',
+          status: "pending",
           user: current_user
         )
 
@@ -81,8 +81,8 @@ module Api
 
         render json: {
           run_id: run.id,
-          status: 'pending',
-          backend: 'dp_sandbox',
+          status: "pending",
+          backend: "dp_sandbox",
           estimated_time_seconds: 2,
           poll_url: api_v1_run_url(run)
         }, status: :accepted

@@ -8,7 +8,7 @@ class PrivacyBudgetService
       unless budget
         return {
           success: false,
-          error: 'Dataset does not have a privacy budget'
+          error: "Dataset does not have a privacy budget"
         }
       end
 
@@ -42,7 +42,7 @@ class PrivacyBudgetService
       budget.with_lock do
         budget.update!(
           consumed_epsilon: budget.consumed_epsilon + actual_epsilon,
-          reserved_epsilon: [budget.reserved_epsilon - actual_epsilon, 0].max
+          reserved_epsilon: [ budget.reserved_epsilon - actual_epsilon, 0 ].max
         )
       end
 
@@ -54,7 +54,7 @@ class PrivacyBudgetService
 
       budget.with_lock do
         budget.update!(
-          reserved_epsilon: [budget.reserved_epsilon - reserved_epsilon, 0].max
+          reserved_epsilon: [ budget.reserved_epsilon - reserved_epsilon, 0 ].max
         )
       end
 

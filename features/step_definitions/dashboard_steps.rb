@@ -5,24 +5,24 @@ require 'json'
 
 # convenience wrapper for two queries with different SQL
 Given('2 queries exist for dataset {string} with SQL {string} and {string}') do |dataset_name, sql1, sql2|
-  step %{1 query exists for dataset "#{dataset_name}" with SQL "#{sql1}"}
-  step %{1 query exists for dataset "#{dataset_name}" with SQL "#{sql2}"}
+  step %(1 query exists for dataset "#{dataset_name}" with SQL "#{sql1}")
+  step %(1 query exists for dataset "#{dataset_name}" with SQL "#{sql2}")
 end
 
 When('I GET the dashboard') do
   # Extract user_id from @user
   user_id = if @user.respond_to?(:id)
               @user.id
-            elsif @user.is_a?(Hash)
+  elsif @user.is_a?(Hash)
               @user[:id] || @user['id']
-            end
-  
+  end
+
   # Fallback to any user in the current organization if needed
   user_id ||= User.where(organization: @organization).limit(1).pluck(:id).first if @organization
-  
+
   # Pass test_user_id as query parameter for test authentication
   get "/dashboard?test_user_id=#{user_id}"
-  
+
   @response = last_response
   @response_body = begin
     JSON.parse(@response.body)

@@ -1,11 +1,11 @@
 # lib/json_web_token.rb
-require 'jwt'
+require "jwt"
 
 class JsonWebToken
-  ALGO = 'HS256'.freeze
+  ALGO = "HS256".freeze
 
   def self.secret
-    ENV['JWT_SECRET'].presence || Rails.application.secret_key_base
+    ENV["JWT_SECRET"].presence || Rails.application.secret_key_base
   end
 
   # Works with:
@@ -25,5 +25,4 @@ class JsonWebToken
     decoded.transform_keys! { |k| k.to_sym rescue k }
     decoded
   end
-
 end

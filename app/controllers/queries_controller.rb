@@ -31,7 +31,7 @@ class QueriesController < ApplicationController
 
   def execute
     @query = Query.joins(:dataset).where(datasets: { organization_id: current_user.organization_id }).find(params[:id])
-    @run = @query.runs.create!(user: current_user, status: 'pending')
+    @run = @query.runs.create!(user: current_user, status: "pending")
     QueryExecutionJob.perform_later(@run.id)
 
     redirect_to run_path(@run), notice: "Query execution started..."
