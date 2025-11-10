@@ -15,7 +15,8 @@ module Api
             metadata: {
               dataset_id: query.dataset_id,
               estimated_epsilon: query.estimated_epsilon,
-              sql: query.sql
+              sql: query.sql,
+              backend: query.backend
             }
           )
           render json: {
@@ -23,6 +24,7 @@ module Api
             sql: query.sql,
             dataset_id: query.dataset_id,
             estimated_epsilon: query.estimated_epsilon,
+            backend: query.backend,
             created_at: query.created_at
           }, status: :created
         else
@@ -37,6 +39,7 @@ module Api
           sql: query.sql,
           dataset_id: query.dataset_id,
           estimated_epsilon: query.estimated_epsilon,
+          backend: query.backend,
           created_at: query.created_at
         }, status: :ok
       end
@@ -70,6 +73,16 @@ module Api
       def execute
         query = Query.find(params[:id])
 
+        # Validate backend is available
+        unless BackendRegistry.backend_available?(query.backend)
+          backend_config = BackendRegistry.get_backend(query.backend)
+          return render json: {
+            error: "Backend '#{query.backend}' is not available",
+            reason: backend_config[:unavailable_reason],
+            alternatives: backend_config[:alternatives]
+          }, status: :unprocessable_entity
+        end
+
         # create run record
         run = query.runs.create!(
           status: "pending",
@@ -82,16 +95,22 @@ module Api
         render json: {
           run_id: run.id,
           status: "pending",
-          backend: "dp_sandbox",
+          backend: query.backend,
           estimated_time_seconds: 2,
           poll_url: api_v1_run_url(run)
         }, status: :accepted
+      rescue BackendRegistry::BackendNotFoundError => e
+        render json: { error: e.message }, status: :bad_request
+      end
+
+      def backends
+        render json: BackendRegistry.all_backends, status: :ok
       end
 
       private
 
       def query_params
-        params.require(:query).permit(:sql, :dataset_id)
+        params.require(:query).permit(:sql, :dataset_id, :backend, :delta)
       end
     end
   end

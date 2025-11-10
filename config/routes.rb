@@ -48,6 +48,7 @@ Rails.application.routes.draw do
       resources :queries, only: [ :create, :show ] do
         post "validate", on: :collection
         post "execute", on: :member
+        get "backends", on: :collection
       end
       resources :runs, only: [ :show ] do
         get "result", on: :member

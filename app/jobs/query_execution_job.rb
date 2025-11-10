@@ -10,47 +10,65 @@ class QueryExecutionJob < ApplicationJob
     user    = run.user
     reservation = nil
 
-    # check and reserve privacy budget
-    reservation = PrivacyBudgetService.check_and_reserve(
-      dataset: dataset,
-      epsilon_needed: query.estimated_epsilon
-    )
+    # check and reserve privacy budget (only for DP backend)
+    if query.backend == "dp_sandbox"
+      reservation = PrivacyBudgetService.check_and_reserve(
+        dataset: dataset,
+        epsilon_needed: query.estimated_epsilon
+      )
 
-    unless reservation[:success]
-      run.update!(
-        status: "failed",
-        error_message: reservation[:error]
-      )
-      AuditLogger.log(
-        user: user,
-        action: "privacy_budget_exhausted",
-        target: dataset,
-        metadata: { query_id: query.id, needed: query.estimated_epsilon, error: reservation[:error] }
-      )
-      return
+      unless reservation[:success]
+        run.update!(
+          status: "failed",
+          error_message: reservation[:error]
+        )
+        AuditLogger.log(
+          user: user,
+          action: "privacy_budget_exhausted",
+          target: dataset,
+          metadata: { query_id: query.id, needed: query.estimated_epsilon, error: reservation[:error] }
+        )
+        return
+      end
     end
 
-    # execute query in DP Sandbox
+    # Get executor for the query's backend
+    executor = BackendRegistry.get_executor(query.backend, query)
+
+    # execute query with appropriate backend
     start_time = Time.now
-    result = DpSandbox.new(query).execute(query.estimated_epsilon, delta: query.delta)
+    result = case query.backend
+    when "dp_sandbox"
+      executor.execute(query.estimated_epsilon, delta: query.delta)
+    when "mpc_backend"
+      # MPC backend doesn't use epsilon/delta
+      executor.execute
+    when "he_backend"
+      # HE backend doesn't use epsilon/delta
+      executor.execute
+    else
+      raise "Unknown backend: #{query.backend}"
+    end
     execution_time = ((Time.now - start_time) * 1000).to_i
 
-    # commit budget
-    PrivacyBudgetService.commit(
-      dataset: dataset,
-      reservation_id: reservation[:reservation_id],
-      actual_epsilon: result[:epsilon_consumed]
-    )
+    # commit budget (only for DP backend)
+    if query.backend == "dp_sandbox" && reservation && reservation[:success]
+      PrivacyBudgetService.commit(
+        dataset: dataset,
+        reservation_id: reservation[:reservation_id],
+        actual_epsilon: result[:epsilon_consumed]
+      )
+    end
 
     # store results
     run.update!(
       status: "completed",
-      backend_used: "dp_sandbox",
+      backend_used: query.backend,
       result: result[:data],
       epsilon_consumed: result[:epsilon_consumed],
       delta_consumed: result[:delta],
       execution_time_ms: result[:execution_time_ms] || execution_time,
-      proof_artifacts: {
+      proof_artifacts: result[:proof_artifacts] || {
         mechanism: result[:mechanism],
         noise_scale: result[:noise_scale],
         epsilon: result[:epsilon_consumed],
