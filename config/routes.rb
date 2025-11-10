@@ -55,7 +55,7 @@ Rails.application.routes.draw do
         get "attestation", on: :member
         get "transcript", on: :member
       end
-      resources :data_rooms, only: [ :create ] do
+      resources :data_rooms, only: [ :create, :index, :show ] do
         post "invite", "attest", "execute", on: :member
       end
       resources :audit_events, only: [ :index ]
