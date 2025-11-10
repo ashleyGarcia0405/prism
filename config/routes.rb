@@ -48,13 +48,14 @@ Rails.application.routes.draw do
       resources :queries, only: [ :create, :show ] do
         post "validate", on: :collection
         post "execute", on: :member
+        get "backends", on: :collection
       end
       resources :runs, only: [ :show ] do
         get "result", on: :member
         get "attestation", on: :member
         get "transcript", on: :member
       end
-      resources :data_rooms, only: [ :create ] do
+      resources :data_rooms, only: [ :create, :index, :show ] do
         post "invite", "attest", "execute", on: :member
       end
       resources :audit_events, only: [ :index ]

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_09_201349) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_10_050517) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -27,6 +27,52 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_09_201349) do
     t.index ["metadata"], name: "index_audit_events_on_metadata", using: :gin
     t.index ["target_type", "target_id"], name: "index_audit_events_on_target_type_and_target_id"
     t.index ["user_id"], name: "index_audit_events_on_user_id"
+  end
+
+  create_table "data_room_invitations", force: :cascade do |t|
+    t.bigint "data_room_id", null: false
+    t.bigint "organization_id", null: false
+    t.bigint "invited_by_id", null: false
+    t.string "status", default: "pending", null: false
+    t.string "invitation_token", null: false
+    t.datetime "expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["data_room_id"], name: "index_data_room_invitations_on_data_room_id"
+    t.index ["invitation_token"], name: "index_data_room_invitations_on_invitation_token", unique: true
+    t.index ["invited_by_id"], name: "index_data_room_invitations_on_invited_by_id"
+    t.index ["organization_id"], name: "index_data_room_invitations_on_organization_id"
+  end
+
+  create_table "data_room_participants", force: :cascade do |t|
+    t.bigint "data_room_id", null: false
+    t.bigint "organization_id", null: false
+    t.bigint "dataset_id", null: false
+    t.string "status", default: "invited", null: false
+    t.datetime "attested_at"
+    t.datetime "computed_at"
+    t.jsonb "computation_metadata"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["data_room_id", "organization_id"], name: "index_participants_on_room_and_org", unique: true
+    t.index ["data_room_id"], name: "index_data_room_participants_on_data_room_id"
+    t.index ["dataset_id"], name: "index_data_room_participants_on_dataset_id"
+    t.index ["organization_id"], name: "index_data_room_participants_on_organization_id"
+  end
+
+  create_table "data_rooms", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.bigint "creator_id", null: false
+    t.string "status", default: "pending", null: false
+    t.text "query_text", null: false
+    t.string "query_type"
+    t.jsonb "query_params"
+    t.jsonb "result"
+    t.datetime "executed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["creator_id"], name: "index_data_rooms_on_creator_id"
   end
 
   create_table "datasets", force: :cascade do |t|
@@ -71,6 +117,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_09_201349) do
     t.datetime "updated_at", null: false
     t.decimal "estimated_epsilon", precision: 10, scale: 6
     t.decimal "delta", precision: 10, scale: 10, default: "0.00001"
+    t.string "backend", default: "dp_sandbox", null: false
+    t.index ["backend"], name: "index_queries_on_backend"
     t.index ["dataset_id"], name: "index_queries_on_dataset_id"
     t.index ["user_id"], name: "index_queries_on_user_id"
   end
@@ -105,6 +153,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_09_201349) do
   end
 
   add_foreign_key "audit_events", "users"
+  add_foreign_key "data_room_invitations", "data_rooms"
+  add_foreign_key "data_room_invitations", "organizations"
+  add_foreign_key "data_room_invitations", "users", column: "invited_by_id"
+  add_foreign_key "data_room_participants", "data_rooms"
+  add_foreign_key "data_room_participants", "datasets"
+  add_foreign_key "data_room_participants", "organizations"
+  add_foreign_key "data_rooms", "users", column: "creator_id"
   add_foreign_key "datasets", "organizations"
   add_foreign_key "policies", "organizations"
   add_foreign_key "privacy_budgets", "datasets"
