@@ -6,18 +6,17 @@ RSpec.describe EnclaveBackend do
   let(:organization) { Organization.create!(name: "Test Org") }
   let(:user) { organization.users.create!(name: "Test", email: "test@example.com", password: "password123") }
   let(:dataset) { organization.datasets.create!(name: "Test Data") }
+  
+  # Create a mock query object (bypass Query model validation since enclave_backend is unavailable)
+  let(:mock_query) do
+    query = double("Query")
+    allow(query).to receive(:sql).and_return("SELECT COUNT(*) FROM patients")
+    query
+  end
 
   describe '#execute' do
-    let(:query) do
-      dataset.queries.create!(
-        sql: "SELECT COUNT(*) FROM patients",
-        user: user,
-        backend: 'enclave_backend'
-      )
-    end
-
     it 'raises NotImplementedError with detailed message' do
-      backend = EnclaveBackend.new(query)
+      backend = EnclaveBackend.new(mock_query)
 
       expect { backend.execute }.to raise_error(EnclaveBackend::NotImplementedError) do |error|
         expect(error.message).to include('Secure Enclave Backend - Not Yet Implemented')
@@ -28,7 +27,7 @@ RSpec.describe EnclaveBackend do
     end
 
     it 'includes implementation phases in error message' do
-      backend = EnclaveBackend.new(query)
+      backend = EnclaveBackend.new(mock_query)
 
       expect { backend.execute }.to raise_error(EnclaveBackend::NotImplementedError) do |error|
         expect(error.message).to include('Phase 1')
@@ -38,7 +37,7 @@ RSpec.describe EnclaveBackend do
     end
 
     it 'lists alternative backends in error message' do
-      backend = EnclaveBackend.new(query)
+      backend = EnclaveBackend.new(mock_query)
 
       expect { backend.execute }.to raise_error(EnclaveBackend::NotImplementedError) do |error|
         expect(error.message).to include('DIFFERENTIAL PRIVACY')
@@ -48,7 +47,7 @@ RSpec.describe EnclaveBackend do
     end
 
     it 'includes hardware requirements in error message' do
-      backend = EnclaveBackend.new(query)
+      backend = EnclaveBackend.new(mock_query)
 
       expect { backend.execute }.to raise_error(EnclaveBackend::NotImplementedError) do |error|
         expect(error.message).to include('HARDWARE REQUIREMENTS')
@@ -58,7 +57,7 @@ RSpec.describe EnclaveBackend do
     end
 
     it 'includes software stack requirements in error message' do
-      backend = EnclaveBackend.new(query)
+      backend = EnclaveBackend.new(mock_query)
 
       expect { backend.execute }.to raise_error(EnclaveBackend::NotImplementedError) do |error|
         expect(error.message).to include('SOFTWARE STACK')
@@ -69,7 +68,7 @@ RSpec.describe EnclaveBackend do
     end
 
     it 'includes security considerations in error message' do
-      backend = EnclaveBackend.new(query)
+      backend = EnclaveBackend.new(mock_query)
 
       expect { backend.execute }.to raise_error(EnclaveBackend::NotImplementedError) do |error|
         expect(error.message).to include('SECURITY CONSIDERATIONS')
@@ -79,7 +78,7 @@ RSpec.describe EnclaveBackend do
     end
 
     it 'includes reference links in error message' do
-      backend = EnclaveBackend.new(query)
+      backend = EnclaveBackend.new(mock_query)
 
       expect { backend.execute }.to raise_error(EnclaveBackend::NotImplementedError) do |error|
         expect(error.message).to include('REFERENCES')
@@ -91,14 +90,8 @@ RSpec.describe EnclaveBackend do
 
   describe '#initialize' do
     it 'accepts a query object' do
-      query = dataset.queries.create!(
-        sql: "SELECT COUNT(*) FROM test",
-        user: user,
-        backend: 'enclave_backend'
-      )
-
-      backend = EnclaveBackend.new(query)
-      expect(backend.query).to eq(query)
+      backend = EnclaveBackend.new(mock_query)
+      expect(backend.query).to eq(mock_query)
     end
   end
 
@@ -108,14 +101,8 @@ RSpec.describe EnclaveBackend do
     end
 
     it 'raises BackendNotAvailableError when getting executor' do
-      query = dataset.queries.create!(
-        sql: "SELECT COUNT(*) FROM test",
-        user: user,
-        backend: 'enclave_backend'
-      )
-
       expect {
-        BackendRegistry.get_executor('enclave_backend', query)
+        BackendRegistry.get_executor('enclave_backend', mock_query)
       }.to raise_error(BackendRegistry::BackendNotAvailableError, /not available/)
     end
 
