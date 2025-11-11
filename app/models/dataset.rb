@@ -14,6 +14,101 @@ class Dataset < ApplicationRecord
     ActiveRecord::Base.connection.quote_table_name(table_name)
   end
 
+  # Schema introspection methods for MPC validation
+
+  # Get all columns in the dataset table
+  def columns
+    return [] unless table_name && table_exists?
+
+    ActiveRecord::Base.connection.columns(table_name).map(&:name)
+  rescue ActiveRecord::StatementInvalid
+    []
+  end
+
+  # Check if column exists in dataset
+  def has_column?(column_name)
+    columns.include?(column_name.to_s)
+  end
+
+  # Get column data type
+  def column_type(column_name)
+    return nil unless table_name && table_exists?
+
+    column = ActiveRecord::Base.connection.columns(table_name)
+                                .find { |c| c.name == column_name.to_s }
+    column&.type
+  rescue ActiveRecord::StatementInvalid
+    nil
+  end
+
+  # Get detailed column metadata
+  def column_info(column_name)
+    return nil unless table_name && table_exists?
+
+    column = ActiveRecord::Base.connection.columns(table_name)
+                                .find { |c| c.name == column_name.to_s }
+    return nil unless column
+
+    {
+      name: column.name,
+      type: column.type,
+      sql_type: column.sql_type,
+      null: column.null,
+      default: column.default,
+      limit: column.limit
+    }
+  rescue ActiveRecord::StatementInvalid
+    nil
+  end
+
+  # Get all column metadata
+  def schema_info
+    return [] unless table_name && table_exists?
+
+    ActiveRecord::Base.connection.columns(table_name).map do |col|
+      {
+        name: col.name,
+        type: col.type,
+        sql_type: col.sql_type,
+        null: col.null,
+        default: col.default
+      }
+    end
+  rescue ActiveRecord::StatementInvalid
+    []
+  end
+
+  # Check if table exists in database
+  def table_exists?
+    return false unless table_name
+
+    ActiveRecord::Base.connection.table_exists?(table_name)
+  end
+
+  # Get sample values from column (for debugging/validation)
+  def sample_column_values(column_name, limit = 5)
+    return [] unless has_column?(column_name)
+
+    sql = "SELECT #{sanitize_column(column_name)} FROM #{table_quoted} LIMIT #{limit}"
+    result = ActiveRecord::Base.connection.execute(sql)
+    result.map { |row| row[column_name] }
+  rescue ActiveRecord::StatementInvalid
+    []
+  end
+
+  # Sanitize column name to prevent SQL injection
+  def sanitize_column(column_name)
+    # Only allow alphanumeric and underscore
+    raise ArgumentError, "Invalid column name: #{column_name}" unless column_name.to_s.match?(/\A[a-zA-Z_][a-zA-Z0-9_]*\z/)
+
+    ActiveRecord::Base.connection.quote_column_name(column_name)
+  end
+
+  # Sanitize value to prevent SQL injection
+  def sanitize_value(value)
+    ActiveRecord::Base.connection.quote(value)
+  end
+
   private
 
   def create_default_privacy_budget

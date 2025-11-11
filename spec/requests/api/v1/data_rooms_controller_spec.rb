@@ -341,24 +341,24 @@ RSpec.describe "Api::V1::DataRoomsController", type: :request do
       create(:data_room_participant, :attested, data_room: data_room, dataset: dataset2)
     end
 
-    context "when data room is ready to execute" do
+    context "when data room is ready to execute with mock backend" do
       it "returns 200 status" do
-        post "/api/v1/data_rooms/#{data_room.id}/execute", headers: headers
+        post "/api/v1/data_rooms/#{data_room.id}/execute", params: { backend: 'mpc_mock' }, headers: headers
         expect(response).to have_http_status(:ok)
       end
 
       it "updates status to completed" do
-        post "/api/v1/data_rooms/#{data_room.id}/execute", headers: headers
+        post "/api/v1/data_rooms/#{data_room.id}/execute", params: { backend: 'mpc_mock' }, headers: headers
         expect(data_room.reload.status).to eq("completed")
       end
 
       it "stores result" do
-        post "/api/v1/data_rooms/#{data_room.id}/execute", headers: headers
+        post "/api/v1/data_rooms/#{data_room.id}/execute", params: { backend: 'mpc_mock' }, headers: headers
         expect(data_room.reload.result).to be_present
       end
 
       it "returns result and proof artifacts" do
-        post "/api/v1/data_rooms/#{data_room.id}/execute", headers: headers
+        post "/api/v1/data_rooms/#{data_room.id}/execute", params: { backend: 'mpc_mock' }, headers: headers
         json = JSON.parse(response.body)
         expect(json["result"]).to be_present
         expect(json["mechanism"]).to eq("secret_sharing")
@@ -366,7 +366,7 @@ RSpec.describe "Api::V1::DataRoomsController", type: :request do
       end
 
       it "marks all participants as computed" do
-        post "/api/v1/data_rooms/#{data_room.id}/execute", headers: headers
+        post "/api/v1/data_rooms/#{data_room.id}/execute", params: { backend: 'mpc_mock' }, headers: headers
         data_room.participants.each do |participant|
           expect(participant.reload.status).to eq("computed")
         end
@@ -379,7 +379,7 @@ RSpec.describe "Api::V1::DataRoomsController", type: :request do
           target: data_room,
           metadata: hash_including(:participant_count, :mechanism)
         )
-        post "/api/v1/data_rooms/#{data_room.id}/execute", headers: headers
+        post "/api/v1/data_rooms/#{data_room.id}/execute", params: { backend: 'mpc_mock' }, headers: headers
       end
     end
 

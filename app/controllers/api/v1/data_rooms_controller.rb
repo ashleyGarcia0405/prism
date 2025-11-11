@@ -190,6 +190,63 @@ module Api
         }, status: :ok
       end
 
+      # POST /api/v1/data_rooms/:id/validate_query
+      def validate_query
+        data_room = find_data_room
+
+        # Get all participant datasets
+        datasets = data_room.participants.includes(:dataset, :organization).map(&:dataset)
+
+        if datasets.empty?
+          return render json: {
+            valid: false,
+            errors: ["No participants in data room. Invite organizations first."]
+          }, status: :unprocessable_entity
+        end
+
+        # Parse query
+        parser = MPCQueryParser.new(data_room.query_params)
+        param_validation = parser.valid_query_params?
+
+        unless param_validation[:valid]
+          return render json: {
+            valid: false,
+            errors: param_validation[:errors]
+          }, status: :unprocessable_entity
+        end
+
+        # Validate schema compatibility
+        validator = SchemaValidator.new(datasets)
+        column = parser.column_name
+
+        # Perform comprehensive validation
+        schema_validation = validator.validate_query_compatibility(column, parser.query_type)
+
+        if schema_validation[:valid]
+          render json: {
+            valid: true,
+            message: "Query is valid and ready to execute",
+            warnings: schema_validation[:warnings],
+            metadata: {
+              datasets_count: datasets.count,
+              column_name: column,
+              column_type: datasets.first.column_type(column),
+              query_type: parser.query_type,
+              where_conditions: parser.where_conditions,
+              common_columns: validator.common_columns.size,
+              estimated_execution_time_ms: estimate_execution_time(datasets)
+            }
+          }, status: :ok
+        else
+          render json: {
+            valid: false,
+            errors: schema_validation[:errors],
+            warnings: schema_validation[:warnings],
+            suggestions: build_suggestions(validator, column, datasets)
+          }, status: :unprocessable_entity
+        end
+      end
+
       # POST /api/v1/data_rooms/:id/execute
       def execute
         data_room = find_data_room
@@ -203,6 +260,57 @@ module Api
           }, status: :unprocessable_entity
         end
 
+        # Check if MPC keys are configured
+        unless MPCKeys.keys_configured?
+          return render json: {
+            error: "MPC coordinator keys not configured. Contact administrator.",
+            details: "Run 'rake mpc:generate_keys' to configure MPC encryption."
+          }, status: :service_unavailable
+        end
+
+        # Check backend preference
+        backend = params[:backend] || 'mpc_real'
+
+        if backend == 'mpc_mock'
+          # Use mock executor for testing
+          execute_with_mock(data_room)
+        else
+          # Use real MPC coordinator (async execution)
+          execute_with_mpc(data_room)
+        end
+      end
+
+      private
+
+      # Execute with real MPC coordinator (async)
+      def execute_with_mpc(data_room)
+        # Update status to executing
+        data_room.update!(status: "executing")
+
+        # Enqueue background job for MPC execution
+        MPCExecutionJob.perform_later(data_room.id)
+
+        render json: {
+          id: data_room.id,
+          status: "executing",
+          message: "MPC computation initiated. Poll this endpoint for results.",
+          poll_url: api_v1_data_room_url(data_room)
+        }, status: :accepted
+      rescue StandardError => e
+        data_room.update!(status: "failed")
+
+        AuditLogger.log(
+          user: current_user,
+          action: "data_room_execution_failed",
+          target: data_room,
+          metadata: { error: e.message, backend: 'mpc_real' }
+        )
+
+        render json: { error: "Failed to initiate MPC execution: #{e.message}" }, status: :internal_server_error
+      end
+
+      # Execute with mock MPC executor (synchronous, for testing)
+      def execute_with_mock(data_room)
         # Update status to executing
         data_room.update!(status: "executing")
 
@@ -235,7 +343,8 @@ module Api
             target: data_room,
             metadata: {
               participant_count: data_room.participant_count,
-              mechanism: result[:mechanism]
+              mechanism: result[:mechanism],
+              backend: 'mpc_mock'
             }
           )
 
@@ -245,7 +354,8 @@ module Api
             result: data_room.result,
             executed_at: data_room.executed_at,
             mechanism: result[:mechanism],
-            proof_artifacts: result[:proof_artifacts]
+            proof_artifacts: result[:proof_artifacts],
+            backend: 'mpc_mock'
           }, status: :ok
         rescue StandardError => e
           data_room.update!(status: "failed")
@@ -254,14 +364,12 @@ module Api
             user: current_user,
             action: "data_room_execution_failed",
             target: data_room,
-            metadata: { error: e.message }
+            metadata: { error: e.message, backend: 'mpc_mock' }
           )
 
           render json: { error: "Execution failed: #{e.message}" }, status: :internal_server_error
         end
       end
-
-      private
 
       def data_room_params
         params.require(:data_room).permit(:name, :description, :query_text, :query_type, query_params: {})
@@ -278,6 +386,49 @@ module Api
         end
 
         data_room
+      end
+
+      # Estimate execution time based on dataset sizes
+      def estimate_execution_time(datasets)
+        # Rough estimate: 100ms base + 50ms per dataset + 10ms per 1000 rows
+        base_time = 100
+        per_dataset = datasets.count * 50
+
+        # For now, we gonna assume average dataset size
+        # In production, query actual row counts
+        estimated_rows = datasets.count * 1000
+        row_time = (estimated_rows / 1000) * 10
+
+        base_time + per_dataset + row_time
+      end
+
+      # Build helpful suggestions for query errors
+      def build_suggestions(validator, column_name, datasets)
+        suggestions = {}
+
+        # Suggest alternative column names
+        alternatives = validator.suggest_alternatives(column_name)
+        if alternatives.any?
+          suggestions[:alternative_columns] = alternatives
+        end
+
+        # Show common columns across all datasets
+        common = validator.common_columns
+        if common.any?
+          suggestions[:common_columns] = common
+          suggestions[:hint] = "These columns exist in all datasets: #{common.join(', ')}"
+        end
+
+        # Show schema for each dataset
+        suggestions[:schemas] = datasets.map do |ds|
+          {
+            dataset_id: ds.id,
+            organization: ds.organization.name,
+            columns: ds.columns
+          }
+        end
+
+        suggestions
       end
     end
   end

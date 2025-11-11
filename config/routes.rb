@@ -56,7 +56,12 @@ Rails.application.routes.draw do
         get "transcript", on: :member
       end
       resources :data_rooms, only: [ :create, :index, :show ] do
-        post "invite", "attest", "execute", on: :member
+        member do
+          post :invite
+          post :attest
+          post :validate_query
+          post :execute
+        end
       end
       resources :audit_events, only: [ :index ]
     end
