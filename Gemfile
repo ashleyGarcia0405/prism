@@ -88,3 +88,6 @@ gem "faker"
 
 # For file uploads (datasets)
 gem "aws-sdk-s3"
+
+
+gem "csv"

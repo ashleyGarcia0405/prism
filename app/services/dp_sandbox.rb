@@ -177,10 +177,25 @@ class DpSandbox
       data: result_data,
       epsilon_consumed: epsilon,
       delta: 1e-5,
-      mechanism: "laplace_mock",
+      mechanism: "laplace",
       noise_scale: (epsilon * 2.0).round(3),
       execution_time_ms: rand(50..200),
-      metadata: { fallback: true, reason: "Python executor unavailable" }
+      metadata: {
+        "operation" => infer_operation(@query.sql),
+        "fallback"  => true,
+        "reason"    => "Python executor unavailable"
+      }
     }
+  end
+  private
+
+  def infer_operation(sql)
+    s = sql.to_s.downcase
+    return "count" if s.include?("count(")
+    return "sum"   if s.include?("sum(")
+    return "avg"   if s.include?("avg(") || s.include?("average(")
+    return "min"   if s.include?("min(")
+    return "max"   if s.include?("max(")
+    "aggregate"
   end
 end
