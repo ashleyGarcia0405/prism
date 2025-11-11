@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "rails_helper"
 
 RSpec.describe "Datasets upload", type: :request do
@@ -27,7 +28,7 @@ RSpec.describe "Datasets upload", type: :request do
       Bob,25,false,80000
       Carol,33,true,120000.5
     CSV
-    file = Tempfile.new(["sample", ".csv"])
+    file = Tempfile.new([ "sample", ".csv" ])
     file.write(csv_body); file.rewind
 
     post "/api/v1/organizations/#{org.id}/datasets/#{ds_id}/upload",
@@ -46,7 +47,7 @@ RSpec.describe "Datasets upload", type: :request do
     count  = ActiveRecord::Base.connection.select_value("SELECT COUNT(*) FROM #{quoted}").to_i
     expect(count).to eq(3)
 
-    cols = json["columns"].map { |c| [c["name"], c["sql_type"]] }.to_h
+    cols = json["columns"].map { |c| [ c["name"], c["sql_type"] ] }.to_h
     expect(cols).to include("age" => "integer", "active" => "boolean")
     expect(cols["salary"]).to eq("double precision")
   ensure
@@ -59,7 +60,7 @@ RSpec.describe "Datasets upload", type: :request do
          headers: auth_headers(user)
     ds_id = JSON.parse(response.body).fetch("id")
 
-    big = Tempfile.new(["big", ".csv"])
+    big = Tempfile.new([ "big", ".csv" ])
     big.write("x\n")
     big.write("a" * (11 * 1024 * 1024)) # >10MB
     big.rewind

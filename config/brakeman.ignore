@@ -1,0 +1,48 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "df178aae982e43dbfe591d02cb72ea1ce4bb57dfc1216447b5742652b1a21c70",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/services/dataset_ingestor.rb",
+      "line": 188,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "ActiveRecord::Base.connection.execute(\"CREATE TABLE #{ActiveRecord::Base.connection.quote_table_name(dataset.table_name)} (#{sql_columns.map do\n \"#{ActiveRecord::Base.connection.quote_column_name(c[\"name\"])} #{c[\"sql_type\"]}\"\nend.join(\", \")});\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "DatasetIngestor",
+        "method": "create_table!"
+      },
+      "user_input": "sql_columns.map do\n \"#{ActiveRecord::Base.connection.quote_column_name(c[\"name\"])} #{c[\"sql_type\"]}\"\nend.join(\", \")",
+      "confidence": "Medium",
+      "cwe_id": [89],
+      "note": "False positive - All identifiers are properly quoted via quote_table_name and quote_column_name"
+    },
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "e5cfa830a5abe6b31d5427371b17965a9194bab8b449a15981d03d3466826c40",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/services/dataset_ingestor.rb",
+      "line": 204,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "ActiveRecord::Base.connection.execute(\"INSERT INTO #{ActiveRecord::Base.connection.quote_table_name(dataset.table_name)} (#{headers.map do\n ActiveRecord::Base.connection.quote_column_name(h)\nend.join(\", \")}) VALUES (#{headers.map.with_index do\n cast_value(row[idx], sql_columns[idx][\"sql_type\"])\nend.map do\n ActiveRecord::Base.connection.quote(v)\nend.join(\", \")})\")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "DatasetIngestor",
+        "method": "bulk_insert!"
+      },
+      "user_input": "headers.map do\n ActiveRecord::Base.connection.quote_column_name(h)\nend.join(\", \")",
+      "confidence": "Medium",
+      "cwe_id": [89],
+      "note": "False positive - All identifiers are properly quoted via quote_table_name, quote_column_name, and quote for values"
+    }
+  ],
+  "updated": "2025-11-11 00:00:00 +0000",
+  "brakeman_version": "7.1.1"
+}
