@@ -81,7 +81,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_10_050517) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "description"
+    t.string "table_name"
+    t.integer "row_count", default: 0, null: false
+    t.jsonb "columns", default: [], null: false
+    t.string "original_filename"
     t.index ["organization_id"], name: "index_datasets_on_organization_id"
+    t.index ["table_name"], name: "index_datasets_on_table_name", unique: true
   end
 
   create_table "organizations", force: :cascade do |t|

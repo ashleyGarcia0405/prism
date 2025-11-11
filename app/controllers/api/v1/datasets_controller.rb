@@ -35,6 +35,39 @@ module Api
         end
       end
 
+
+      def upload
+        organization = Organization.find(params[:organization_id])
+        dataset = organization.datasets.find(params[:id])
+
+        # Accept either top-level :file or nested :dataset[:file]
+        file = params[:file] || params.dig(:dataset, :file)
+        return render json: { error: "file is required" }, status: :bad_request if file.blank?
+
+        io  = file.respond_to?(:tempfile) ? file.tempfile : file
+        filename = file.respond_to?(:original_filename) ? file.original_filename : "upload.csv"
+
+        result = DatasetIngestor.new(dataset: dataset, io: io, filename: filename).call
+
+        AuditLogger.log(
+          user: current_user,
+          action: 'dataset_uploaded',
+          target: dataset,
+          metadata: { filename: dataset.original_filename, rows: result.row_count }
+        )
+
+        render json: {
+          dataset_id: dataset.id,
+          table: dataset.table_name,
+          row_count: result.row_count,
+          columns: result.columns
+        }, status: :ok
+      rescue ArgumentError => e
+        render json: { error: e.message }, status: :unprocessable_content
+      end
+
+
+
       def budget
         dataset = Dataset.find(params[:id])
         budget = dataset.privacy_budget
