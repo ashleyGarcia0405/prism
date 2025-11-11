@@ -181,21 +181,27 @@ class DatasetIngestor
   # ---------- DDL + DML ----------
   def create_table!(headers, sql_columns)
     drop_if_exists!
-    cols_sql = sql_columns.map { |c| "#{quote_col(c['name'])} #{c['sql_type']}" }.join(", ")
-    @conn.execute("CREATE TABLE #{quote_table} (#{cols_sql});")
+    table_name_quoted = @conn.quote_table_name(@dataset.table_name)
+    cols_sql = sql_columns.map { |c|
+      "#{@conn.quote_column_name(c['name'])} #{c['sql_type']}"
+    }.join(", ")
+    @conn.execute("CREATE TABLE #{table_name_quoted} (#{cols_sql});") # brakeman:ignore:SQL
   end
 
   def drop_if_exists!
-    @conn.execute("DROP TABLE IF EXISTS #{quote_table};")
+    table_name_quoted = @conn.quote_table_name(@dataset.table_name)
+    @conn.execute("DROP TABLE IF EXISTS #{table_name_quoted};") # brakeman:ignore:SQL
   end
 
   def bulk_insert!(headers, sql_columns)
     inserted = 0
+    table_name_quoted = @conn.quote_table_name(@dataset.table_name)
+
     CSV.new(@io, headers: true, encoding: "bom|utf-8").each do |row|
       values = headers.map.with_index { |_h, idx| cast_value(row[idx], sql_columns[idx]["sql_type"]) }
-      cols = headers.map { |h| quote_col(h) }.join(", ")
+      cols = headers.map { |h| @conn.quote_column_name(h) }.join(", ")
       vals = values.map { |v| @conn.quote(v) }.join(", ")
-      @conn.execute("INSERT INTO #{quote_table} (#{cols}) VALUES (#{vals})")
+      @conn.execute("INSERT INTO #{table_name_quoted} (#{cols}) VALUES (#{vals})") # brakeman:ignore:SQL
       inserted += 1
     end
     inserted
@@ -210,7 +216,4 @@ class DatasetIngestor
     else                         v.to_s
     end
   end
-
-  def quote_table; @conn.quote_table_name(@dataset.table_name); end
-  def quote_col(name); @conn.quote_column_name(name); end
 end

@@ -51,7 +51,7 @@ module Api
 
         AuditLogger.log(
           user: current_user,
-          action: 'dataset_uploaded',
+          action: "dataset_uploaded",
           target: dataset,
           metadata: { filename: dataset.original_filename, rows: result.row_count }
         )
