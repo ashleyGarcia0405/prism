@@ -22,57 +22,56 @@ module BackendHelper
 
   def backend_status_badge(backend_name)
     backend = BackendRegistry::BACKENDS[backend_name]
-    return content_tag(:span, 'Unknown', class: 'badge badge-secondary') unless backend
+    return content_tag(:span, "Unknown", class: "badge badge-secondary") unless backend
 
     if backend[:available]
       if backend[:mocked]
-        content_tag(:span, '⚠️ Mocked', class: 'badge badge-warning', title: 'Returns simulated results')
+        content_tag(:span, "⚠️ Mocked", class: "badge badge-warning", title: "Returns simulated results")
       else
-        content_tag(:span, '✅ Functional', class: 'badge badge-success', title: 'Fully operational')
+        content_tag(:span, "✅ Functional", class: "badge badge-success", title: "Fully operational")
       end
     else
-      content_tag(:span, '❌ Not Available', class: 'badge badge-danger', title: 'Not implemented')
+      content_tag(:span, "❌ Not Available", class: "badge badge-danger", title: "Not implemented")
     end
   end
 
   def backend_icon(backend_name)
     icons = {
-      'dp_sandbox' => '🔒',
-      'mpc_backend' => '🤝',
-      'he_backend' => '🔐',
-      'enclave_backend' => '🛡️'
+      "dp_sandbox" => "🔒",
+      "mpc_backend" => "🤝",
+      "he_backend" => "🔐",
+      "enclave_backend" => "🛡️"
     }
-    icons[backend_name] || '❓'
+    icons[backend_name] || "❓"
   end
 
   def backend_description(backend_name)
-    BackendRegistry::BACKENDS[backend_name]&.dig(:description) || 'Unknown backend'
+    BackendRegistry::BACKENDS[backend_name]&.dig(:description) || "Unknown backend"
   end
 
   def backend_features(backend_name)
     backend = BackendRegistry::BACKENDS[backend_name]
-    return '' unless backend
+    return "" unless backend
 
     features = backend[:features] || []
-    features.join(', ')
+    features.join(", ")
   end
 
   def backend_privacy_guarantee(backend_name)
     backend = BackendRegistry::BACKENDS[backend_name]
-    return '' unless backend
+    return "" unless backend
 
-    backend[:privacy_guarantee] || 'Unknown'
+    backend[:privacy_guarantee] || "Unknown"
   end
 
   def backend_card_class(backend_name)
     backend = BackendRegistry::BACKENDS[backend_name]
-    return 'backend-card-unknown' unless backend
+    return "backend-card-unknown" unless backend
 
     if backend[:available]
-      backend[:mocked] ? 'backend-card-mocked' : 'backend-card-available'
+      backend[:mocked] ? "backend-card-mocked" : "backend-card-available"
     else
-      'backend-card-unavailable'
+      "backend-card-unavailable"
     end
   end
 end
-

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe EnclaveBackend do
+RSpec.describe EnclaveBackend, :requires_sgx_hardware do
   let(:organization) { Organization.create!(name: "Test Org") }
   let(:user) { organization.users.create!(name: "Test", email: "test@example.com", password: "password123") }
   let(:dataset) { organization.datasets.create!(name: "Test Data") }
@@ -130,4 +130,3 @@ RSpec.describe EnclaveBackend do
     end
   end
 end
-

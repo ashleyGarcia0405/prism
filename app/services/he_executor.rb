@@ -141,4 +141,3 @@ class HeExecutor
     raise StandardError, "Invalid JSON response from HE executor: #{e.message}"
   end
 end
-

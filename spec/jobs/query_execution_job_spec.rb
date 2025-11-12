@@ -316,4 +316,3 @@ RSpec.describe QueryExecutionJob, type: :job do
     end
   end
 end
-

@@ -117,4 +117,3 @@ class EnclaveBackend
     MSG
   end
 end
-

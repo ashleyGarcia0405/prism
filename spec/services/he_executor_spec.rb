@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe HeExecutor do
+RSpec.describe HeExecutor, :requires_tenseal do
   let(:organization) { Organization.create!(name: "Test Org") }
   let(:user) { organization.users.create!(name: "Test", email: "test@example.com", password: "password123") }
   let(:dataset) { organization.datasets.create!(name: "Test Data") }
@@ -178,4 +178,3 @@ RSpec.describe HeExecutor do
     end
   end
 end
-

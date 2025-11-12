@@ -5,7 +5,7 @@ RSpec.describe QueryValidator do
   describe "edge cases and helper branches" do
     # 1) extract_select_statement: raw_stmt.stmt nil
     it "handles parse result where raw_stmt has no stmt" do
-      fake = double(tree: double(stmts: [double(stmt: nil)]))
+      fake = double(tree: double(stmts: [ double(stmt: nil) ]))
       allow(PgQuery).to receive(:parse).and_return(fake)
       res = QueryValidator.validate("SELECT 1")
       expect(res[:valid]).to eq(false)
@@ -17,18 +17,18 @@ RSpec.describe QueryValidator do
     # 2) selects_star?: target_list present but with a target_node that has no res_target
     it "selects_star? handles target_node without res_target" do
       # Build a fake select_stmt with target_list containing a node with res_target == nil
-      select_stmt = double(target_list: [double(res_target: nil)])
+      select_stmt = double(target_list: [ double(res_target: nil) ])
       expect(QueryValidator.send(:selects_star?, select_stmt)).to eq(false)
     end
 
     # 3) selects_star?: star field present (SELECT *)
     it "detects SELECT * via selects_star?" do
       field = double(a_star: true)
-      column_ref = double(fields: [field])
+      column_ref = double(fields: [ field ])
       val = double(column_ref: column_ref)
       res_target = double(val: val)
       target_node = double(res_target: res_target)
-      select_stmt = double(target_list: [target_node])
+      select_stmt = double(target_list: [ target_node ])
       expect(QueryValidator.send(:selects_star?, select_stmt)).to eq(true)
     end
 
@@ -37,7 +37,7 @@ RSpec.describe QueryValidator do
       # target node with res_target but val has no func_call
       res_target = double(val: double(func_call: nil))
       target_node = double(res_target: res_target)
-      select_stmt = double(target_list: [target_node])
+      select_stmt = double(target_list: [ target_node ])
       funcs = QueryValidator.send(:find_aggregate_functions, select_stmt)
       expect(funcs).to eq([])
     end
@@ -65,7 +65,7 @@ RSpec.describe QueryValidator do
     # 8) has_non_aggregate_columns? with target_node having no res_target
     it "has_non_aggregate_columns? skips targets without res_target" do
       target_node = double(res_target: nil)
-      select_stmt = double(target_list: [target_node])
+      select_stmt = double(target_list: [ target_node ])
       result = QueryValidator.send(:has_non_aggregate_columns?, select_stmt, [])
       expect(result).to eq(false)
     end
@@ -74,7 +74,7 @@ RSpec.describe QueryValidator do
     it "has_non_aggregate_columns? skips targets with nil val" do
       res_target = double(val: nil)
       target_node = double(res_target: res_target)
-      select_stmt = double(target_list: [target_node])
+      select_stmt = double(target_list: [ target_node ])
       result = QueryValidator.send(:has_non_aggregate_columns?, select_stmt, [])
       expect(result).to eq(false)
     end
@@ -85,7 +85,7 @@ RSpec.describe QueryValidator do
       val = double(column_ref: column_ref)
       res_target = double(val: val)
       target_node = double(res_target: res_target)
-      select_stmt = double(target_list: [target_node])
+      select_stmt = double(target_list: [ target_node ])
       result = QueryValidator.send(:has_non_aggregate_columns?, select_stmt, [])
       expect(result).to eq(true)
     end
@@ -109,10 +109,10 @@ RSpec.describe QueryValidator do
       # Left side: COUNT(*)
       count_string = double(sval: "COUNT")
       count_name_node = double(string: count_string)
-      left_func = double(funcname: [count_name_node])
+      left_func = double(funcname: [ count_name_node ])
       lexpr = double(func_call: left_func)
 
-      a_expr = double(name: [op_node], lexpr: lexpr, rexpr: rexpr)
+      a_expr = double(name: [ op_node ], lexpr: lexpr, rexpr: rexpr)
       node = double(a_expr: a_expr, bool_expr: nil)
 
       expect(QueryValidator.send(:check_having_condition, node)).to eq(true)
@@ -122,7 +122,7 @@ RSpec.describe QueryValidator do
     it "check_having_condition rejects invalid operators" do
       string_node = double(sval: "<")
       name_node = double(string: string_node)
-      a_expr = double(name: [name_node])
+      a_expr = double(name: [ name_node ])
       node = double(a_expr: a_expr, bool_expr: nil)
 
       expect(QueryValidator.send(:check_having_condition, node)).to eq(false)
@@ -136,11 +136,11 @@ RSpec.describe QueryValidator do
 
       string_node = double(sval: "COUNT")
       name_node = double(string: string_node)
-      left_func = double(funcname: [name_node])
+      left_func = double(funcname: [ name_node ])
       lexpr = double(func_call: left_func)
 
       op_node = double(string: double(sval: ">="))
-      a_expr = double(name: [op_node], lexpr: lexpr, rexpr: rexpr)
+      a_expr = double(name: [ op_node ], lexpr: lexpr, rexpr: rexpr)
       node = double(a_expr: a_expr, bool_expr: nil)
 
       expect(QueryValidator.send(:check_having_condition, node)).to eq(false)
@@ -154,14 +154,14 @@ RSpec.describe QueryValidator do
 
       string_node = double(sval: "COUNT")
       name_node = double(string: string_node)
-      left_func = double(funcname: [name_node])
+      left_func = double(funcname: [ name_node ])
       lexpr = double(func_call: left_func)
 
       op_node = double(string: double(sval: ">="))
-      a_expr = double(name: [op_node], lexpr: lexpr, rexpr: rexpr)
+      a_expr = double(name: [ op_node ], lexpr: lexpr, rexpr: rexpr)
       inner_node = double(a_expr: a_expr, bool_expr: nil)
 
-      bool_expr = double(args: [inner_node])
+      bool_expr = double(args: [ inner_node ])
       outer_node = double(a_expr: nil, bool_expr: bool_expr)
 
       expect(QueryValidator.send(:check_having_condition, outer_node)).to eq(true)
@@ -181,31 +181,31 @@ RSpec.describe QueryValidator do
 
     # 18) estimate_epsilon: COUNT (0.1)
     it "estimate_epsilon adds 0.1 for COUNT" do
-      result = QueryValidator.send(:estimate_epsilon, ["COUNT"])
+      result = QueryValidator.send(:estimate_epsilon, [ "COUNT" ])
       expect(result).to eq(0.1)
     end
 
     # 19) estimate_epsilon: SUM (0.5)
     it "estimate_epsilon adds 0.5 for SUM" do
-      result = QueryValidator.send(:estimate_epsilon, ["SUM"])
+      result = QueryValidator.send(:estimate_epsilon, [ "SUM" ])
       expect(result).to eq(0.5)
     end
 
     # 20) estimate_epsilon: multiple functions (COUNT + AVG)
     it "estimate_epsilon sums multiple function costs" do
-      result = QueryValidator.send(:estimate_epsilon, ["COUNT", "AVG"])
+      result = QueryValidator.send(:estimate_epsilon, [ "COUNT", "AVG" ])
       expect(result).to eq(0.6) # 0.1 + 0.5
     end
 
     # 21) estimate_epsilon: multiple of same (2x COUNT)
     it "estimate_epsilon accumulates same function calls" do
-      result = QueryValidator.send(:estimate_epsilon, ["COUNT", "COUNT"])
+      result = QueryValidator.send(:estimate_epsilon, [ "COUNT", "COUNT" ])
       expect(result).to eq(0.2) # 0.1 + 0.1
     end
 
     # 22) estimate_epsilon: all 6 allowed functions
     it "estimate_epsilon with all 6 allowed aggregates" do
-      funcs = ["COUNT", "MIN", "MAX", "AVG", "SUM", "STDDEV"]
+      funcs = [ "COUNT", "MIN", "MAX", "AVG", "SUM", "STDDEV" ]
       result = QueryValidator.send(:estimate_epsilon, funcs)
       expected = 3 * 0.1 + 3 * 0.5 # COUNT, MIN, MAX (0.1 each) + AVG, SUM, STDDEV (0.5 each)
       expect(result).to eq(expected)
@@ -219,12 +219,12 @@ RSpec.describe QueryValidator do
 
     # 24) estimate_epsilon: uppercase conversion
     it "estimate_epsilon handles lowercase function names" do
-      result = QueryValidator.send(:estimate_epsilon, ["count", "sum"])
+      result = QueryValidator.send(:estimate_epsilon, [ "count", "sum" ])
       expect(result).to eq(0.6) # 0.1 + 0.5
     end
 
     # Additional tests for hard-to-reach branches with safe-navigation operators
-    
+
     # 25) extract_select_statement: result.tree.stmts is nil (safe nav else branch)
     it "extract_select_statement handles nil stmts gracefully via safe nav" do
       fake_tree = double(stmts: nil)
@@ -240,7 +240,7 @@ RSpec.describe QueryValidator do
     it "selects_star? handles res_target.val nil" do
       res_target = double(val: nil)
       target_node = double(res_target: res_target)
-      select_stmt = double(target_list: [target_node])
+      select_stmt = double(target_list: [ target_node ])
       expect(QueryValidator.send(:selects_star?, select_stmt)).to eq(false)
     end
 
@@ -251,7 +251,7 @@ RSpec.describe QueryValidator do
       val = double(func_call: fcall)
       res_target = double(val: val)
       target_node = double(res_target: res_target)
-      select_stmt = double(target_list: [target_node])
+      select_stmt = double(target_list: [ target_node ])
       funcs = QueryValidator.send(:find_aggregate_functions, select_stmt)
       # extract_function_name will try to map over empty array and return ""
       # which is falsy in the "agg_funcs << func_name if func_name" check
@@ -263,7 +263,7 @@ RSpec.describe QueryValidator do
       # lexpr is nil or doesn't have func_call
       rexpr = double(a_const: nil)
       name_node = double(string: double(sval: ">="))
-      a_expr = double(name: [name_node], lexpr: double(func_call: nil), rexpr: rexpr)
+      a_expr = double(name: [ name_node ], lexpr: double(func_call: nil), rexpr: rexpr)
       node = double(a_expr: a_expr, bool_expr: nil)
 
       expect(QueryValidator.send(:check_having_condition, node)).to eq(false)
@@ -282,19 +282,19 @@ RSpec.describe QueryValidator do
     it "contains_subselect? iterates through protobuf fields (integration)" do
       # This tests the descriptor iteration logic
       field = double(name: "test")
-      descriptor = [field]
-      
+      descriptor = [ field ]
+
       node = double(sub_link: false)
       allow(node).to receive(:class).and_return(double(descriptor: descriptor))
       allow(node).to receive(:send).with("test").and_return([])
-      
+
       expect(QueryValidator.send(:contains_subselect?, node)).to eq(false)
     end
 
     # 6) has_group_by? true/false
     it "has_group_by? returns true/false appropriately" do
       select_stmt1 = double(group_clause: nil)
-      select_stmt2 = double(group_clause: [1])
+      select_stmt2 = double(group_clause: [ 1 ])
       expect(QueryValidator.send(:has_group_by?, select_stmt1)).to be_nil.or eq(false)
       expect(QueryValidator.send(:has_group_by?, select_stmt2)).to eq(true)
     end
@@ -308,7 +308,7 @@ RSpec.describe QueryValidator do
       val = double(column_ref: double)
       res_target = double(val: val)
       target_node = double(res_target: res_target)
-      select_stmt = double(target_list: [target_node])
+      select_stmt = double(target_list: [ target_node ])
       expect(QueryValidator.send(:has_non_aggregate_columns?, select_stmt, [])).to eq(true)
     end
 
@@ -316,7 +316,7 @@ RSpec.describe QueryValidator do
     it "check_having_condition returns false if operator is not >= or >" do
       # Build an A_Expr style double where name.first.string.sval returns "="
       name_node = double(string: double(sval: "="))
-      expr = double(name: [name_node], lexpr: nil, rexpr: nil)
+      expr = double(name: [ name_node ], lexpr: nil, rexpr: nil)
       node = double(a_expr: expr, bool_expr: nil)
       expect(QueryValidator.send(:check_having_condition, node)).to eq(false)
     end
@@ -324,7 +324,7 @@ RSpec.describe QueryValidator do
     # 9) check_having_condition: a_expr with valid operator but left not a func_call -> false
     it "check_having_condition false when left side not a func_call" do
       name_node = double(string: double(sval: ">="))
-      expr = double(name: [name_node], lexpr: double(func_call: nil), rexpr: double(a_const: nil))
+      expr = double(name: [ name_node ], lexpr: double(func_call: nil), rexpr: double(a_const: nil))
       node = double(a_expr: expr, bool_expr: nil)
       expect(QueryValidator.send(:check_having_condition, node)).to eq(false)
     end
@@ -335,7 +335,7 @@ RSpec.describe QueryValidator do
       func_call = double # func_call placeholder
       lexpr = double(func_call: func_call)
       right_val_const = double(ival: double(ival: QueryValidator::MIN_GROUP_SIZE - 1))
-      expr = double(name: [name_node], lexpr: lexpr, rexpr: double(a_const: right_val_const))
+      expr = double(name: [ name_node ], lexpr: lexpr, rexpr: double(a_const: right_val_const))
       # stub extract_function_name to return "count" for this func_call
       allow(QueryValidator).to receive(:extract_function_name).with(func_call).and_return("count")
       node = double(a_expr: expr, bool_expr: nil)
@@ -351,12 +351,12 @@ RSpec.describe QueryValidator do
       func_call = double
       lexpr = double(func_call: func_call)
       right_val_const = double(ival: double(ival: QueryValidator::MIN_GROUP_SIZE + 1))
-      expr = double(name: [name_node], lexpr: lexpr, rexpr: double(a_const: right_val_const))
+      expr = double(name: [ name_node ], lexpr: lexpr, rexpr: double(a_const: right_val_const))
       allow(QueryValidator).to receive(:extract_function_name).with(func_call).and_return("count")
       # bool_expr with args array containing our expr wrapper
       arg_node = double(a_expr: expr, bool_expr: nil)
       # make sure node responds to a_expr (nil) so check_having_condition first branch won't raise
-      bool_wrapper = double(a_expr: nil, bool_expr: double(args: [arg_node]))
+      bool_wrapper = double(a_expr: nil, bool_expr: double(args: [ arg_node ]))
       expect(QueryValidator.send(:check_having_condition, bool_wrapper)).to eq(true)
       allow(QueryValidator).to receive(:extract_function_name).and_call_original
     end
@@ -373,10 +373,10 @@ RSpec.describe QueryValidator do
       field_desc = double(name: 'child')
       # node whose class.descriptor yields that field_desc
       node = double(sub_link: nil)
-      allow(node).to receive(:class).and_return(double(descriptor: [field_desc]))
+      allow(node).to receive(:class).and_return(double(descriptor: [ field_desc ]))
       # define node.child to return array of items, one of which has sub_link true
       nested = double(sub_link: true)
-      allow(node).to receive(:child).and_return([nested])
+      allow(node).to receive(:child).and_return([ nested ])
       expect(QueryValidator.send(:contains_subselect?, node)).to eq(true)
     end
 
@@ -384,7 +384,7 @@ RSpec.describe QueryValidator do
     it "contains_subselect? returns true when nested value responds to sub_link" do
       field_desc = double(name: 'elem')
       node = double(sub_link: nil)
-      allow(node).to receive(:class).and_return(double(descriptor: [field_desc]))
+      allow(node).to receive(:class).and_return(double(descriptor: [ field_desc ]))
       nested = double(sub_link: true)
       # return single object (not an array) to hit the respond_to branch
       allow(node).to receive(:elem).and_return(nested)
@@ -393,10 +393,10 @@ RSpec.describe QueryValidator do
 
     # 15) estimate_epsilon: cover all case arms
     it "estimate_epsilon sums epsilon per aggregate type" do
-      eps = QueryValidator.send(:estimate_epsilon, ["COUNT", "MIN", "MAX"])
+      eps = QueryValidator.send(:estimate_epsilon, [ "COUNT", "MIN", "MAX" ])
       expect(eps).to be >= 0.3 # each of COUNT/MIN/MAX adds 0.1
 
-      eps2 = QueryValidator.send(:estimate_epsilon, ["AVG", "SUM", "STDDEV"])
+      eps2 = QueryValidator.send(:estimate_epsilon, [ "AVG", "SUM", "STDDEV" ])
       expect(eps2).to be >= 1.5 # 3 * 0.5
 
       # mixed set and minimum enforced
