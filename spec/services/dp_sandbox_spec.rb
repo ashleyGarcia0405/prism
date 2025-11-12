@@ -165,9 +165,9 @@ RSpec.describe DpSandbox do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(true)
         allow(Open3).to receive(:capture3).and_return(
-          ['{"success": false, "error": "Test error"}', '', status_mock]
+          [ '{"success": false, "error": "Test error"}', '', status_mock ]
         )
-        
+
         result = dp_sandbox.execute(0.5)
         # Should fall through to rescue and generate mock result
         expect(result[:data]).to be_present
@@ -190,9 +190,9 @@ RSpec.describe DpSandbox do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(false)
         allow(Open3).to receive(:capture3).and_return(
-          ['', 'ModuleNotFoundError: No module named numpy', status_mock]
+          [ '', 'ModuleNotFoundError: No module named numpy', status_mock ]
         )
-        
+
         result = dp_sandbox.execute(0.5)
         # Should fall through to rescue and generate mock result
         expect(result[:data]).to be_present
@@ -215,9 +215,9 @@ RSpec.describe DpSandbox do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(true)
         allow(Open3).to receive(:capture3).and_return(
-          ['Invalid JSON {broken}', '', status_mock]
+          [ 'Invalid JSON {broken}', '', status_mock ]
         )
-        
+
         result = dp_sandbox.execute(0.5)
         # Should fall through to rescue and generate mock result
         expect(result[:data]).to be_present
@@ -239,13 +239,13 @@ RSpec.describe DpSandbox do
         # This tests the infer_bounds method with various column types
         sandbox = DpSandbox.new(query)
         sample_data = {
-          columns: ["id", "age", "treatment_cost"],
+          columns: [ "id", "age", "treatment_cost" ],
           rows: [
-            [1, 45, 1500.50],
-            [2, 52, 2000.75]
+            [ 1, 45, 1500.50 ],
+            [ 2, 52, 2000.75 ]
           ]
         }
-        
+
         bounds = sandbox.send(:infer_bounds, sample_data)
         # id, age, and treatment_cost are numeric, so should have bounds
         expect(bounds).to be_a(Hash)
@@ -264,7 +264,7 @@ RSpec.describe DpSandbox do
         )
         sandbox = DpSandbox.new(count_query)
         mock_result = sandbox.send(:generate_mock_result, 0.5)
-        
+
         # COUNT is checked first in the if/elsif chain
         expect(mock_result[:data]).to have_key('count')
         expect(mock_result[:metadata]).to include('fallback' => true)
@@ -280,7 +280,7 @@ RSpec.describe DpSandbox do
           "SELECT MIN(age) FROM patients WHERE diagnosis = 'diabetes'",
           "SELECT MAX(age) FROM patients WHERE diagnosis = 'diabetes'"
         ]
-        
+
         queries.each do |sql|
           q = dataset.queries.create!(
             sql: sql,
@@ -289,7 +289,7 @@ RSpec.describe DpSandbox do
           )
           sandbox = DpSandbox.new(q)
           mock_result = sandbox.send(:generate_mock_result, 0.5)
-          
+
           expect(mock_result).to have_key(:data)
           expect(mock_result).to have_key(:epsilon_consumed)
           expect(mock_result).to have_key(:mechanism)
