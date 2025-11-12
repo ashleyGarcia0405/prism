@@ -21,7 +21,7 @@ class MPCCoordinator
     return validation_result unless validation_result[:valid]
 
     # 2. Update data room status
-    @data_room.update!(status: 'executing')
+    @data_room.update!(status: "executing")
 
     # 3. Trigger local computation for each participant
     local_results = compute_local_results
@@ -48,7 +48,7 @@ class MPCCoordinator
 
     # 9. Store result in data room
     @data_room.update!(
-      status: 'completed',
+      status: "completed",
       result: {
         value: final_result,
         query_type: @data_room.query_type,
@@ -72,7 +72,7 @@ class MPCCoordinator
   rescue StandardError => e
     # Mark as failed and log error
     @data_room.update!(
-      status: 'failed',
+      status: "failed",
       result: {
         error: e.message,
         failed_at: Time.current
@@ -96,7 +96,7 @@ class MPCCoordinator
     unless all_participants_attested?
       return {
         valid: false,
-        error: 'Not all participants have attested to the query',
+        error: "Not all participants have attested to the query",
         missing_attestations: participants_pending_attestation.map(&:organization_id)
       }
     end
@@ -104,7 +104,7 @@ class MPCCoordinator
     unless participants.count >= 2
       return {
         valid: false,
-        error: 'At least 2 participants required for MPC',
+        error: "At least 2 participants required for MPC",
         participants_count: participants.count
       }
     end
@@ -114,12 +114,12 @@ class MPCCoordinator
 
   # Check if all participants have attested
   def all_participants_attested?
-    @participants.all? { |p| p.status == 'attested' }
+    @participants.all? { |p| p.status == "attested" }
   end
 
   # Get participants that haven't attested yet
   def participants_pending_attestation
-    @participants.select { |p| p.status != 'attested' }
+    @participants.select { |p| p.status != "attested" }
   end
 
   # Trigger local computation for all participants
@@ -175,7 +175,7 @@ class MPCCoordinator
   # Compute final result based on query type
   def compute_final_result(raw_result)
     case @data_room.query_type
-    when 'avg'
+    when "avg"
       # For AVG, we need to divide sum by count
       # Each participant computed local sum, so we have total sum
       # We need to get total count separately or store it
@@ -184,7 +184,7 @@ class MPCCoordinator
       return nil if total_count.zero?
 
       raw_result / total_count.to_f
-    when 'sum', 'count'
+    when "sum", "count"
       raw_result
     else
       raw_result
@@ -201,35 +201,27 @@ class MPCCoordinator
     @participants.each do |participant|
       dataset = participant.dataset
       query_params = @data_room.query_params || {}
+      where_conditions = query_params["where"] || {}
 
-      # Execute COUNT query
-      where_clause = build_where_clause(query_params['where'])
-      sql = "SELECT COUNT(*) as count FROM #{dataset.table_quoted}#{where_clause}"
+      # Use WhereClauseBuilder for safe WHERE clause construction
+      where_clause = WhereClauseBuilder.new(dataset, where_conditions).build
+
+      # Build SQL query with properly sanitized components:
+      # - dataset.table_quoted uses ActiveRecord's quote_table_name
+      # - where_clause from WhereClauseBuilder uses quote_column_name and quote for all values
+      sql = "SELECT COUNT(*) as count FROM " + dataset.table_quoted + where_clause
       result = ActiveRecord::Base.connection.execute(sql)
 
-      total += result.first['count'].to_i
+      total += result.first["count"].to_i
     end
 
     total
   end
 
-  # Build WHERE clause from conditions
-  def build_where_clause(conditions)
-    return '' unless conditions.is_a?(Hash) && conditions.any?
-
-    condition_strings = conditions.map do |column, value|
-      safe_column = ActiveRecord::Base.connection.quote_column_name(column)
-      safe_value = ActiveRecord::Base.connection.quote(value)
-      "#{safe_column} = #{safe_value}"
-    end
-
-    " WHERE #{condition_strings.join(' AND ')}"
-  end
-
   # Load coordinator's private key
   def load_coordinator_private_key
-    if ENV['MPC_COORDINATOR_PRIVATE_KEY'].present?
-      OpenSSL::PKey::RSA.new(ENV['MPC_COORDINATOR_PRIVATE_KEY'])
+    if ENV["MPC_COORDINATOR_PRIVATE_KEY"].present?
+      OpenSSL::PKey::RSA.new(ENV["MPC_COORDINATOR_PRIVATE_KEY"])
     else
       key_string = Rails.application.credentials.dig(:mpc, :coordinator_private_key)
       raise "MPC coordinator private key not configured" unless key_string
@@ -242,7 +234,7 @@ class MPCCoordinator
   def log_mpc_execution(result, execution_time_ms)
     AuditLogger.log(
       user: @data_room.creator,
-      action: 'mpc_executed',
+      action: "mpc_executed",
       target: @data_room,
       metadata: {
         result: result,
