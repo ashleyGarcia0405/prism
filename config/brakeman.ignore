@@ -41,8 +41,29 @@
       "confidence": "Medium",
       "cwe_id": [89],
       "note": "False positive - All identifiers are properly quoted via quote_table_name, quote_column_name, and quote for values"
+    },
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "c5fce031536ff71885dd75c5b225abce92f0c4104d6fdb19c9ed1d7f5dca1558",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/services/mpc_coordinator.rb",
+      "line": 213,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "ActiveRecord::Base.connection.execute(((\"SELECT COUNT(*) as count FROM \" + participant.dataset.table_quoted) + WhereClauseBuilder.new(participant.dataset, ((data_room.query_params or {})[\"where\"] or {})).build))",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "MPCCoordinator",
+        "method": "compute_total_count"
+      },
+      "user_input": "participant.dataset.table_quoted",
+      "confidence": "Medium",
+      "cwe_id": [89],
+      "note": "False positive - table_quoted uses quote_table_name and WhereClauseBuilder properly sanitizes all column names and values using quote_column_name and quote"
     }
   ],
-  "updated": "2025-11-11 00:00:00 +0000",
+  "updated": "2025-11-12 00:00:00 +0000",
   "brakeman_version": "7.1.1"
 }

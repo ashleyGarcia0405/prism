@@ -89,7 +89,14 @@ class Dataset < ApplicationRecord
   def sample_column_values(column_name, limit = 5)
     return [] unless has_column?(column_name)
 
-    sql = "SELECT #{sanitize_column(column_name)} FROM #{table_quoted} LIMIT #{limit}"
+    # Use sanitize_sql_array with bind parameters to prevent SQL injection
+    safe_column = sanitize_column(column_name)
+    safe_table = table_quoted
+    safe_limit = limit.to_i
+
+    sql = ActiveRecord::Base.sanitize_sql_array([
+      "SELECT #{safe_column} FROM #{safe_table} LIMIT ?", safe_limit
+    ])
     result = ActiveRecord::Base.connection.execute(sql)
     result.map { |row| row[column_name] }
   rescue ActiveRecord::StatementInvalid
