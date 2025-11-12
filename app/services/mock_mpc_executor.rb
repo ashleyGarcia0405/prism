@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# MockMpcExecutor simulates multi-party computation for collaborative queries
+# MockMPCExecutor simulates multi-party computation for collaborative queries
 # This is a mock implementation that returns realistic-looking results
-class MockMpcExecutor
+class MockMPCExecutor
   attr_reader :query
 
   def initialize(query)
@@ -87,3 +87,6 @@ class MockMpcExecutor
     { avg: base_avg }
   end
 end
+
+# Compatibility alias for references using 'MockMpcExecutor'
+MockMpcExecutor = MockMPCExecutor

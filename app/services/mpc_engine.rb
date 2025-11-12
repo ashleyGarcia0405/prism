@@ -86,3 +86,6 @@ module MPCEngine
     end
   end
 end
+
+# Compatibility alias for default inflection (MpcEngine)
+MpcEngine = MPCEngine

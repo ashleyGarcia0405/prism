@@ -247,3 +247,6 @@ class MPCCoordinator
     )
   end
 end
+
+# Compatibility alias for default inflection (MpcCoordinator)
+MpcCoordinator = MPCCoordinator

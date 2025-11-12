@@ -42,3 +42,7 @@ class MPCExecutionJob < ApplicationJob
     raise
   end
 end
+
+# Provide compatibility constant so Zeitwerk's default inflection (MpcExecutionJob)
+# matches the file path while preserving the intended MPC acronym constant.
+MpcExecutionJob = MPCExecutionJob

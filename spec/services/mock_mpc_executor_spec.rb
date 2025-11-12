@@ -2,14 +2,14 @@
 
 require "rails_helper"
 
-RSpec.describe MockMpcExecutor do
+RSpec.describe MockMPCExecutor do
   let(:dataset) { create(:dataset) }
   let(:user) { create(:user) }
 
   describe "#execute" do
     it "returns a hash with data" do
       query = create(:query, sql: "SELECT COUNT(*) FROM data", dataset: dataset, user: user)
-      executor = MockMpcExecutor.new(query)
+      executor = MockMPCExecutor.new(query)
       result = executor.execute
 
       expect(result).to be_a(Hash)
@@ -18,7 +18,7 @@ RSpec.describe MockMpcExecutor do
 
     it "returns nil epsilon_consumed (MPC doesn't use epsilon)" do
       query = create(:query, sql: "SELECT COUNT(*) FROM data", dataset: dataset, user: user)
-      executor = MockMpcExecutor.new(query)
+      executor = MockMPCExecutor.new(query)
       result = executor.execute
 
       expect(result[:epsilon_consumed]).to be_nil
@@ -27,7 +27,7 @@ RSpec.describe MockMpcExecutor do
 
     it "returns secret_sharing mechanism" do
       query = create(:query, sql: "SELECT COUNT(*) FROM data", dataset: dataset, user: user)
-      executor = MockMpcExecutor.new(query)
+      executor = MockMPCExecutor.new(query)
       result = executor.execute
 
       expect(result[:mechanism]).to eq("secret_sharing")
@@ -35,7 +35,7 @@ RSpec.describe MockMpcExecutor do
 
     it "includes proof artifacts with MPC details" do
       query = create(:query, sql: "SELECT COUNT(*) FROM data", dataset: dataset, user: user)
-      executor = MockMpcExecutor.new(query)
+      executor = MockMPCExecutor.new(query)
       result = executor.execute
 
       expect(result[:proof_artifacts]).to include(
@@ -58,7 +58,7 @@ RSpec.describe MockMpcExecutor do
     context "with COUNT query" do
       it "returns count result" do
         query = create(:query, sql: "SELECT COUNT(*) FROM data", dataset: dataset, user: user)
-        executor = MockMpcExecutor.new(query)
+        executor = MockMPCExecutor.new(query)
         result = executor.execute
 
         expect(result[:data]).to have_key(:count)
@@ -69,7 +69,7 @@ RSpec.describe MockMpcExecutor do
     context "with SUM query" do
       it "returns sum result" do
         query = create(:query, sql: "SELECT SUM(amount) FROM data", dataset: dataset, user: user)
-        executor = MockMpcExecutor.new(query)
+        executor = MockMPCExecutor.new(query)
         result = executor.execute
 
         expect(result[:data]).to have_key(:sum)
@@ -80,7 +80,7 @@ RSpec.describe MockMpcExecutor do
     context "with AVG query" do
       it "returns average result" do
         query = create(:query, sql: "SELECT AVG(amount) FROM data", dataset: dataset, user: user)
-        executor = MockMpcExecutor.new(query)
+        executor = MockMPCExecutor.new(query)
         result = executor.execute
 
         expect(result[:data]).to have_key(:avg)

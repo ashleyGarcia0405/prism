@@ -166,3 +166,6 @@ class MPCQueryParser
     %w[integer bigint smallint float double decimal numeric real]
   end
 end
+
+# Compatibility alias for default inflection (MpcQueryParser)
+MpcQueryParser = MPCQueryParser

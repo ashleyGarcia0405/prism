@@ -11,11 +11,6 @@ module Prism
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.0
 
-    # Ensure Zeitwerk treats 'mpc' as the acronym 'MPC' when inferring constants
-    config.autoloaders.main.inflector.inflect(
-      "mpc" => "MPC"
-    )
-
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
