@@ -15,8 +15,8 @@ module MPCKeys
     end
 
     def coordinator_public_key
-      if ENV['MPC_COORDINATOR_PUBLIC_KEY'].present?
-        OpenSSL::PKey::RSA.new(ENV['MPC_COORDINATOR_PUBLIC_KEY'])
+      if ENV["MPC_COORDINATOR_PUBLIC_KEY"].present?
+        OpenSSL::PKey::RSA.new(ENV["MPC_COORDINATOR_PUBLIC_KEY"])
       elsif Rails.application.credentials.dig(:mpc, :coordinator_public_key).present?
         OpenSSL::PKey::RSA.new(Rails.application.credentials.dig(:mpc, :coordinator_public_key))
       else
@@ -29,8 +29,8 @@ module MPCKeys
     end
 
     def coordinator_private_key
-      if ENV['MPC_COORDINATOR_PRIVATE_KEY'].present?
-        OpenSSL::PKey::RSA.new(ENV['MPC_COORDINATOR_PRIVATE_KEY'])
+      if ENV["MPC_COORDINATOR_PRIVATE_KEY"].present?
+        OpenSSL::PKey::RSA.new(ENV["MPC_COORDINATOR_PRIVATE_KEY"])
       elsif Rails.application.credentials.dig(:mpc, :coordinator_private_key).present?
         OpenSSL::PKey::RSA.new(Rails.application.credentials.dig(:mpc, :coordinator_private_key))
       else

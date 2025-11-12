@@ -32,7 +32,7 @@ class MPCExecutionJob < ApplicationJob
 
     # Update data room status
     DataRoom.find(data_room_id).update!(
-      status: 'failed',
+      status: "failed",
       result: {
         error: e.message,
         failed_at: Time.current

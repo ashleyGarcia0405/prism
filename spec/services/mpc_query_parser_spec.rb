@@ -205,7 +205,7 @@ RSpec.describe MPCQueryParser do
 
       it 'allows array values for IN clauses' do
         parser = MPCQueryParser.new({
-          'where' => { 'state' => ['CA', 'NY', 'TX'] }
+          'where' => { 'state' => [ 'CA', 'NY', 'TX' ] }
         })
 
         expect(parser.valid_where_conditions?).to be true
@@ -249,7 +249,7 @@ RSpec.describe MPCQueryParser do
 
       it 'rejects array with non-scalar values' do
         parser = MPCQueryParser.new({
-          'where' => { 'state' => [{ 'complex' => 'object' }] }
+          'where' => { 'state' => [ { 'complex' => 'object' } ] }
         })
 
         expect(parser.valid_where_conditions?).to be false
@@ -392,7 +392,7 @@ RSpec.describe MPCQueryParser do
       })
 
       columns = parser.referenced_columns
-      expect(columns).to eq(['state'])
+      expect(columns).to eq([ 'state' ])
     end
   end
 
@@ -497,7 +497,7 @@ RSpec.describe MPCQueryParser do
         'column' => 'salary',
         'where' => {
           'age' => { 'operator' => 'between', 'min' => 25, 'max' => 65 },
-          'state' => ['CA', 'NY', 'TX']
+          'state' => [ 'CA', 'NY', 'TX' ]
         }
       })
 

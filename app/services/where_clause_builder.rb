@@ -12,7 +12,7 @@ class WhereClauseBuilder
 
   # Build WHERE clause from conditions
   def build
-    return '' if @conditions.empty?
+    return "" if @conditions.empty?
 
     clauses = @conditions.map do |column, condition|
       build_condition(column, condition)
@@ -43,60 +43,60 @@ class WhereClauseBuilder
   end
 
   def build_complex_condition(column, condition)
-    operator = (condition['operator'] || condition[:operator]).to_s
+    operator = (condition["operator"] || condition[:operator]).to_s
 
     case operator
-    when 'between'
-      min_val = @dataset.sanitize_value(condition['min'] || condition[:min])
-      max_val = @dataset.sanitize_value(condition['max'] || condition[:max])
+    when "between"
+      min_val = @dataset.sanitize_value(condition["min"] || condition[:min])
+      max_val = @dataset.sanitize_value(condition["max"] || condition[:max])
       "#{column} BETWEEN #{min_val} AND #{max_val}"
 
-    when 'gt'
-      value = @dataset.sanitize_value(condition['value'] || condition[:value])
+    when "gt"
+      value = @dataset.sanitize_value(condition["value"] || condition[:value])
       "#{column} > #{value}"
 
-    when 'lt'
-      value = @dataset.sanitize_value(condition['value'] || condition[:value])
+    when "lt"
+      value = @dataset.sanitize_value(condition["value"] || condition[:value])
       "#{column} < #{value}"
 
-    when 'gte'
-      value = @dataset.sanitize_value(condition['value'] || condition[:value])
+    when "gte"
+      value = @dataset.sanitize_value(condition["value"] || condition[:value])
       "#{column} >= #{value}"
 
-    when 'lte'
-      value = @dataset.sanitize_value(condition['value'] || condition[:value])
+    when "lte"
+      value = @dataset.sanitize_value(condition["value"] || condition[:value])
       "#{column} <= #{value}"
 
-    when 'eq'
-      value = @dataset.sanitize_value(condition['value'] || condition[:value])
+    when "eq"
+      value = @dataset.sanitize_value(condition["value"] || condition[:value])
       "#{column} = #{value}"
 
-    when 'ne'
-      value = @dataset.sanitize_value(condition['value'] || condition[:value])
+    when "ne"
+      value = @dataset.sanitize_value(condition["value"] || condition[:value])
       "#{column} != #{value}"
 
-    when 'in'
-      values = condition['values'] || condition[:values]
+    when "in"
+      values = condition["values"] || condition[:values]
       build_in_condition(column, values)
 
-    when 'not_in'
-      values = condition['values'] || condition[:values]
-      safe_values = values.map { |v| @dataset.sanitize_value(v) }.join(', ')
+    when "not_in"
+      values = condition["values"] || condition[:values]
+      safe_values = values.map { |v| @dataset.sanitize_value(v) }.join(", ")
       "#{column} NOT IN (#{safe_values})"
 
-    when 'is_null'
+    when "is_null"
       "#{column} IS NULL"
 
-    when 'is_not_null'
+    when "is_not_null"
       "#{column} IS NOT NULL"
 
-    when 'like'
-      pattern = @dataset.sanitize_value(condition['pattern'] || condition[:pattern])
+    when "like"
+      pattern = @dataset.sanitize_value(condition["pattern"] || condition[:pattern])
       "#{column} LIKE #{pattern}"
 
-    when 'ilike'
+    when "ilike"
       # Case-insensitive LIKE (PostgreSQL)
-      pattern = @dataset.sanitize_value(condition['pattern'] || condition[:pattern])
+      pattern = @dataset.sanitize_value(condition["pattern"] || condition[:pattern])
       "#{column} ILIKE #{pattern}"
 
     else
@@ -107,7 +107,7 @@ class WhereClauseBuilder
   def build_in_condition(column, values)
     return "#{column} IN (NULL)" if values.empty?
 
-    safe_values = values.map { |v| @dataset.sanitize_value(v) }.join(', ')
+    safe_values = values.map { |v| @dataset.sanitize_value(v) }.join(", ")
     "#{column} IN (#{safe_values})"
   end
 end

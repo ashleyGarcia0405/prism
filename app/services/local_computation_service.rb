@@ -32,7 +32,7 @@ class LocalComputationService
 
     # 5. Store computation metadata
     @participant.update!(
-      status: 'computed',
+      status: "computed",
       computed_at: Time.current,
       computation_metadata: {
         share: share,
@@ -50,7 +50,7 @@ class LocalComputationService
   rescue StandardError => e
     # Mark participant as failed
     @participant.update!(
-      status: 'failed',
+      status: "failed",
       computation_metadata: {
         error: e.message,
         backtrace: e.backtrace.first(5)
@@ -65,7 +65,7 @@ class LocalComputationService
   # Execute query on local dataset
   def execute_local_query
     # Use MPCQueryParser to build SQL
-    parser = MPCQueryParser.new(@query_params.presence || { 'query_type' => @data_room.query_type })
+    parser = MPCQueryParser.new(@query_params.presence || { "query_type" => @data_room.query_type })
 
     # Validate query can run on this dataset
     validation = parser.validate_for_dataset(@dataset)
@@ -79,10 +79,10 @@ class LocalComputationService
 
     # Extract result based on query type
     case parser.query_type
-    when 'sum', 'avg'
-      result.first['sum']&.to_f || 0.0
-    when 'count'
-      result.first['count']&.to_i || 0
+    when "sum", "avg"
+      result.first["sum"]&.to_f || 0.0
+    when "count"
+      result.first["count"]&.to_i || 0
     else
       raise "Unsupported query type: #{parser.query_type}"
     end
@@ -105,8 +105,8 @@ class LocalComputationService
   # Load coordinator's public key
   def load_coordinator_public_key
     # Try to load from environment variable first
-    if ENV['MPC_COORDINATOR_PUBLIC_KEY'].present?
-      OpenSSL::PKey::RSA.new(ENV['MPC_COORDINATOR_PUBLIC_KEY'])
+    if ENV["MPC_COORDINATOR_PUBLIC_KEY"].present?
+      OpenSSL::PKey::RSA.new(ENV["MPC_COORDINATOR_PUBLIC_KEY"])
     else
       # Fallback: Load from Rails credentials
       key_string = Rails.application.credentials.dig(:mpc, :coordinator_public_key)

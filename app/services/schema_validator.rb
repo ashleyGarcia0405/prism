@@ -129,7 +129,7 @@ class SchemaValidator
         incompatibilities = type_incompatibilities(column_name)
         error_msg = "Column '#{column_name}' has incompatible types across datasets:\n"
         incompatibilities.each do |inc|
-          orgs = inc[:datasets].map { |d| d[:organization] }.join(', ')
+          orgs = inc[:datasets].map { |d| d[:organization] }.join(", ")
           error_msg += "  - #{inc[:type]} (#{inc[:sql_type]}): #{orgs}\n"
         end
         errors << error_msg.strip
@@ -153,11 +153,11 @@ class SchemaValidator
     return nil unless column_type
 
     case query_type
-    when 'sum', 'avg'
+    when "sum", "avg"
       unless numeric_types.include?(column_type.to_s)
-        return "Cannot compute #{query_type.upcase} on non-numeric column '#{column_name}' (type: #{column_type})"
+        "Cannot compute #{query_type.upcase} on non-numeric column '#{column_name}' (type: #{column_type})"
       end
-    when 'count'
+    when "count"
       # COUNT works on any column type
       nil
     else
