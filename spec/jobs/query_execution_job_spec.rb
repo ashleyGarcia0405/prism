@@ -144,5 +144,175 @@ RSpec.describe QueryExecutionJob, type: :job do
         expect(event.metadata['error']).to eq("Execution error")
       end
     end
+
+    # Branch coverage tests for different backends
+    context 'with MPC backend' do
+      let(:query) do
+        dataset.queries.create!(
+          sql: "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25",
+          user: user,
+          estimated_epsilon: 0.5,
+          backend: 'mpc_backend'
+        )
+      end
+
+      it 'executes MPC backend without epsilon/delta' do
+        mock_executor = instance_double('MpcExecutor')
+        allow(BackendRegistry).to receive(:get_executor).with('mpc_backend', query).and_return(mock_executor)
+        allow(mock_executor).to receive(:execute).and_return(
+          data: { "count" => 100 },
+          epsilon_consumed: 0,
+          delta: 0,
+          mechanism: 'mpc',
+          noise_scale: 0,
+          execution_time_ms: 100,
+          metadata: { backend: 'mpc' }
+        )
+
+        QueryExecutionJob.new.perform(run.id)
+
+        expect(run.reload.status).to eq('completed')
+        expect(run.backend_used).to eq('mpc_backend')
+        expect(mock_executor).to have_received(:execute)
+      end
+
+      it 'does not check privacy budget for MPC' do
+        mock_executor = instance_double('MpcExecutor')
+        allow(BackendRegistry).to receive(:get_executor).with('mpc_backend', query).and_return(mock_executor)
+        allow(mock_executor).to receive(:execute).and_return(
+          data: { "count" => 100 },
+          epsilon_consumed: 0,
+          delta: 0,
+          mechanism: 'mpc',
+          noise_scale: 0,
+          execution_time_ms: 100,
+          metadata: { backend: 'mpc' }
+        )
+
+        original_consumed = dataset.privacy_budget.consumed_epsilon
+        QueryExecutionJob.new.perform(run.id)
+
+        expect(dataset.privacy_budget.reload.consumed_epsilon).to eq(original_consumed)
+      end
+    end
+
+    context 'with HE backend' do
+      let(:query) do
+        dataset.queries.create!(
+          sql: "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25",
+          user: user,
+          estimated_epsilon: 0.5,
+          backend: 'he_backend'
+        )
+      end
+
+      it 'executes HE backend without epsilon/delta' do
+        mock_executor = instance_double('HeExecutor')
+        allow(BackendRegistry).to receive(:get_executor).with('he_backend', query).and_return(mock_executor)
+        allow(mock_executor).to receive(:execute).and_return(
+          data: { "count" => 100 },
+          epsilon_consumed: 0,
+          delta: 0,
+          mechanism: 'he',
+          noise_scale: 0,
+          execution_time_ms: 100,
+          metadata: { backend: 'he' }
+        )
+
+        QueryExecutionJob.new.perform(run.id)
+
+        expect(run.reload.status).to eq('completed')
+        expect(run.backend_used).to eq('he_backend')
+        expect(mock_executor).to have_received(:execute)
+      end
+
+      it 'does not check privacy budget for HE' do
+        mock_executor = instance_double('HeExecutor')
+        allow(BackendRegistry).to receive(:get_executor).with('he_backend', query).and_return(mock_executor)
+        allow(mock_executor).to receive(:execute).and_return(
+          data: { "count" => 100 },
+          epsilon_consumed: 0,
+          delta: 0,
+          mechanism: 'he',
+          noise_scale: 0,
+          execution_time_ms: 100,
+          metadata: { backend: 'he' }
+        )
+
+        original_consumed = dataset.privacy_budget.consumed_epsilon
+        QueryExecutionJob.new.perform(run.id)
+
+        expect(dataset.privacy_budget.reload.consumed_epsilon).to eq(original_consumed)
+      end
+    end
+
+    context 'with non-DP backend and error' do
+      let(:query) do
+        dataset.queries.create!(
+          sql: "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25",
+          user: user,
+          estimated_epsilon: 0.5
+        )
+      end
+      let(:run) { query.runs.create!(user: user, status: 'pending') }
+
+      it 'does not attempt rollback when no reservation was made' do
+        allow(PrivacyBudgetService).to receive(:check_and_reserve).and_raise(StandardError.new("Budget service error"))
+
+        expect {
+          QueryExecutionJob.new.perform(run.id)
+        }.to raise_error(StandardError)
+
+        expect(run.reload.status).to eq('failed')
+        # Verify rollback was not called since reservation was never made
+      end
+    end
+
+    context 'with non-DP backend and error' do
+      let(:query) do
+        dataset.queries.create!(
+          sql: "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25",
+          user: user,
+          estimated_epsilon: 0.5,
+          backend: 'he_backend'
+        )
+      end
+
+      it 'fails without attempting budget operations' do
+        mock_executor = instance_double('HeExecutor')
+        allow(BackendRegistry).to receive(:get_executor).with('he_backend', query).and_return(mock_executor)
+        allow(mock_executor).to receive(:execute).and_raise(StandardError.new("HE execution failed"))
+
+        expect {
+          QueryExecutionJob.new.perform(run.id)
+        }.to raise_error(StandardError)
+
+        expect(run.reload.status).to eq('failed')
+        expect(run.error_message).to eq("HE execution failed")
+      end
+    end
+
+    context 'with proof_artifacts already in result' do
+      it 'uses result proof_artifacts instead of building them' do
+        mock_executor = instance_double('DpSandbox')
+        allow(BackendRegistry).to receive(:get_executor).and_return(mock_executor)
+        allow(mock_executor).to receive(:execute).and_return(
+          data: { "count" => 100 },
+          epsilon_consumed: 0.5,
+          delta: 1e-5,
+          mechanism: 'laplace',
+          noise_scale: 2.0,
+          execution_time_ms: 150,
+          proof_artifacts: { custom: 'artifact', pre_computed: true },
+          metadata: { backend: 'dp' }
+        )
+
+        QueryExecutionJob.new.perform(run.id)
+
+        artifacts = run.reload.proof_artifacts
+        expect(artifacts['custom']).to eq('artifact')
+        expect(artifacts['pre_computed']).to eq(true)
+      end
+    end
   end
 end

@@ -208,5 +208,116 @@ RSpec.describe QueryValidator do
         expect(result[:estimated_epsilon]).to eq(1.1) # AVG=0.5 + SUM=0.5 + COUNT=0.1
       end
     end
+
+    it "returns parse error message for malformed SQL" do
+      res = QueryValidator.validate("SELEC FROM")
+      expect(res[:valid]).to eq(false)
+      expect(res[:errors].join).to match(/Invalid SQL syntax/i)
+    end
+
+    it "rejects non-select statements" do
+      res = QueryValidator.validate("INSERT INTO t VALUES (1)")
+      expect(res[:valid]).to eq(false)
+      expect(res[:errors]).to include("Query must be a SELECT statement")
+    end
+
+    it "rejects SELECT *" do
+      res = QueryValidator.validate("SELECT * FROM people")
+      expect(res[:valid]).to eq(false)
+      expect(res[:errors].join).to match(/Cannot SELECT \*/i)
+    end
+
+    it "requires aggregate functions" do
+      res = QueryValidator.validate("SELECT id, name FROM people")
+      expect(res[:valid]).to eq(false)
+      expect(res[:errors].join).to match(/Query must use aggregate functions/)
+    end
+
+    it "flags non-aggregate columns without GROUP BY" do
+      res = QueryValidator.validate("SELECT id, COUNT(*) FROM people")
+      expect(res[:valid]).to eq(false)
+      expect(res[:errors].join).to match(/require GROUP BY/i)
+    end
+
+    it "requires HAVING with COUNT >= MIN_GROUP_SIZE when grouping" do
+      res = QueryValidator.validate("SELECT id, COUNT(*) FROM people GROUP BY id")
+      expect(res[:valid]).to eq(false)
+      expect(res[:errors].join).to match(/Must include HAVING COUNT\(\*\) >= #{QueryValidator::MIN_GROUP_SIZE}/)
+    end
+
+    it "accepts GROUP BY when HAVING COUNT >= MIN_GROUP_SIZE is present (>= operator)" do
+      res = QueryValidator.validate("SELECT id, COUNT(*) FROM people GROUP BY id HAVING COUNT(*) >= #{QueryValidator::MIN_GROUP_SIZE}")
+      expect(res[:valid]).to eq(true)
+    end
+
+    it "accepts HAVING with > operator" do
+      res = QueryValidator.validate("SELECT id, COUNT(*) FROM people GROUP BY id HAVING COUNT(*) > #{QueryValidator::MIN_GROUP_SIZE}")
+      expect(res[:valid]).to eq(true)
+    end
+
+    it "accepts HAVING with boolean OR containing a valid condition" do
+      sql = "SELECT id, COUNT(*) FROM people GROUP BY id HAVING (COUNT(*) >= #{QueryValidator::MIN_GROUP_SIZE} OR COUNT(*) >= 100)"
+      res = QueryValidator.validate(sql)
+      expect(res[:valid]).to eq(true)
+    end
+
+    it "rejects subqueries in SELECT" do
+      res = QueryValidator.validate("SELECT (SELECT COUNT(*) FROM other) AS subcount FROM people")
+      expect(res[:valid]).to eq(false)
+      expect(res[:errors].join).to match(/Subqueries are not allowed/)
+    end
+
+    it "rejects subqueries in FROM" do
+      res = QueryValidator.validate("SELECT * FROM (SELECT 1) AS sub")
+      expect(res[:valid]).to eq(false)
+      expect(res[:errors].join).to match(/Subqueries are not allowed/)
+    end
+
+    it "rejects subqueries in WHERE" do
+      sql = <<~SQL
+        SELECT id FROM people
+        WHERE EXISTS (SELECT 1 FROM other WHERE other.x = people.x)
+      SQL
+      res = QueryValidator.validate(sql)
+      expect(res[:valid]).to eq(false)
+      expect(res[:errors].join).to match(/Subqueries are not allowed/)
+    end
+
+    it "rejects unsupported aggregate functions" do
+      res = QueryValidator.validate("SELECT MEDIAN(age) FROM people")
+      expect(res[:valid]).to eq(false)
+      expect(res[:errors].join).to match(/Only these aggregates are allowed:/)
+    end
+
+    it "estimates epsilon: COUNT gives minimum epsilon (0.1)" do
+      res = QueryValidator.validate("SELECT COUNT(*) FROM people")
+      expect(res[:valid]).to eq(true)
+      expect(res[:estimated_epsilon]).to be >= 0.1
+    end
+
+    it "estimates epsilon: AVG/SUM/STDDEV increase epsilon" do
+      r1 = QueryValidator.validate("SELECT AVG(age) FROM people")
+      r2 = QueryValidator.validate("SELECT SUM(cost) FROM people")
+      r3 = QueryValidator.validate("SELECT STDDEV(x) FROM people")
+
+      expect(r1[:valid]).to eq(true)
+      expect(r2[:valid]).to eq(true)
+      expect(r3[:valid]).to eq(true)
+
+      expect(r1[:estimated_epsilon]).to be >= 0.5
+      expect(r2[:estimated_epsilon]).to be >= 0.5
+      expect(r3[:estimated_epsilon]).to be >= 0.5
+    end
+
+    it "handles the extract_select_statement nil branch via stubbing parse result" do
+      fake = double(tree: double(stmts: []))
+      allow(PgQuery).to receive(:parse).and_return(fake)
+      res = QueryValidator.validate("SELECT 1 FROM t")
+      expect(res[:valid]).to eq(false)
+      expect(res[:errors]).to include("Query must be a SELECT statement")
+    ensure
+      # restore normal behavior for subsequent tests
+      allow(PgQuery).to receive(:parse).and_call_original
+    end
   end
 end

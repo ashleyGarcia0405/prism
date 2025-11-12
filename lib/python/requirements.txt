@@ -2,3 +2,4 @@ diffprivlib==0.6.4
 pandas==2.2.0
 numpy==1.26.4
 sqlparse==0.4.4
+tenseal==0.3.16

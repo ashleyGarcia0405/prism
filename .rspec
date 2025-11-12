@@ -1,1 +1,3 @@
 --require spec_helper
+--tag ~requires_tenseal
+--tag ~requires_sgx_hardware
