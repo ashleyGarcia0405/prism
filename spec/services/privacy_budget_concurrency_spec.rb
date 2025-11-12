@@ -49,7 +49,7 @@ RSpec.describe PrivacyBudgetService, 'concurrency and race conditions' do
         epsilon_needed: 2.0
       )
       expect(result2[:success]).to be false
-      expect(result2[:error]).to include("Insufficient privacy budget")
+      expect(result2[:error]).to include("Query would exceed privacy budget")
     end
 
     it 'correctly updates remaining_epsilon' do
@@ -212,7 +212,7 @@ RSpec.describe PrivacyBudgetService, 'concurrency and race conditions' do
       )
 
       expect(result[:success]).to be false
-      expect(result[:error]).to include("Insufficient privacy budget")
+      expect(result[:error]).to include("Query would exceed privacy budget")
     end
 
     it 'provides budget status in error message' do

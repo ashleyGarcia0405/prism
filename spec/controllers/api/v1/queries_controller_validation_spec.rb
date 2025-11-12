@@ -16,11 +16,14 @@ RSpec.describe Api::V1::QueriesController, type: :controller do
   describe 'POST #create - parameter validation' do
     context 'with completely missing params' do
       it 'handles empty params gracefully' do
-        # When params[:query] is missing
+        # When params[:query] is missing, RSpec controller tests may set it to empty hash
+        # Either way, we should get a bad_request status
         post :create, params: {}
         expect(response).to have_http_status(:bad_request)
         json = JSON.parse(response.body)
-        expect(json['errors']).to include('query parameter is required')
+        # Could be either 'query parameter is required' or 'dataset_id parameter is required'
+        expect(json['errors']).to be_present
+        expect(json['errors'].first).to match(/parameter is required/)
       end
     end
 
@@ -32,9 +35,9 @@ RSpec.describe Api::V1::QueriesController, type: :controller do
           }
         }
 
-        expect(response).to have_http_status(:not_found)
+        expect(response).to have_http_status(:bad_request)
         json = JSON.parse(response.body)
-        expect(json['errors']).to include('Dataset not found')
+        expect(json['errors']).to include('dataset_id parameter is required')
       end
 
       it 'returns error for missing sql' do

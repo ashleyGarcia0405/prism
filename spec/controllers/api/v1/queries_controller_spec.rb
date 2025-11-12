@@ -93,11 +93,11 @@ RSpec.describe Api::V1::QueriesController, type: :controller do
         }
       end
 
-      it 'returns 404 status' do
+      it 'returns 400 status' do
         post :create, params: params_without_dataset
-        expect(response).to have_http_status(:not_found)
+        expect(response).to have_http_status(:bad_request)
         json = JSON.parse(response.body)
-        expect(json['errors']).to include('Dataset not found')
+        expect(json['errors']).to include('dataset_id parameter is required')
       end
     end
 
