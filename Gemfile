@@ -72,6 +72,8 @@ group :test do
 
   # Better RSpec matchers
   gem "shoulda-matchers"
+
+  gem "rails-controller-testing"
 end
 
 
