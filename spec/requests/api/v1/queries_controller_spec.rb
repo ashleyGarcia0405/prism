@@ -80,7 +80,7 @@ RSpec.describe "Api::V1::QueriesController", type: :request do
 
       ActiveJob::Base.queue_adapter = :test
       expect {
-        post "/api/v1/queries/#{q.id}/execute", headers: headers
+        post "/api/v1/queries/#{q.id}/execute", headers: headers, params: { epsilon: 0.5 }.to_json
       }.to change { Run.count }.by(1)
 
       expect(enqueued_jobs.size).to eq(1)

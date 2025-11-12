@@ -83,9 +83,13 @@ class QueryExecutionJob < ApplicationJob
       metadata: { query_id: query.id, dataset_id: dataset.id, epsilon_consumed: run.epsilon_consumed }
     )
 
+  rescue ActiveRecord::RecordNotFound => e
+    # Run doesn't exist - log the error but don't try to update it
+    Rails.logger.error("QueryExecutionJob failed: Run #{run_id} not found: #{e.message}")
+    raise
   rescue => e
-    # rollback budget reservation on error
-    if reservation && reservation[:success]
+    # rollback budget reservation on error (only if we successfully reserved)
+    if reservation && reservation[:success] && dataset
       PrivacyBudgetService.rollback(
         dataset: dataset,
         reservation_id: reservation[:reservation_id],
@@ -93,16 +97,21 @@ class QueryExecutionJob < ApplicationJob
       )
     end
 
-    run.update!(
-      status: "failed",
-      error_message: e.message
-    )
-    AuditLogger.log(
-      user: user || query&.user,
-      action: "query_failed",
-      target: run,
-      metadata: { query_id: query&.id, dataset_id: dataset&.id, error: e.message }.compact
-    )
+    # only update run if it exists and is persisted
+    if run&.persisted?
+      run.update!(
+        status: "failed",
+        error_message: e.message
+      )
+      AuditLogger.log(
+        user: user || query&.user,
+        action: "query_failed",
+        target: run,
+        metadata: { query_id: query&.id, dataset_id: dataset&.id, error: e.message }.compact
+      )
+    else
+      Rails.logger.error("QueryExecutionJob failed: #{e.message}")
+    end
     raise
   end
 end

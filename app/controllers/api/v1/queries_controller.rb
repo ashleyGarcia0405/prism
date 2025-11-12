@@ -4,6 +4,14 @@ module Api
   module V1
     class QueriesController < Api::BaseController
       def create
+        unless params[:query]
+          return render json: { errors: ["query parameter is required"] }, status: :bad_request
+        end
+
+        unless params[:query][:dataset_id]
+          return render json: { errors: ["dataset_id parameter is required"] }, status: :bad_request
+        end
+
         dataset = Dataset.find(params[:query][:dataset_id])
         query = dataset.queries.new(query_params.merge(user: current_user))
 
@@ -30,6 +38,8 @@ module Api
         else
           render json: { errors: query.errors.full_messages }, status: :unprocessable_entity
         end
+      rescue ActiveRecord::RecordNotFound
+        render json: { errors: ["Dataset not found"] }, status: :not_found
       end
 
       def show
@@ -71,6 +81,24 @@ module Api
       end
 
       def execute
+        # Validate epsilon parameter
+        epsilon = params[:epsilon]
+
+        if epsilon.nil?
+          return render json: { error: "epsilon parameter is required" }, status: :bad_request
+        end
+
+        # Convert and validate epsilon
+        begin
+          epsilon_value = Float(epsilon)
+        rescue ArgumentError, TypeError
+          return render json: { error: "epsilon must be a valid number" }, status: :bad_request
+        end
+
+        if epsilon_value < 0
+          return render json: { error: "epsilon must be a positive number" }, status: :bad_request
+        end
+
         query = Query.find(params[:id])
 
         # Validate backend is available
@@ -99,6 +127,8 @@ module Api
           estimated_time_seconds: 2,
           poll_url: api_v1_run_url(run)
         }, status: :accepted
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: "Query not found" }, status: :not_found
       rescue BackendRegistry::BackendNotFoundError => e
         render json: { error: e.message }, status: :bad_request
       end
