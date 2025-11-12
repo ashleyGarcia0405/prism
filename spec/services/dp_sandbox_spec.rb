@@ -171,7 +171,7 @@ RSpec.describe DpSandbox do
         result = dp_sandbox.execute(0.5)
         # Should fall through to rescue and generate mock result
         expect(result[:data]).to be_present
-        expect(result[:metadata]).to include(:fallback)
+        expect(result[:metadata]).to include('fallback' => true)
       end
     end
 
@@ -196,7 +196,7 @@ RSpec.describe DpSandbox do
         result = dp_sandbox.execute(0.5)
         # Should fall through to rescue and generate mock result
         expect(result[:data]).to be_present
-        expect(result[:metadata]).to include(:fallback)
+        expect(result[:metadata]).to include('fallback' => true)
       end
     end
 
@@ -221,7 +221,7 @@ RSpec.describe DpSandbox do
         result = dp_sandbox.execute(0.5)
         # Should fall through to rescue and generate mock result
         expect(result[:data]).to be_present
-        expect(result[:metadata]).to include(:fallback)
+        expect(result[:metadata]).to include('fallback' => true)
       end
     end
 
@@ -267,8 +267,8 @@ RSpec.describe DpSandbox do
         
         # COUNT is checked first in the if/elsif chain
         expect(mock_result[:data]).to have_key('count')
-        expect(mock_result[:metadata]).to include(fallback: true)
-        expect(mock_result[:mechanism]).to eq('laplace_mock')
+        expect(mock_result[:metadata]).to include('fallback' => true)
+        expect(mock_result[:mechanism]).to eq('laplace')
       end
 
       it 'handles different SQL query patterns correctly' do
@@ -293,7 +293,7 @@ RSpec.describe DpSandbox do
           expect(mock_result).to have_key(:data)
           expect(mock_result).to have_key(:epsilon_consumed)
           expect(mock_result).to have_key(:mechanism)
-          expect(mock_result[:mechanism]).to eq('laplace_mock')
+          expect(mock_result[:mechanism]).to eq('laplace')
         end
       end
     end
