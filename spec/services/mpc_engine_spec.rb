@@ -62,14 +62,14 @@ RSpec.describe MPCEngine do
     end
 
     it 'works with manually created shares' do
-      shares = [45.5, 30.2, 24.3]
+      shares = [ 45.5, 30.2, 24.3 ]
       result = MPCEngine.reconstruct(shares)
 
       expect(result).to be_within(0.0001).of(100.0)
     end
 
     it 'works with negative shares' do
-      shares = [150, -30, -20]
+      shares = [ 150, -30, -20 ]
       result = MPCEngine.reconstruct(shares)
 
       expect(result).to eq(100)

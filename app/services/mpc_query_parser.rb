@@ -11,17 +11,17 @@ class MPCQueryParser
 
   # Extract column name from query
   def column_name
-    @query_params['column'] || @query_params[:column]
+    @query_params["column"] || @query_params[:column]
   end
 
   # Extract query type (sum, count, avg)
   def query_type
-    (@query_params['query_type'] || @query_params[:query_type])&.to_s&.downcase
+    (@query_params["query_type"] || @query_params[:query_type])&.to_s&.downcase
   end
 
   # Extract WHERE conditions
   def where_conditions
-    @query_params['where'] || @query_params[:where] || {}
+    @query_params["where"] || @query_params[:where] || {}
   end
 
   # Validate query parameters are complete
@@ -34,7 +34,7 @@ class MPCQueryParser
     end
 
     # Check column name (except for COUNT(*))
-    if query_type != 'count' && column_name.blank?
+    if query_type != "count" && column_name.blank?
       errors << "Column name is required for #{query_type&.upcase} queries"
     end
 
@@ -83,11 +83,11 @@ class MPCQueryParser
   # Build SQL for specific dataset
   def build_sql_for_dataset(dataset)
     case query_type
-    when 'sum'
+    when "sum"
       build_sum_query(dataset)
-    when 'count'
+    when "count"
       build_count_query(dataset)
-    when 'avg'
+    when "avg"
       # For AVG in MPC, we compute SUM (coordinator will divide by total count)
       build_sum_query(dataset)
     else
@@ -120,7 +120,7 @@ class MPCQueryParser
     end
 
     # Check column type is numeric for SUM/AVG
-    if ['sum', 'avg'].include?(query_type) && column_name.present?
+    if [ "sum", "avg" ].include?(query_type) && column_name.present?
       type = dataset.column_type(column_name)
       unless numeric_types.include?(type.to_s)
         errors << "Column '#{column_name}' must be numeric for #{query_type.upcase}, but is #{type}"
@@ -142,7 +142,7 @@ class MPCQueryParser
   def valid_complex_condition?(condition)
     return false unless condition.is_a?(Hash)
 
-    operator = condition['operator'] || condition[:operator]
+    operator = condition["operator"] || condition[:operator]
     valid_operators = %w[between gt lt gte lte eq ne in]
 
     valid_operators.include?(operator.to_s)

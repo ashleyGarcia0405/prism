@@ -200,7 +200,7 @@ module Api
         if datasets.empty?
           return render json: {
             valid: false,
-            errors: ["No participants in data room. Invite organizations first."]
+            errors: [ "No participants in data room. Invite organizations first." ]
           }, status: :unprocessable_entity
         end
 
@@ -269,9 +269,9 @@ module Api
         end
 
         # Check backend preference
-        backend = params[:backend] || 'mpc_real'
+        backend = params[:backend] || "mpc_real"
 
-        if backend == 'mpc_mock'
+        if backend == "mpc_mock"
           # Use mock executor for testing
           execute_with_mock(data_room)
         else
@@ -303,7 +303,7 @@ module Api
           user: current_user,
           action: "data_room_execution_failed",
           target: data_room,
-          metadata: { error: e.message, backend: 'mpc_real' }
+          metadata: { error: e.message, backend: "mpc_real" }
         )
 
         render json: { error: "Failed to initiate MPC execution: #{e.message}" }, status: :internal_server_error
@@ -344,7 +344,7 @@ module Api
             metadata: {
               participant_count: data_room.participant_count,
               mechanism: result[:mechanism],
-              backend: 'mpc_mock'
+              backend: "mpc_mock"
             }
           )
 
@@ -355,7 +355,7 @@ module Api
             executed_at: data_room.executed_at,
             mechanism: result[:mechanism],
             proof_artifacts: result[:proof_artifacts],
-            backend: 'mpc_mock'
+            backend: "mpc_mock"
           }, status: :ok
         rescue StandardError => e
           data_room.update!(status: "failed")
@@ -364,7 +364,7 @@ module Api
             user: current_user,
             action: "data_room_execution_failed",
             target: data_room,
-            metadata: { error: e.message, backend: 'mpc_mock' }
+            metadata: { error: e.message, backend: "mpc_mock" }
           )
 
           render json: { error: "Execution failed: #{e.message}" }, status: :internal_server_error
