@@ -16,7 +16,14 @@ module Api
         return
       end
 
-      token = header.split(" ").last
+      # validate Bearer token format (RFC 6750)
+      unless header.start_with?("Bearer ")
+        render json: { error: "Invalid authorization format. Expected 'Bearer <token>'" }, status: :unauthorized
+        return
+      end
+
+      # extract token (split into max 2 parts in case token contains spaces)
+      token = header.split(" ", 2).last
 
       begin
         decoded = JsonWebToken.decode(token)

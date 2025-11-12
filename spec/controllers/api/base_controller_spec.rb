@@ -78,6 +78,108 @@ RSpec.describe Api::BaseController, type: :controller do
         get :index
         expect(response).to have_http_status(:unauthorized)
       end
+
+      it 'returns error message' do
+        get :index
+        json = JSON.parse(response.body)
+        expect(json['error']).to eq('User not found')
+      end
+    end
+
+    context 'with malformed Authorization header' do
+      context 'without Bearer prefix' do
+        before do
+          # Now properly validates Bearer prefix (RFC 6750)
+          token = JsonWebToken.encode(user_id: user.id)
+          request.headers['Authorization'] = token
+        end
+
+        it 'returns 401 status' do
+          get :index
+          expect(response).to have_http_status(:unauthorized)
+        end
+
+        it 'returns error message about invalid format' do
+          get :index
+          json = JSON.parse(response.body)
+          expect(json['error']).to include('Invalid authorization format')
+        end
+      end
+
+      context 'with empty token after Bearer' do
+        before do
+          request.headers['Authorization'] = "Bearer "
+        end
+
+        it 'returns 401 status' do
+          get :index
+          expect(response).to have_http_status(:unauthorized)
+        end
+      end
+
+      context 'with multiple spaces' do
+        before do
+          token = JsonWebToken.encode(user_id: user.id)
+          request.headers['Authorization'] = "Bearer  #{token}"
+        end
+
+        it 'handles the request' do
+          # Should either succeed or fail gracefully
+          get :index
+          expect(response.status).to be_between(200, 401).inclusive
+        end
+      end
+    end
+
+    context 'with tampered token' do
+      before do
+        valid_token = JsonWebToken.encode(user_id: user.id)
+        tampered_token = valid_token[0..-2] + 'X'
+        request.headers['Authorization'] = "Bearer #{tampered_token}"
+      end
+
+      it 'returns 401 status' do
+        get :index
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context 'with token containing invalid user_id' do
+      before do
+        # Create token with string user_id instead of integer
+        token = JsonWebToken.encode(user_id: 'invalid')
+        request.headers['Authorization'] = "Bearer #{token}"
+      end
+
+      it 'returns 401 status' do
+        get :index
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context 'with nil user_id in token' do
+      before do
+        token = JsonWebToken.encode(user_id: nil)
+        request.headers['Authorization'] = "Bearer #{token}"
+      end
+
+      it 'returns 401 status' do
+        get :index
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context 'with very long token' do
+      before do
+        long_token = "x" * 10000
+        request.headers['Authorization'] = "Bearer #{long_token}"
+      end
+
+      it 'handles the request' do
+        # Should fail gracefully with 401
+        get :index
+        expect(response).to have_http_status(:unauthorized)
+      end
     end
   end
 end

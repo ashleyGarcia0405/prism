@@ -7,6 +7,11 @@ module QueryValidator
   class << self
     def validate(sql_string)
       errors = []
+      
+      if sql_string.nil? || sql_string.to_s.strip.empty?
+        errors << "SQL cannot be empty"
+        return build_response(false, errors)
+      end
 
       begin
         result = PgQuery.parse(sql_string)
