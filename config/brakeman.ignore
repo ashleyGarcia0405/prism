@@ -24,20 +24,20 @@
     {
       "warning_type": "SQL Injection",
       "warning_code": 0,
-      "fingerprint": "e5cfa830a5abe6b31d5427371b17965a9194bab8b449a15981d03d3466826c40",
+      "fingerprint": "1964ed2f32d0dde5c6778ee158e63573c81e55771737bfac3c6ea6e8ef8c29be",
       "check_name": "SQL",
       "message": "Possible SQL injection",
       "file": "app/services/dataset_ingestor.rb",
-      "line": 204,
+      "line": 216,
       "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
-      "code": "ActiveRecord::Base.connection.execute(\"INSERT INTO #{ActiveRecord::Base.connection.quote_table_name(dataset.table_name)} (#{headers.map do\n ActiveRecord::Base.connection.quote_column_name(h)\nend.join(\", \")}) VALUES (#{headers.map.with_index do\n cast_value(row[idx], sql_columns[idx][\"sql_type\"])\nend.map do\n ActiveRecord::Base.connection.quote(v)\nend.join(\", \")})\")",
+      "code": "ActiveRecord::Base.connection.execute(\"INSERT INTO #{ActiveRecord::Base.connection.quote_table_name(dataset.table_name)} (#{headers.map do\n ActiveRecord::Base.connection.quote_column_name(h)\n end.join(\", \")}) VALUES (#{(CSV.new(io, :headers => true, :encoding => \"bom|utf-8\").first.headers or []).map.with_index do\n cast_value(row[orig_h], sql_columns[idx][\"sql_type\"])\n end.map do\n ActiveRecord::Base.connection.quote(v)\n end.join(\", \")})\")",
       "render_path": null,
       "location": {
         "type": "method",
         "class": "DatasetIngestor",
         "method": "bulk_insert!"
       },
-      "user_input": "headers.map do\n ActiveRecord::Base.connection.quote_column_name(h)\nend.join(\", \")",
+      "user_input": "headers.map do\n ActiveRecord::Base.connection.quote_column_name(h)\n end.join(\", \")",
       "confidence": "Medium",
       "cwe_id": [89],
       "note": "False positive - All identifiers are properly quoted via quote_table_name, quote_column_name, and quote for values"
