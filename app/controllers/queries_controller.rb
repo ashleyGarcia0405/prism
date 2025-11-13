@@ -16,6 +16,21 @@ class QueriesController < ApplicationController
     @query.dataset_id = params[:dataset_id] if params[:dataset_id]
   end
 
+  def validate
+    sql = params[:sql]
+
+    if sql.blank?
+      render json: { valid: false, errors: [ "SQL query is required" ] }
+      return
+    end
+
+    result = QueryValidator.validate(sql)
+    render json: result
+  rescue StandardError => e
+    Rails.logger.error("Validation error: #{e.message}")
+    render json: { valid: false, errors: [ e.message ] }, status: :unprocessable_entity
+  end
+
   def create
     dataset = current_user.organization.datasets.find(params[:query][:dataset_id])
     @query = dataset.queries.new(query_params)

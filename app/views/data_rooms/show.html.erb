@@ -1,0 +1,223 @@
+<% content_for :title, "#{@data_room['name']} - Prism" %>
+
+<div class="mb-8">
+  <div class="flex justify-between items-start">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-100 mb-2"><%= @data_room["name"] %></h1>
+      <p class="text-gray-400"><%= @data_room["description"] || "No description" %></p>
+    </div>
+    <% status_class = case @data_room["status"]
+        when 'pending' then 'bg-yellow-900 bg-opacity-50 text-yellow-300 border border-yellow-700'
+        when 'attested' then 'bg-green-900 bg-opacity-50 text-green-300 border border-green-700'
+        when 'executing' then 'bg-blue-900 bg-opacity-50 text-blue-300 border border-blue-700'
+        when 'completed' then 'bg-green-900 bg-opacity-50 text-green-300 border border-green-700'
+        when 'failed' then 'bg-red-900 bg-opacity-50 text-red-300 border border-red-700'
+        else 'bg-slate-700 text-gray-300'
+        end %>
+    <span class="px-4 py-2 text-sm font-medium rounded-full <%= status_class %>">
+      <%= @data_room["status"].upcase %>
+    </span>
+  </div>
+</div>
+
+<!-- Query Info -->
+<div class="bg-slate-800 border border-slate-700 rounded-lg shadow-lg p-6 mb-6">
+  <h2 class="text-xl font-bold text-gray-100 mb-4">Query Details</h2>
+  <div class="grid grid-cols-2 gap-6 mb-4">
+    <div>
+      <p class="text-sm text-gray-400 mb-1">Query Type</p>
+      <p class="text-lg font-medium text-gray-100"><%= @data_room["query_type"]&.upcase || "N/A" %></p>
+    </div>
+    <div>
+      <p class="text-sm text-gray-400 mb-1">Created By</p>
+      <p class="text-lg font-medium text-gray-100">
+        <%= @is_creator ? "You" : "Organization ##{@data_room['creator_id']}" %>
+      </p>
+    </div>
+  </div>
+  <div class="bg-slate-900 border border-slate-700 p-4 rounded-lg">
+    <p class="text-sm text-gray-400 mb-2">Query Text:</p>
+    <pre class="text-sm font-mono text-blue-300 overflow-x-auto"><%= @data_room["query_text"] %></pre>
+  </div>
+</div>
+
+<!-- Participants Section -->
+<div class="bg-slate-800 border border-slate-700 rounded-lg shadow-lg p-6 mb-6">
+  <div class="flex justify-between items-center mb-4">
+    <h2 class="text-xl font-bold text-gray-100">
+      Participants (<%= @data_room["attested_count"] %>/<%= @data_room["participant_count"] %> Attested)
+    </h2>
+    <% if @is_creator && @data_room["status"] == "pending" %>
+      <button onclick="document.getElementById('invite-modal').classList.remove('hidden')"
+              class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm font-medium">
+        + Invite Organization
+      </button>
+    <% end %>
+  </div>
+
+  <% if @data_room["participants"]&.any? %>
+    <div class="space-y-3">
+      <% @data_room["participants"].each do |participant| %>
+        <div class="bg-slate-900 border border-slate-700 p-4 rounded-lg flex justify-between items-center">
+          <div>
+            <p class="font-medium text-gray-100"><%= participant["organization_name"] %></p>
+            <p class="text-sm text-gray-400">Dataset: <%= participant["dataset_name"] %></p>
+          </div>
+          <% part_status_class = case participant["status"]
+              when 'attested' then 'bg-green-900 bg-opacity-50 text-green-300 border border-green-700'
+              when 'invited' then 'bg-yellow-900 bg-opacity-50 text-yellow-300 border border-yellow-700'
+              else 'bg-slate-700 text-gray-300'
+              end %>
+          <span class="px-3 py-1 text-xs font-medium rounded-full <%= part_status_class %>">
+            <%= participant["status"].upcase %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-gray-400 text-center py-8">No participants yet. Invite organizations to join this data room.</p>
+  <% end %>
+</div>
+
+<!-- Actions Section -->
+<% if @my_participant.nil? && !@is_creator %>
+  <!-- User's organization is invited but hasn't attested -->
+  <div class="bg-purple-900 bg-opacity-20 border border-purple-600 rounded-lg p-6 mb-6">
+    <h3 class="text-lg font-bold text-purple-300 mb-4">You've Been Invited!</h3>
+    <p class="text-gray-300 mb-4">Attest your participation by selecting a dataset to contribute to this data room.</p>
+
+    <%= form_with url: attest_data_room_path(@data_room["id"]), method: :post, class: "space-y-4" do |f| %>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Select Your Dataset</label>
+        <%= select_tag :dataset_id,
+            options_from_collection_for_select(current_user.organization.datasets.where.not(table_name: nil), :id, :name),
+            prompt: "Choose a dataset...",
+            required: true,
+            class: "w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-100" %>
+      </div>
+      <%= submit_tag "Attest Participation", class: "w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium" %>
+    <% end %>
+  </div>
+<% elsif @my_participant && @my_participant["status"] == "invited" %>
+  <div class="bg-yellow-900 bg-opacity-20 border border-yellow-600 rounded-lg p-6 mb-6">
+    <h3 class="text-lg font-bold text-yellow-300 mb-2">Pending Attestation</h3>
+    <p class="text-gray-300">You're invited but haven't attested yet. Select a dataset to participate.</p>
+  </div>
+<% end %>
+
+<!-- Execute Section -->
+<% if @data_room["status"] == "attested" %>
+  <div class="bg-green-900 bg-opacity-20 border border-green-600 rounded-lg p-6">
+    <h3 class="text-lg font-bold text-green-300 mb-4">Ready to Execute</h3>
+    <p class="text-gray-300 mb-4">All participants have attested. You can now execute the MPC computation.</p>
+
+    <div class="flex space-x-4">
+      <%= button_to "Execute (Mock Backend)",
+          execute_data_room_path(@data_room["id"], backend: "mpc_mock"),
+          method: :post,
+          class: "px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium" %>
+      <%= button_to "Execute (Real MPC)",
+          execute_data_room_path(@data_room["id"], backend: "mpc_real"),
+          method: :post,
+          class: "px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium",
+          data: { confirm: "This will initiate a real MPC computation. Continue?" } %>
+    </div>
+  </div>
+<% end %>
+
+<!-- Results Section -->
+<% if @data_room["status"] == "completed" && @data_room["result"].present? %>
+  <div class="bg-slate-800 border border-slate-700 rounded-lg shadow-lg p-6">
+    <h2 class="text-xl font-bold text-gray-100 mb-4">Computation Results</h2>
+
+    <div class="bg-slate-900 border border-slate-700 p-4 rounded-lg mb-4">
+      <% if @data_room["result"].is_a?(Hash) %>
+        <table class="w-full">
+          <tbody>
+            <% @data_room["result"].each do |key, value| %>
+              <tr class="border-b border-slate-800 last:border-0">
+                <td class="py-2 text-gray-400"><%= key %></td>
+                <td class="py-2 text-gray-100 font-medium text-right">
+                  <%= value.is_a?(Float) ? number_with_precision(value, precision: 2) : value %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% elsif @data_room["result"].is_a?(Array) %>
+        <table class="w-full">
+          <thead>
+            <tr class="border-b border-slate-700">
+              <% @data_room["result"].first&.keys&.each do |key| %>
+                <th class="py-2 text-left text-gray-400 text-sm"><%= key %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody>
+            <% @data_room["result"].each do |row| %>
+              <tr class="border-b border-slate-800 last:border-0">
+                <% row.each do |_, value| %>
+                  <td class="py-2 text-gray-100">
+                    <%= value.is_a?(Float) ? number_with_precision(value, precision: 2) : value %>
+                  </td>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p class="text-gray-300"><%= @data_room["result"] %></p>
+      <% end %>
+    </div>
+
+    <p class="text-sm text-gray-400">
+      Executed: <%= time_ago_in_words(Time.parse(@data_room["executed_at"])) %> ago
+    </p>
+  </div>
+<% elsif @data_room["status"] == "failed" %>
+  <div class="bg-red-900 bg-opacity-30 border border-red-500 rounded-lg p-6">
+    <h2 class="text-xl font-bold text-red-300 mb-2">Execution Failed</h2>
+    <p class="text-red-200">The MPC computation failed. Please try again or contact support.</p>
+  </div>
+<% end %>
+
+<div class="mt-6">
+  <%= link_to "← Back to Data Rooms", data_rooms_path, class: "text-blue-400 hover:text-blue-300" %>
+</div>
+
+<!-- Invite Modal -->
+<% if @is_creator %>
+  <div id="invite-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-slate-800 border border-slate-700 rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold text-gray-100">Invite Organization</h3>
+        <button onclick="document.getElementById('invite-modal').classList.add('hidden')"
+                class="text-gray-400 hover:text-gray-200">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <%= form_with url: invite_data_room_path(@data_room["id"]), method: :post, class: "space-y-4" do |f| %>
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Organization</label>
+          <%= select_tag :organization_id,
+              options_from_collection_for_select(@all_organizations, :id, :name),
+              prompt: "Select an organization...",
+              required: true,
+              class: "w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-100" %>
+        </div>
+
+        <div class="flex space-x-3">
+          <button type="button"
+                  onclick="document.getElementById('invite-modal').classList.add('hidden')"
+                  class="flex-1 px-4 py-2 border border-slate-600 rounded-lg text-gray-300 hover:bg-slate-700 transition">
+            Cancel
+          </button>
+          <%= submit_tag "Send Invite", class: "flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition font-medium" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

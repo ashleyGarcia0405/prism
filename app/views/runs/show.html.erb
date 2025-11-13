@@ -1,6 +1,11 @@
 <% content_for :title, "Query Results - Prism" %>
 
-<div class="max-w-6xl mx-auto">
+<div class="max-w-6xl mx-auto"
+     <% if @run.status == 'pending' %>
+       data-controller="run-poller"
+       data-run-poller-url-value="<%= api_v1_run_path(@run) %>"
+       data-run-poller-status-value="<%= @run.status %>"
+     <% end %>>
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-100 mb-2">Query Results</h1>
     <p class="text-gray-400">Run #<%= @run.id %> for <%= @dataset.name %></p>
@@ -52,10 +57,6 @@
     </div>
   </div>
 
-  <!-- Auto-refresh for pending runs -->
-  <% if @run.status == 'pending' %>
-    <meta http-equiv="refresh" content="3">
-  <% end %>
 
   <!-- Query Info -->
   <div class="bg-slate-800 border border-slate-700 rounded-lg shadow-lg p-6 mb-6">

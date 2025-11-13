@@ -8,11 +8,16 @@ RSpec.describe SchemaValidator do
   let(:org2) { Organization.create!(name: "Hospital B") }
   let(:org3) { Organization.create!(name: "Hospital C") }
 
+  let(:dataset1_columns) { %w[id age salary name diagnosis] }
+  let(:dataset2_columns) { %w[id age salary name condition] }
+  let(:dataset3_columns) { %w[id age income full_name diagnosis] }
+
   let(:dataset1) do
     Dataset.create!(
       name: "Dataset 1",
       organization: org1,
-      table_name: "test_patients_1"
+      table_name: "test_patients_1",
+      columns: dataset1_columns
     )
   end
 
@@ -20,7 +25,8 @@ RSpec.describe SchemaValidator do
     Dataset.create!(
       name: "Dataset 2",
       organization: org2,
-      table_name: "test_patients_2"
+      table_name: "test_patients_2",
+      columns: dataset2_columns
     )
   end
 
@@ -28,7 +34,8 @@ RSpec.describe SchemaValidator do
     Dataset.create!(
       name: "Dataset 3",
       organization: org3,
-      table_name: "test_patients_3"
+      table_name: "test_patients_3",
+      columns: dataset3_columns
     )
   end
 
@@ -309,7 +316,8 @@ RSpec.describe SchemaValidator do
         dataset_string = Dataset.create!(
           name: "String Age Dataset",
           organization: org1,
-          table_name: "test_patients_string_age"
+          table_name: "test_patients_string_age",
+          columns: [ 'id', 'age' ]
         )
 
         validator = SchemaValidator.new([ dataset1, dataset_string ])
@@ -438,7 +446,8 @@ RSpec.describe SchemaValidator do
       dataset_different = Dataset.create!(
         name: "Different Schema",
         organization: org1,
-        table_name: "test_different_schema"
+        table_name: "test_different_schema",
+        columns: [ 'id', 'completely_different_column' ]
       )
 
       validator = SchemaValidator.new([ dataset1, dataset_different ])
@@ -476,7 +485,7 @@ RSpec.describe SchemaValidator do
 
   describe 'Levenshtein distance calculation' do
     it 'calculates correct distance for similar strings' do
-      validator = SchemaValidator.new([ dataset1 ])
+      validator = SchemaValidator.new([ dataset3 ])
 
       # Testing indirectly through suggest_alternatives
       # 'full_name' and 'name' have distance 5

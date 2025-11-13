@@ -125,18 +125,20 @@ class DatasetIngestor
   end
 
   def infer_types(sample_rows:)
-    headers = sample_rows.first&.headers || []
-    headers = normalize_headers(headers)
+    original_headers = sample_rows.first&.headers || []
+    normalized_headers = normalize_headers(original_headers)
 
     # Start as :boolean so we can promote to :integer → :float → :text as needed.
     # If a column has "true/false/1/0" it stays boolean; otherwise it promotes.
-    type_map = headers.index_with { :boolean }
+    type_map = normalized_headers.index_with { :boolean }
 
     sample_rows.each do |row|
-      headers.each_with_index do |h, idx|
-        val = row[idx]
+      original_headers.each_with_index do |orig_h, idx|
+        norm_h = normalized_headers[idx]
+        # Access by original header name, map to normalized header name
+        val = row[orig_h]
         next if val.nil? || val.to_s.strip.empty?
-        type_map[h] = widen(type_map[h], classify(val))
+        type_map[norm_h] = widen(type_map[norm_h], classify(val))
       end
     end
     type_map
@@ -197,8 +199,18 @@ class DatasetIngestor
     inserted = 0
     table_name_quoted = @conn.quote_table_name(@dataset.table_name)
 
+    rewind
+    csv = CSV.new(@io, headers: true, encoding: "bom|utf-8")
+    original_headers = csv.first&.headers || []
+
+    # Rewind and process all rows
+    rewind
     CSV.new(@io, headers: true, encoding: "bom|utf-8").each do |row|
-      values = headers.map.with_index { |_h, idx| cast_value(row[idx], sql_columns[idx]["sql_type"]) }
+      # Map original headers to normalized headers and get values
+      values = original_headers.map.with_index do |orig_h, idx|
+        cast_value(row[orig_h], sql_columns[idx]["sql_type"])
+      end
+
       cols = headers.map { |h| @conn.quote_column_name(h) }.join(", ")
       vals = values.map { |v| @conn.quote(v) }.join(", ")
       @conn.execute("INSERT INTO #{table_name_quoted} (#{cols}) VALUES (#{vals})") # brakeman:ignore:SQL

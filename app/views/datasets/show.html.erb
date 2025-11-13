@@ -6,9 +6,99 @@
       <h1 class="text-3xl font-bold text-gray-100 mb-2"><%= @dataset.name %></h1>
       <p class="text-gray-400"><%= @dataset.description || "No description provided" %></p>
     </div>
-    <%= link_to "Run Query", new_dataset_query_path(@dataset), class: "bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium" %>
+    <% if @dataset.row_count.to_i > 0 %>
+      <%= link_to "Run Query", new_dataset_query_path(@dataset), class: "bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium" %>
+    <% end %>
   </div>
 </div>
+
+<% unless @dataset.row_count.to_i > 0 %>
+  <!-- Upload Form -->
+  <div class="bg-yellow-900 bg-opacity-20 border border-yellow-600 rounded-lg p-6 mb-8">
+    <h2 class="text-xl font-bold text-yellow-400 mb-4">Upload Dataset</h2>
+    <p class="text-gray-300 mb-6">This dataset needs data. Upload a CSV file to get started.</p>
+
+    <%= form_with url: upload_dataset_path(@dataset), method: :post, multipart: true, local: true, class: "space-y-4" do |f| %>
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">CSV File</label>
+        <div class="flex items-center space-x-4">
+          <%= file_field_tag :file,
+              accept: ".csv",
+              required: true,
+              class: "block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer" %>
+        </div>
+        <p class="text-sm text-gray-400 mt-2">Max file size: 10MB. First row must contain column headers.</p>
+      </div>
+
+      <div class="bg-blue-900 bg-opacity-30 border-l-4 border-blue-500 p-4 rounded">
+        <p class="text-sm text-blue-200">
+          <strong>Note:</strong> The system will automatically infer column types (integer, float, text, boolean) from your data.
+        </p>
+      </div>
+
+      <%= submit_tag "Upload File", class: "bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition font-medium cursor-pointer" %>
+    <% end %>
+  </div>
+<% else %>
+  <!-- Dataset Info -->
+  <div class="bg-slate-800 border border-slate-700 rounded-lg shadow-lg p-6 mb-8">
+    <h2 class="text-xl font-bold text-gray-100 mb-4">Dataset Information</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div>
+        <p class="text-sm text-gray-400 mb-1">File Name</p>
+        <p class="text-lg font-medium text-gray-100"><%= @dataset.original_filename || "N/A" %></p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-400 mb-1">Total Rows</p>
+        <p class="text-lg font-medium text-gray-100"><%= number_with_delimiter(@dataset.row_count || 0) %></p>
+      </div>
+      <div>
+        <p class="text-sm text-gray-400 mb-1">Columns</p>
+        <p class="text-lg font-medium text-gray-100"><%= @dataset.columns&.size || 0 %></p>
+      </div>
+    </div>
+
+    <% if @dataset.table_name.present? %>
+      <div class="mt-6">
+        <p class="text-sm text-gray-400 mb-2">Database Table Name</p>
+        <div class="bg-slate-900 border border-slate-700 rounded-lg p-3">
+          <div class="flex items-center justify-between">
+            <code class="text-green-400 font-mono text-sm" id="table-name-display"><%= @dataset.table_name %></code>
+            <button type="button" onclick="copyTableNameFromShow(this)" class="text-xs text-blue-400 hover:text-blue-300 px-3 py-1 rounded border border-blue-700 hover:border-blue-500 transition">
+              Copy
+            </button>
+          </div>
+          <p class="text-xs text-gray-500 mt-2">Use this table name in your SQL queries</p>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @dataset.columns.present? %>
+      <div class="mt-6">
+        <h3 class="text-sm font-medium text-gray-400 mb-3">Schema</h3>
+        <div class="bg-slate-900 rounded-lg p-4 overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-left text-gray-400 border-b border-slate-700">
+                <th class="pb-2 pr-4">Column Name</th>
+                <th class="pb-2">Data Type</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-300">
+              <% @dataset.columns.each do |col| %>
+                <tr class="border-b border-slate-800">
+                  <td class="py-2 pr-4"><code class="text-blue-400"><%= col["name"] %></code></td>
+                  <td class="py-2"><span class="text-green-400"><%= col["sql_type"] %></span></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
 
 <!-- Privacy Budget Card -->
 <div class="bg-slate-800 border border-slate-700 rounded-lg shadow-lg p-6 mb-8">
@@ -125,3 +215,26 @@
     </div>
   <% end %>
 </div>
+
+<script>
+  function copyTableNameFromShow(button) {
+    const tableName = document.getElementById('table-name-display').textContent;
+    if (tableName) {
+      navigator.clipboard.writeText(tableName).then(() => {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.classList.add('text-green-400', 'border-green-500');
+        button.classList.remove('text-blue-400', 'border-blue-700');
+
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.classList.remove('text-green-400', 'border-green-500');
+          button.classList.add('text-blue-400', 'border-blue-700');
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy table name');
+      });
+    }
+  }
+</script>

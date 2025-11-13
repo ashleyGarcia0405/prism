@@ -21,15 +21,25 @@ Rails.application.routes.draw do
   get "dashboard", to: "dashboard#index"
 
   resources :datasets do
+    post "upload", on: :member
     resources :queries, only: [ :new, :create ]
   end
 
   resources :queries, only: [ :index, :show ] do
     post "execute", on: :member
+    post "validate", on: :collection
   end
 
   resources :runs, only: [ :show ]
   resources :audit_events, only: [ :index ]
+
+  resources :data_rooms, only: [ :index, :show, :new, :create ] do
+    member do
+      post :invite
+      post :attest
+      post :execute
+    end
+  end
 
   # API Routes
   namespace :api do
