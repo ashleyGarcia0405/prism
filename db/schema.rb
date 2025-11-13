@@ -89,6 +89,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_10_050517) do
     t.index ["table_name"], name: "index_datasets_on_table_name", unique: true
   end
 
+  create_table "org1_ds_5f4c88ec06c2", id: false, force: :cascade do |t|
+    t.integer "id"
+    t.text "name"
+    t.integer "age"
+    t.text "department"
+    t.integer "salary"
+    t.integer "years_employed"
+  end
+
   create_table "organizations", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
