@@ -4,7 +4,8 @@ export default class extends Controller {
   static values = {
     url: String,
     interval: { type: Number, default: 3000 },
-    status: String
+    status: String,
+    token: String
   }
 
   connect() {
@@ -32,11 +33,12 @@ export default class extends Controller {
 
   async poll() {
     try {
-      const response = await fetch(this.urlValue, {
-        headers: {
-          'Accept': 'application/json'
-        }
-      })
+      const headers = { 'Accept': 'application/json' }
+      if (this.hasTokenValue && this.tokenValue) {
+        headers['Authorization'] = `Bearer ${this.tokenValue}`
+      }
+
+      const response = await fetch(this.urlValue, { headers })
 
       if (!response.ok) {
         console.error('Poll failed:', response.statusText)

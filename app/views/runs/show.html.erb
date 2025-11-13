@@ -5,6 +5,7 @@
        data-controller="run-poller"
        data-run-poller-url-value="<%= api_v1_run_path(@run) %>"
        data-run-poller-status-value="<%= @run.status %>"
+       data-run-poller-token-value="<%= api_auth_token %>"
      <% end %>>
   <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-100 mb-2">Query Results</h1>
