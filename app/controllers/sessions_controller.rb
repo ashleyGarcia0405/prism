@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
     user = User.find_by(email: params[:email])
 
     if user&.authenticate(params[:password])
-      session[:user_id] = user.id
+      establish_session(user)
       redirect_to dashboard_path, notice: "Welcome back, #{user.name}!"
     else
       flash.now[:alert] = "Invalid email or password"
@@ -36,7 +36,7 @@ class SessionsController < ApplicationController
 
       if user.save
         # Auto-login after successful registration
-        session[:user_id] = user.id
+        establish_session(user)
         redirect_to dashboard_path, notice: "Welcome to Prism, #{user.name}! Your account has been created."
       else
         organization.destroy # Rollback organization if user creation fails
@@ -51,6 +51,7 @@ class SessionsController < ApplicationController
 
   def destroy
     session.delete(:user_id)
+    session.delete(:auth_token)
     @current_user = nil
     redirect_to login_path, notice: "You have been logged out"
   end
@@ -63,5 +64,10 @@ class SessionsController < ApplicationController
 
   def organization_params
     params.require(:organization).permit(:name)
+  end
+
+  def establish_session(user)
+    session[:user_id] = user.id
+    session[:auth_token] = JsonWebToken.encode(user_id: user.id)
   end
 end

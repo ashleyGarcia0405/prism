@@ -25,7 +25,7 @@ Rails.application.routes.draw do
     resources :queries, only: [ :new, :create ]
   end
 
-  resources :queries, only: [ :index, :show ] do
+  resources :queries, only: [ :index, :show, :create ] do
     post "execute", on: :member
     post "validate", on: :collection
   end
