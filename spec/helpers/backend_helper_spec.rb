@@ -411,7 +411,7 @@ RSpec.describe BackendHelper, type: :helper do
       unavailable = helper.backend_card_class('enclave_backend')
 
       # All different, so CSS can style them differently
-      expect([available, mocked, unavailable].uniq.length).to eq(3)
+      expect([ available, mocked, unavailable ].uniq.length).to eq(3)
     end
   end
 

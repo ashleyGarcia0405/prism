@@ -29,7 +29,7 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'accepts file at exactly MAX_BYTES' do
-        csv_content = make_csv(['col1', 'col2'], [1, 2])
+        csv_content = make_csv([ 'col1', 'col2' ], [ 1, 2 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -50,12 +50,12 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'properly loads valid CSV headers' do
-        csv_content = make_csv(['col1', 'col2'], [1, 2])
+        csv_content = make_csv([ 'col1', 'col2' ], [ 1, 2 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'valid.csv')
         result = ingestor.call
-        
+
         expect(result.columns.count).to eq(2)
       end
     end
@@ -63,7 +63,7 @@ RSpec.describe DatasetIngestor do
     describe 'table name generation' do
       it 'uses default_table_name if dataset.table_name is nil' do
         dataset.update!(table_name: nil)
-        csv_content = make_csv(['name', 'age'], ['Alice', 30])
+        csv_content = make_csv([ 'name', 'age' ], [ 'Alice', 30 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -75,7 +75,7 @@ RSpec.describe DatasetIngestor do
       it 'uses existing table_name if already set' do
         custom_table = 'my_custom_table'
         dataset.update!(table_name: custom_table)
-        csv_content = make_csv(['col1'], [1])
+        csv_content = make_csv([ 'col1' ], [ 1 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -88,7 +88,7 @@ RSpec.describe DatasetIngestor do
         dataset.update!(table_name: nil)
         dataset.update!(name: 'a' * 100) # Very long name
 
-        csv_content = make_csv(['col1'], [1])
+        csv_content = make_csv([ 'col1' ], [ 1 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -101,8 +101,8 @@ RSpec.describe DatasetIngestor do
 
     describe 'header normalization' do
       it 'normalizes headers to lowercase with underscores' do
-        csv_content = make_csv(['First Name', 'Age Group', 'Salary/Hour'])
-        csv_content += make_csv(['John', 25, 15])
+        csv_content = make_csv([ 'First Name', 'Age Group', 'Salary/Hour' ])
+        csv_content += make_csv([ 'John', 25, 15 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -112,8 +112,8 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'handles duplicate header names by appending numeric suffix' do
-        csv_content = make_csv(['name', 'name', 'name'])
-        csv_content += make_csv(['a', 'b', 'c'])
+        csv_content = make_csv([ 'name', 'name', 'name' ])
+        csv_content += make_csv([ 'a', 'b', 'c' ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -124,31 +124,31 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'removes leading and trailing special characters from headers' do
-        csv_content = make_csv(['__name__', '___age___'])
-        csv_content += make_csv(['John', 25])
+        csv_content = make_csv([ '__name__', '___age___' ])
+        csv_content += make_csv([ 'John', 25 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
         result = ingestor.call
 
-        expect(result.columns.map { |c| c['name'] }).to eq(['name', 'age'])
+        expect(result.columns.map { |c| c['name'] }).to eq([ 'name', 'age' ])
       end
 
       it 'converts blank headers to "col"' do
-        csv_content = make_csv(['', 'name', ''])
-        csv_content += make_csv(['val1', 'John', 'val2'])
+        csv_content = make_csv([ '', 'name', '' ])
+        csv_content += make_csv([ 'val1', 'John', 'val2' ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
         result = ingestor.call
 
         names = result.columns.map { |c| c['name'] }
-        expect(names).to eq(['col', 'name', 'col_2'])
+        expect(names).to eq([ 'col', 'name', 'col_2' ])
       end
 
       it 'handles headers with non-ASCII characters' do
-        csv_content = make_csv(['café', 'naïve', 'über'])
-        csv_content += make_csv(['a', 'b', 'c'])
+        csv_content = make_csv([ 'café', 'naïve', 'über' ])
+        csv_content += make_csv([ 'a', 'b', 'c' ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -163,9 +163,9 @@ RSpec.describe DatasetIngestor do
     describe 'type inference' do
       it 'infers boolean type from true/false strings' do
         csv_content = make_csv(
-          ['active', 'value'],
-          ['true', 1],
-          ['false', 2]
+          [ 'active', 'value' ],
+          [ 'true', 1 ],
+          [ 'false', 2 ]
         )
         io = csv_io(csv_content)
 
@@ -178,9 +178,9 @@ RSpec.describe DatasetIngestor do
 
       it 'infers boolean type from t/f abbreviations' do
         csv_content = make_csv(
-          ['flag'],
-          ['t'],
-          ['f']
+          [ 'flag' ],
+          [ 't' ],
+          [ 'f' ]
         )
         io = csv_io(csv_content)
 
@@ -193,9 +193,9 @@ RSpec.describe DatasetIngestor do
 
       it 'infers boolean type from yes/no' do
         csv_content = make_csv(
-          ['consent'],
-          ['yes'],
-          ['no']
+          [ 'consent' ],
+          [ 'yes' ],
+          [ 'no' ]
         )
         io = csv_io(csv_content)
 
@@ -208,9 +208,9 @@ RSpec.describe DatasetIngestor do
 
       it 'infers boolean type from 1/0' do
         csv_content = make_csv(
-          ['binary'],
-          ['1'],
-          ['0']
+          [ 'binary' ],
+          [ '1' ],
+          [ '0' ]
         )
         io = csv_io(csv_content)
 
@@ -223,9 +223,9 @@ RSpec.describe DatasetIngestor do
 
       it 'infers integer type for whole numbers' do
         csv_content = make_csv(
-          ['count', 'value'],
-          ['100', 50],
-          ['200', 75]
+          [ 'count', 'value' ],
+          [ '100', 50 ],
+          [ '200', 75 ]
         )
         io = csv_io(csv_content)
 
@@ -238,9 +238,9 @@ RSpec.describe DatasetIngestor do
 
       it 'infers float type when integers are mixed with floats' do
         csv_content = make_csv(
-          ['value'],
-          ['100'],
-          ['100.5']
+          [ 'value' ],
+          [ '100' ],
+          [ '100.5' ]
         )
         io = csv_io(csv_content)
 
@@ -253,9 +253,9 @@ RSpec.describe DatasetIngestor do
 
       it 'widens boolean to integer when integer values appear' do
         csv_content = make_csv(
-          ['value'],
-          ['true'],
-          ['100']
+          [ 'value' ],
+          [ 'true' ],
+          [ '100' ]
         )
         io = csv_io(csv_content)
 
@@ -268,9 +268,9 @@ RSpec.describe DatasetIngestor do
 
       it 'widens integer to float when float values appear' do
         csv_content = make_csv(
-          ['value'],
-          ['100'],
-          ['100.5']
+          [ 'value' ],
+          [ '100' ],
+          [ '100.5' ]
         )
         io = csv_io(csv_content)
 
@@ -283,9 +283,9 @@ RSpec.describe DatasetIngestor do
 
       it 'widens any type to text when non-numeric values appear' do
         csv_content = make_csv(
-          ['value'],
-          ['100'],
-          ['not a number']
+          [ 'value' ],
+          [ '100' ],
+          [ 'not a number' ]
         )
         io = csv_io(csv_content)
 
@@ -298,11 +298,11 @@ RSpec.describe DatasetIngestor do
 
       it 'stays boolean when all values are boolean-like' do
         csv_content = make_csv(
-          ['flag'],
-          ['true'],
-          ['false'],
-          ['yes'],
-          ['no']
+          [ 'flag' ],
+          [ 'true' ],
+          [ 'false' ],
+          [ 'yes' ],
+          [ 'no' ]
         )
         io = csv_io(csv_content)
 
@@ -315,11 +315,11 @@ RSpec.describe DatasetIngestor do
 
       it 'ignores nil and empty values during type inference' do
         csv_content = make_csv(
-          ['value'],
-          ['100'],
-          [''],
-          [nil],
-          ['200']
+          [ 'value' ],
+          [ '100' ],
+          [ '' ],
+          [ nil ],
+          [ '200' ]
         )
         io = csv_io(csv_content)
 
@@ -332,9 +332,9 @@ RSpec.describe DatasetIngestor do
 
       it 'defaults to boolean if all values are nil or empty' do
         csv_content = make_csv(
-          ['empty_col'],
-          [''],
-          [nil]
+          [ 'empty_col' ],
+          [ '' ],
+          [ nil ]
         )
         io = csv_io(csv_content)
 
@@ -347,10 +347,10 @@ RSpec.describe DatasetIngestor do
 
       it 'handles negative integers' do
         csv_content = make_csv(
-          ['temperature'],
-          ['-10'],
-          ['5'],
-          ['-25']
+          [ 'temperature' ],
+          [ '-10' ],
+          [ '5' ],
+          [ '-25' ]
         )
         io = csv_io(csv_content)
 
@@ -363,10 +363,10 @@ RSpec.describe DatasetIngestor do
 
       it 'handles negative floats' do
         csv_content = make_csv(
-          ['balance'],
-          ['-10.50'],
-          ['5.75'],
-          ['-25.99']
+          [ 'balance' ],
+          [ '-10.50' ],
+          [ '5.75' ],
+          [ '-25.99' ]
         )
         io = csv_io(csv_content)
 
@@ -379,9 +379,9 @@ RSpec.describe DatasetIngestor do
 
       it 'handles scientific notation as float' do
         csv_content = make_csv(
-          ['value'],
-          ['1e-10'],
-          ['5.5e3']
+          [ 'value' ],
+          [ '1e-10' ],
+          [ '5.5e3' ]
         )
         io = csv_io(csv_content)
 
@@ -394,10 +394,10 @@ RSpec.describe DatasetIngestor do
 
       it 'handles whitespace-only values as nil' do
         csv_content = make_csv(
-          ['value'],
-          ['100'],
-          ['   '],
-          ['200']
+          [ 'value' ],
+          [ '100' ],
+          [ '   ' ],
+          [ '200' ]
         )
         io = csv_io(csv_content)
 
@@ -412,10 +412,10 @@ RSpec.describe DatasetIngestor do
     describe 'data insertion' do
       it 'inserts all rows from CSV into the database table' do
         csv_content = make_csv(
-          ['name', 'age'],
-          ['Alice', '30'],
-          ['Bob', '25'],
-          ['Charlie', '35']
+          [ 'name', 'age' ],
+          [ 'Alice', '30' ],
+          [ 'Bob', '25' ],
+          [ 'Charlie', '35' ]
         )
         io = csv_io(csv_content)
 
@@ -428,11 +428,11 @@ RSpec.describe DatasetIngestor do
 
       it 'casts boolean values correctly (true variants)' do
         csv_content = make_csv(
-          ['flag'],
-          ['true'],
-          ['t'],
-          ['yes'],
-          ['1']
+          [ 'flag' ],
+          [ 'true' ],
+          [ 't' ],
+          [ 'yes' ],
+          [ '1' ]
         )
         io = csv_io(csv_content)
 
@@ -447,11 +447,11 @@ RSpec.describe DatasetIngestor do
 
       it 'casts boolean values correctly (false variants)' do
         csv_content = make_csv(
-          ['flag'],
-          ['false'],
-          ['f'],
-          ['no'],
-          ['0']
+          [ 'flag' ],
+          [ 'false' ],
+          [ 'f' ],
+          [ 'no' ],
+          [ '0' ]
         )
         io = csv_io(csv_content)
 
@@ -466,10 +466,10 @@ RSpec.describe DatasetIngestor do
 
       it 'casts integer values correctly' do
         csv_content = make_csv(
-          ['count'],
-          ['100'],
-          ['200'],
-          ['300']
+          [ 'count' ],
+          [ '100' ],
+          [ '200' ],
+          [ '300' ]
         )
         io = csv_io(csv_content)
 
@@ -478,15 +478,15 @@ RSpec.describe DatasetIngestor do
 
         table = dataset.table_name
         values = ActiveRecord::Base.connection.execute("SELECT count FROM #{table}")
-        expect(values.map { |row| row['count'] }).to eq([100, 200, 300])
+        expect(values.map { |row| row['count'] }).to eq([ 100, 200, 300 ])
       end
 
       it 'casts float values correctly' do
         csv_content = make_csv(
-          ['price'],
-          ['10.50'],
-          ['20.75'],
-          ['30.99']
+          [ 'price' ],
+          [ '10.50' ],
+          [ '20.75' ],
+          [ '30.99' ]
         )
         io = csv_io(csv_content)
 
@@ -501,10 +501,10 @@ RSpec.describe DatasetIngestor do
 
       it 'casts text values correctly' do
         csv_content = make_csv(
-          ['name'],
-          ['Alice'],
-          ['Bob'],
-          ['Charlie']
+          [ 'name' ],
+          [ 'Alice' ],
+          [ 'Bob' ],
+          [ 'Charlie' ]
         )
         io = csv_io(csv_content)
 
@@ -513,15 +513,15 @@ RSpec.describe DatasetIngestor do
 
         table = dataset.table_name
         values = ActiveRecord::Base.connection.execute("SELECT name FROM #{table}")
-        expect(values.map { |row| row['name'] }).to eq(['Alice', 'Bob', 'Charlie'])
+        expect(values.map { |row| row['name'] }).to eq([ 'Alice', 'Bob', 'Charlie' ])
       end
 
       it 'converts nil/empty values to nil in database' do
         csv_content = make_csv(
-          ['value'],
-          ['100'],
-          [''],
-          ['200']
+          [ 'value' ],
+          [ '100' ],
+          [ '' ],
+          [ '200' ]
         )
         io = csv_io(csv_content)
 
@@ -534,8 +534,8 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'handles large number of rows' do
-        rows = [['id', 'value']]
-        100.times { |i| rows << [i, i * 10] }
+        rows = [ [ 'id', 'value' ] ]
+        100.times { |i| rows << [ i, i * 10 ] }
         csv_content = rows.map { |row| CSV.generate_line(row) }.join
 
         io = csv_io(csv_content)
@@ -546,7 +546,7 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'preserves original filename in dataset' do
-        csv_content = make_csv(['col'], [1])
+        csv_content = make_csv([ 'col' ], [ 1 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'my_data.csv')
@@ -558,21 +558,21 @@ RSpec.describe DatasetIngestor do
 
     describe 'transaction handling' do
       it 'rolls back all changes on error during table creation' do
-        csv_content = make_csv(['col1'], [1])
+        csv_content = make_csv([ 'col1' ], [ 1 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
 
         # Successfully run the ingestor
         result = ingestor.call
-        
+
         # Verify it worked
         expect(result.row_count).to eq(1)
         expect(dataset.reload.row_count).to eq(1)
       end
 
       it 'successfully creates table within transaction' do
-        csv_content = make_csv(['name', 'age'], ['Alice', '30'])
+        csv_content = make_csv([ 'name', 'age' ], [ 'Alice', '30' ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -583,7 +583,7 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'drops existing table before creating new one' do
-        csv_content = make_csv(['col1'], [1])
+        csv_content = make_csv([ 'col1' ], [ 1 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -600,7 +600,7 @@ RSpec.describe DatasetIngestor do
 
     describe 'IO operations' do
       it 'rewinds IO stream after reading headers' do
-        csv_content = make_csv(['col1', 'col2'], [1, 2], [3, 4])
+        csv_content = make_csv([ 'col1', 'col2' ], [ 1, 2 ], [ 3, 4 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -611,7 +611,7 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'handles StringIO objects' do
-        csv_content = make_csv(['col1'], [1], [2])
+        csv_content = make_csv([ 'col1' ], [ 1 ], [ 2 ])
         io = StringIO.new(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -622,8 +622,8 @@ RSpec.describe DatasetIngestor do
 
       it 'handles File objects' do
         require 'tempfile'
-        csv_content = make_csv(['col1'], [1], [2])
-        
+        csv_content = make_csv([ 'col1' ], [ 1 ], [ 2 ])
+
         file = Tempfile.new('test.csv')
         file.write(csv_content)
         file.rewind
@@ -640,7 +640,7 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'handles UTF-8 encoding with BOM' do
-        csv_content = "\xEF\xBB\xBF" + make_csv(['col1'], ['value'])
+        csv_content = "\xEF\xBB\xBF" + make_csv([ 'col1' ], [ 'value' ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -650,7 +650,7 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'handles malformed UTF-8 characters' do
-        csv_content = make_csv(['col1'], ['valid'])
+        csv_content = make_csv([ 'col1' ], [ 'valid' ])
         # Simulate invalid UTF-8 by using replacement character
         io = csv_io(csv_content)
 
@@ -664,9 +664,9 @@ RSpec.describe DatasetIngestor do
     describe 'edge cases' do
       it 'handles column with all nil values' do
         csv_content = make_csv(
-          ['name', 'empty'],
-          ['Alice', ''],
-          ['Bob', nil]
+          [ 'name', 'empty' ],
+          [ 'Alice', '' ],
+          [ 'Bob', nil ]
         )
         io = csv_io(csv_content)
 
@@ -679,7 +679,7 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'handles single row (no data, just headers)' do
-        csv_content = make_csv(['col1', 'col2'])
+        csv_content = make_csv([ 'col1', 'col2' ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -690,7 +690,7 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'handles single column CSV' do
-        csv_content = make_csv(['id'], [1], [2], [3])
+        csv_content = make_csv([ 'id' ], [ 1 ], [ 2 ], [ 3 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -702,7 +702,7 @@ RSpec.describe DatasetIngestor do
 
       it 'handles very wide CSV (many columns)' do
         headers = (1..50).map { |i| "col#{i}" }
-        rows = [headers]
+        rows = [ headers ]
         rows << (1..50).map(&:to_s)
         csv_content = rows.map { |row| CSV.generate_line(row) }.join
 
@@ -715,7 +715,7 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'handles CSV with quoted fields containing commas' do
-        csv_content = %{"name","address"\n"Alice","123 Main St, Apt 5"\n"Bob","456 Oak Ave, Suite 100"}
+        csv_content = %("name","address"\n"Alice","123 Main St, Apt 5"\n"Bob","456 Oak Ave, Suite 100")
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -728,7 +728,7 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'handles CSV with quoted fields containing newlines' do
-        csv_content = %{"name","bio"\n"Alice","Line 1\nLine 2"\n"Bob","Single line"}
+        csv_content = %("name","bio"\n"Alice","Line 1\nLine 2"\n"Bob","Single line")
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -738,19 +738,19 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'handles headers with spaces' do
-        csv_content = make_csv(['First Name', 'Last Name'])
-        csv_content += make_csv(['John', 'Doe'])
+        csv_content = make_csv([ 'First Name', 'Last Name' ])
+        csv_content += make_csv([ 'John', 'Doe' ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
         result = ingestor.call
 
         names = result.columns.map { |c| c['name'] }
-        expect(names).to eq(['first_name', 'last_name'])
+        expect(names).to eq([ 'first_name', 'last_name' ])
       end
 
       it 'handles mixed case in CSV values' do
-        csv_content = make_csv(['flag'], ['TRUE'], ['False'], ['TrUe'])
+        csv_content = make_csv([ 'flag' ], [ 'TRUE' ], [ 'False' ], [ 'TrUe' ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -761,7 +761,7 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'handles float with leading/trailing zeros' do
-        csv_content = make_csv(['value'], ['0.0'], ['00.50'], ['100.00'])
+        csv_content = make_csv([ 'value' ], [ '0.0' ], [ '00.50' ], [ '100.00' ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -774,7 +774,7 @@ RSpec.describe DatasetIngestor do
 
     describe 'return value' do
       it 'returns IngestResult struct with correct attributes' do
-        csv_content = make_csv(['col1', 'col2'], [1, 'a'], [2, 'b'])
+        csv_content = make_csv([ 'col1', 'col2' ], [ 1, 'a' ], [ 2, 'b' ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -787,7 +787,7 @@ RSpec.describe DatasetIngestor do
       end
 
       it 'updates dataset with result metadata' do
-        csv_content = make_csv(['name'], ['Alice'], ['Bob'])
+        csv_content = make_csv([ 'name' ], [ 'Alice' ], [ 'Bob' ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -806,7 +806,7 @@ RSpec.describe DatasetIngestor do
     describe '#default_table_name' do
       it 'generates table name from dataset name' do
         dataset.update!(name: 'Customer Data', table_name: nil)
-        csv_content = make_csv(['col'], [1])
+        csv_content = make_csv([ 'col' ], [ 1 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -817,7 +817,7 @@ RSpec.describe DatasetIngestor do
 
       it 'replaces non-alphanumeric characters with underscores' do
         dataset.update!(name: 'Data@#$%Set', table_name: nil)
-        csv_content = make_csv(['col'], [1])
+        csv_content = make_csv([ 'col' ], [ 1 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -829,7 +829,7 @@ RSpec.describe DatasetIngestor do
 
       it 'uses "dataset" as default slug if name is very generic' do
         dataset.update!(name: 'Data', table_name: nil)
-        csv_content = make_csv(['col'], [1])
+        csv_content = make_csv([ 'col' ], [ 1 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -842,7 +842,7 @@ RSpec.describe DatasetIngestor do
 
       it 'includes organization_id in table name' do
         dataset.update!(table_name: nil)
-        csv_content = make_csv(['col'], [1])
+        csv_content = make_csv([ 'col' ], [ 1 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')
@@ -854,7 +854,7 @@ RSpec.describe DatasetIngestor do
 
       it 'includes dataset_id in table name' do
         dataset.update!(table_name: nil)
-        csv_content = make_csv(['col'], [1])
+        csv_content = make_csv([ 'col' ], [ 1 ])
         io = csv_io(csv_content)
 
         ingestor = DatasetIngestor.new(dataset: dataset, io: io, filename: 'test.csv')

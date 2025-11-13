@@ -40,7 +40,7 @@ RSpec.describe HeExecutor do
       it 'returns hash with required keys' do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(true)
-        
+
         python_response = {
           'success' => true,
           'result' => { 'count' => 1000 },
@@ -76,7 +76,7 @@ RSpec.describe HeExecutor do
       it 'returns correct data from Python executor' do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(true)
-        
+
         python_response = {
           'success' => true,
           'result' => { 'count' => 500 },
@@ -105,7 +105,7 @@ RSpec.describe HeExecutor do
       it 'returns zero epsilon and delta (no privacy budget)' do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(true)
-        
+
         python_response = {
           'success' => true,
           'result' => { 'count' => 100 },
@@ -136,7 +136,7 @@ RSpec.describe HeExecutor do
       it 'returns homomorphic_encryption as mechanism' do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(true)
-        
+
         python_response = {
           'success' => true,
           'result' => { 'count' => 100 },
@@ -165,7 +165,7 @@ RSpec.describe HeExecutor do
       it 'includes execution time from Python response' do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(true)
-        
+
         python_response = {
           'success' => true,
           'result' => { 'count' => 100 },
@@ -194,7 +194,7 @@ RSpec.describe HeExecutor do
       it 'builds proof_artifacts with encryption parameters' do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(true)
-        
+
         python_response = {
           'success' => true,
           'result' => { 'count' => 100 },
@@ -227,7 +227,7 @@ RSpec.describe HeExecutor do
       it 'includes full metadata in response' do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(true)
-        
+
         python_response = {
           'success' => true,
           'result' => { 'count' => 100 },
@@ -260,7 +260,7 @@ RSpec.describe HeExecutor do
       it 'raises error when Python returns success=false' do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(true)
-        
+
         python_response = {
           'success' => false,
           'error' => 'Operation not supported'
@@ -279,7 +279,7 @@ RSpec.describe HeExecutor do
       it 'logs error message when execution fails' do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(true)
-        
+
         python_response = {
           'success' => false,
           'error' => 'Test error message'
@@ -298,7 +298,7 @@ RSpec.describe HeExecutor do
       it 'raises error when Python process fails (non-zero exit)' do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(false)
-        
+
         allow(Open3).to receive(:capture3).and_return([
           '',
           'Traceback: Module not found',
@@ -312,7 +312,7 @@ RSpec.describe HeExecutor do
       it 'logs Python stderr when process fails' do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(false)
-        
+
         stderr_msg = 'ModuleNotFoundError: No module named tenseal'
         allow(Open3).to receive(:capture3).and_return([
           '',
@@ -327,7 +327,7 @@ RSpec.describe HeExecutor do
       it 'raises error when Python returns invalid JSON' do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(true)
-        
+
         allow(Open3).to receive(:capture3).and_return([
           'not valid json at all',
           '',
@@ -341,7 +341,7 @@ RSpec.describe HeExecutor do
       it 'logs JSON parsing error details' do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(true)
-        
+
         invalid_json = 'bad json'
         allow(Open3).to receive(:capture3).and_return([
           invalid_json,
@@ -356,7 +356,7 @@ RSpec.describe HeExecutor do
       it 'logs full backtrace on error' do
         status_mock = double('status')
         allow(status_mock).to receive(:success?).and_return(true)
-        
+
         python_response = {
           'success' => false,
           'error' => 'Test error'
@@ -492,7 +492,7 @@ RSpec.describe HeExecutor do
       executor = HeExecutor.new(generic_query)
       sample_data = executor.send(:generate_sample_data)
 
-      expect(sample_data[:columns]).to eq(['id', 'value'])
+      expect(sample_data[:columns]).to eq([ 'id', 'value' ])
       expect(sample_data[:rows].length).to eq(1000)
     end
   end
@@ -561,7 +561,7 @@ RSpec.describe HeExecutor do
     it 'invokes Python script with input JSON' do
       status_mock = double('status')
       allow(status_mock).to receive(:success?).and_return(true)
-      
+
       python_response = { 'success' => true, 'result' => { 'count' => 100 }, 'execution_time_ms' => 50, 'mechanism' => 'homomorphic_encryption', 'metadata' => {} }
 
       expect(Open3).to receive(:capture3).and_return([
@@ -571,7 +571,7 @@ RSpec.describe HeExecutor do
       ])
 
       executor = HeExecutor.new(query)
-      input_data = { query: "SELECT COUNT(*) FROM patients", data: [[1, 25]], columns: ['id', 'age'] }
+      input_data = { query: "SELECT COUNT(*) FROM patients", data: [ [ 1, 25 ] ], columns: [ 'id', 'age' ] }
       result = executor.send(:call_python_executor, input_data)
 
       expect(result['success']).to be true
@@ -580,7 +580,7 @@ RSpec.describe HeExecutor do
     it 'parses JSON response from Python' do
       status_mock = double('status')
       allow(status_mock).to receive(:success?).and_return(true)
-      
+
       expected_response = { 'success' => true, 'result' => { 'count' => 500 }, 'execution_time_ms' => 100, 'mechanism' => 'homomorphic_encryption', 'metadata' => { 'operation' => 'count' } }
 
       allow(Open3).to receive(:capture3).and_return([
@@ -600,7 +600,7 @@ RSpec.describe HeExecutor do
       status_mock = double('status')
       allow(status_mock).to receive(:success?).and_return(true)
 
-      allow(Open3).to receive(:capture3).and_return(['{}', '', status_mock])
+      allow(Open3).to receive(:capture3).and_return([ '{}', '', status_mock ])
 
       executor = HeExecutor.new(query)
       input_data = { query: "SELECT COUNT(*) FROM patients", data: [], columns: [] }
@@ -614,7 +614,7 @@ RSpec.describe HeExecutor do
       status_mock = double('status')
       allow(status_mock).to receive(:success?).and_return(true)
 
-      allow(Open3).to receive(:capture3).and_return(['{}', '', status_mock])
+      allow(Open3).to receive(:capture3).and_return([ '{}', '', status_mock ])
 
       executor = HeExecutor.new(query)
       input_data = { query: "SELECT COUNT(*) FROM patients", data: [], columns: [] }

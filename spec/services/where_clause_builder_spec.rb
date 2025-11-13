@@ -235,7 +235,7 @@ RSpec.describe WhereClauseBuilder, type: :service do
     end
 
     context 'with array of integers' do
-      let(:conditions) { { 'user_id' => [1, 2, 3] } }
+      let(:conditions) { { 'user_id' => [ 1, 2, 3 ] } }
 
       it 'builds IN clause with integers' do
         result = builder.build
@@ -245,7 +245,7 @@ RSpec.describe WhereClauseBuilder, type: :service do
     end
 
     context 'with array of mixed types' do
-      let(:conditions) { { 'data' => [1, 'string', true] } }
+      let(:conditions) { { 'data' => [ 1, 'string', true ] } }
 
       it 'sanitizes all values' do
         result = builder.build
@@ -411,7 +411,7 @@ RSpec.describe WhereClauseBuilder, type: :service do
 
   describe 'IN operator with hash' do
     context 'in operator with values' do
-      let(:conditions) { { 'status' => { operator: 'in', values: ['active', 'pending'] } } }
+      let(:conditions) { { 'status' => { operator: 'in', values: [ 'active', 'pending' ] } } }
 
       it 'builds IN clause' do
         result = builder.build
@@ -426,7 +426,7 @@ RSpec.describe WhereClauseBuilder, type: :service do
     end
 
     context 'with string keys' do
-      let(:conditions) { { 'status' => { 'operator' => 'in', 'values' => ['active', 'pending'] } } }
+      let(:conditions) { { 'status' => { 'operator' => 'in', 'values' => [ 'active', 'pending' ] } } }
 
       it 'builds IN clause' do
         result = builder.build
@@ -447,7 +447,7 @@ RSpec.describe WhereClauseBuilder, type: :service do
 
   describe 'NOT IN operator' do
     context 'not_in operator' do
-      let(:conditions) { { 'status' => { operator: 'not_in', values: ['deleted', 'archived'] } } }
+      let(:conditions) { { 'status' => { operator: 'not_in', values: [ 'deleted', 'archived' ] } } }
 
       it 'builds NOT IN clause' do
         result = builder.build
@@ -462,7 +462,7 @@ RSpec.describe WhereClauseBuilder, type: :service do
     end
 
     context 'with string keys' do
-      let(:conditions) { { 'status' => { 'operator' => 'not_in', 'values' => ['deleted', 'archived'] } } }
+      let(:conditions) { { 'status' => { 'operator' => 'not_in', 'values' => [ 'deleted', 'archived' ] } } }
 
       it 'builds NOT IN clause' do
         result = builder.build
@@ -560,7 +560,7 @@ RSpec.describe WhereClauseBuilder, type: :service do
         {
           'age' => { operator: 'gte', value: 18 },
           'status' => 'active',
-          'country' => { operator: 'in', values: ['US', 'CA'] }
+          'country' => { operator: 'in', values: [ 'US', 'CA' ] }
         }
       end
 
@@ -774,7 +774,7 @@ RSpec.describe WhereClauseBuilder, type: :service do
         {
           'age' => { operator: 'between', min: 20, max: 65 },
           'active' => true,
-          'tags' => { operator: 'in', values: ['tag1', 'tag2'] },
+          'tags' => { operator: 'in', values: [ 'tag1', 'tag2' ] },
           'name' => { operator: 'like', pattern: '%Smith' }
         }
       end
