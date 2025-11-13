@@ -2,6 +2,8 @@
 require "rails_helper"
 
 RSpec.describe QueryValidator do
+  let(:min_group_size) { QueryValidator::MIN_GROUP_SIZE }
+
   describe "edge cases and helper branches" do
     # 1) extract_select_statement: raw_stmt.stmt nil
     it "handles parse result where raw_stmt has no stmt" do
@@ -96,9 +98,9 @@ RSpec.describe QueryValidator do
     end
 
     # 12) check_having_condition with a_expr operator >=
-    it "check_having_condition validates COUNT(*) >= 25" do
-      # Build a valid a_expr: COUNT(*) >= 25
-      int_val = double(ival: 25)
+    it "check_having_condition validates COUNT(*) >= #{QueryValidator::MIN_GROUP_SIZE}" do
+      # Build a valid a_expr: COUNT(*) >= MIN_GROUP_SIZE
+      int_val = double(ival: min_group_size)
       a_const = double(ival: int_val)
       rexpr = double(a_const: a_const)
 
@@ -128,9 +130,9 @@ RSpec.describe QueryValidator do
       expect(QueryValidator.send(:check_having_condition, node)).to eq(false)
     end
 
-    # 14) check_having_condition with COUNT() < 25 (wrong threshold)
-    it "check_having_condition rejects COUNT(*) with value < 25" do
-      int_val = double(ival: 10)
+    # 14) check_having_condition with COUNT() below MIN_GROUP_SIZE (wrong threshold)
+    it "check_having_condition rejects COUNT(*) with value < #{QueryValidator::MIN_GROUP_SIZE}" do
+      int_val = double(ival: min_group_size - 1)
       a_const = double(ival: int_val)
       rexpr = double(a_const: a_const)
 
@@ -148,7 +150,7 @@ RSpec.describe QueryValidator do
 
     # 15) check_having_condition with bool_expr (AND/OR)
     it "check_having_condition handles bool_expr (AND/OR)" do
-      int_val = double(ival: 25)
+      int_val = double(ival: min_group_size)
       a_const = double(ival: int_val)
       rexpr = double(a_const: a_const)
 

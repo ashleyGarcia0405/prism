@@ -1,0 +1,89 @@
+<% content_for :title, "Data Rooms - Prism" %>
+
+<div class="mb-8">
+  <div class="flex justify-between items-start">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-100 mb-2">Data Rooms</h1>
+      <p class="text-gray-400">Collaborative multi-party computation spaces</p>
+    </div>
+    <%= link_to "Create Data Room", new_data_room_path, class: "bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium" %>
+  </div>
+</div>
+
+<!-- Info Card -->
+<div class="bg-blue-900 bg-opacity-20 border border-blue-600 rounded-lg p-6 mb-8">
+  <div class="flex items-start">
+    <svg class="h-6 w-6 text-blue-400 mr-3 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <div>
+      <h3 class="text-lg font-medium text-blue-300 mb-2">What are Data Rooms?</h3>
+      <p class="text-gray-300 text-sm">
+        Data Rooms enable secure multi-party computation (MPC) where multiple organizations can collaborate on queries
+        without revealing their raw data to each other. Perfect for cross-organizational analytics while preserving privacy.
+      </p>
+    </div>
+  </div>
+</div>
+
+<% if @data_rooms.any? %>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <% @data_rooms.each do |data_room| %>
+      <div class="bg-slate-800 border border-slate-700 rounded-lg shadow-lg hover:shadow-xl transition overflow-hidden">
+        <!-- Status Badge -->
+        <div class="px-6 py-4 border-b border-slate-700 flex justify-between items-center">
+          <h3 class="font-bold text-gray-100 truncate"><%= data_room["name"] %></h3>
+          <% status_class = case data_room["status"]
+              when 'pending' then 'bg-yellow-900 bg-opacity-50 text-yellow-300 border border-yellow-700'
+              when 'attested' then 'bg-green-900 bg-opacity-50 text-green-300 border border-green-700'
+              when 'executing' then 'bg-blue-900 bg-opacity-50 text-blue-300 border border-blue-700'
+              when 'completed' then 'bg-green-900 bg-opacity-50 text-green-300 border border-green-700'
+              when 'failed' then 'bg-red-900 bg-opacity-50 text-red-300 border border-red-700'
+              else 'bg-slate-700 text-gray-300'
+              end %>
+          <span class="px-2 py-1 text-xs font-medium rounded-full <%= status_class %>">
+            <%= data_room["status"] %>
+          </span>
+        </div>
+
+        <div class="px-6 py-4">
+          <p class="text-sm text-gray-400 mb-4 line-clamp-2">
+            <%= data_room["description"] || "No description" %>
+          </p>
+
+          <div class="space-y-2 mb-4">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-400">Type:</span>
+              <span class="font-medium text-gray-200"><%= data_room["query_type"]&.upcase || "N/A" %></span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-400">Participants:</span>
+              <span class="font-medium text-gray-200">
+                <%= data_room["attested_count"] %>/<%= data_room["participant_count"] %> attested
+              </span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-400">Created:</span>
+              <span class="font-medium text-gray-200">
+                <%= time_ago_in_words(Time.parse(data_room["created_at"])) %> ago
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-6 py-4 bg-slate-900 bg-opacity-50">
+          <%= link_to "View Details", data_room_path(data_room["id"]), class: "block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="bg-slate-800 border border-slate-700 rounded-lg shadow-lg p-12 text-center">
+    <svg class="mx-auto h-16 w-16 text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+    </svg>
+    <h3 class="text-xl font-medium text-gray-300 mb-2">No Data Rooms Yet</h3>
+    <p class="text-gray-400 mb-6">Create your first data room to start collaborating with other organizations</p>
+    <%= link_to "Create Data Room", new_data_room_path, class: "inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700" %>
+  </div>
+<% end %>

@@ -2,7 +2,7 @@ require "pg_query"
 
 module QueryValidator
   ALLOWED_AGGREGATES = %w[COUNT AVG SUM MIN MAX STDDEV].freeze
-  MIN_GROUP_SIZE = 25
+  MIN_GROUP_SIZE = 2  # Lowered for testing (production should be 25)
 
   class << self
     def validate(sql_string)

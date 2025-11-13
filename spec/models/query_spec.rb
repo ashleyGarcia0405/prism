@@ -4,6 +4,7 @@ RSpec.describe Query, type: :model do
   let(:organization) { Organization.create!(name: "Test Hospital") }
   let(:user) { organization.users.create!(name: "Test User", email: "test@example.com", password: "password123") }
   let(:dataset) { organization.datasets.create!(name: "Patient Data") }
+  let(:min_group_size) { QueryValidator::MIN_GROUP_SIZE }
 
   describe 'associations' do
     it { should belong_to(:dataset) }
@@ -19,7 +20,7 @@ RSpec.describe Query, type: :model do
     context 'with valid SQL' do
       it 'creates query successfully' do
         query = Query.new(
-          sql: "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25",
+          sql: "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}",
           dataset: dataset,
           user: user
         )
@@ -29,7 +30,7 @@ RSpec.describe Query, type: :model do
 
       it 'sets estimated_epsilon' do
         query = Query.create!(
-          sql: "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25",
+          sql: "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}",
           dataset: dataset,
           user: user
         )
@@ -58,12 +59,12 @@ RSpec.describe Query, type: :model do
         )
 
         expect(query.save).to be false
-        expect(query.errors[:sql]).to include("Must include HAVING COUNT(*) >= 25 for k-anonymity")
+        expect(query.errors[:sql]).to include("Must include HAVING COUNT(*) >= #{min_group_size} for k-anonymity")
       end
 
       it 'rejects subqueries' do
         query = Query.new(
-          sql: "SELECT state, (SELECT COUNT(*) FROM patients p2 WHERE p2.state = p1.state) FROM patients p1 GROUP BY state HAVING COUNT(*) >= 25",
+          sql: "SELECT state, (SELECT COUNT(*) FROM patients p2 WHERE p2.state = p1.state) FROM patients p1 GROUP BY state HAVING COUNT(*) >= #{min_group_size}",
           dataset: dataset,
           user: user
         )
@@ -77,7 +78,7 @@ RSpec.describe Query, type: :model do
   describe '#estimated_epsilon calculation' do
     it 'estimates correctly for COUNT' do
       query = Query.create!(
-        sql: "SELECT state, COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25",
+        sql: "SELECT state, COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}",
         dataset: dataset,
         user: user
       )
@@ -87,7 +88,7 @@ RSpec.describe Query, type: :model do
 
     it 'estimates correctly for AVG + COUNT' do
       query = Query.create!(
-        sql: "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25",
+        sql: "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}",
         dataset: dataset,
         user: user
       )
@@ -97,7 +98,7 @@ RSpec.describe Query, type: :model do
 
     it 'estimates correctly for multiple aggregates' do
       query = Query.create!(
-        sql: "SELECT state, AVG(age), SUM(income), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25",
+        sql: "SELECT state, AVG(age), SUM(income), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}",
         dataset: dataset,
         user: user
       )

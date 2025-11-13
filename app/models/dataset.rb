@@ -16,8 +16,8 @@ class Dataset < ApplicationRecord
 
   # Schema introspection methods for MPC validation
 
-  # Get all columns in the dataset table
-  def columns
+  # Get all column names from the dataset table
+  def column_names
     return [] unless table_name && table_exists?
 
     ActiveRecord::Base.connection.columns(table_name).map(&:name)
@@ -27,7 +27,7 @@ class Dataset < ApplicationRecord
 
   # Check if column exists in dataset
   def has_column?(column_name)
-    columns.include?(column_name.to_s)
+    column_names.include?(column_name.to_s)
   end
 
   # Get column data type

@@ -7,7 +7,7 @@
   </div>
 
   <div class="bg-slate-800 border border-slate-700 rounded-lg shadow-lg p-6">
-    <%= form_with model: @dataset, class: "space-y-6" do |f| %>
+    <%= form_with model: @dataset, multipart: true, local: true, class: "space-y-6" do |f| %>
       <% if @dataset.errors.any? %>
         <div class="bg-red-900 bg-opacity-50 border border-red-500 text-red-200 px-4 py-3 rounded">
           <h3 class="font-bold">Errors:</h3>
@@ -34,6 +34,18 @@
             rows: 4,
             class: "w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-100 placeholder-gray-500",
             placeholder: "Describe what data this dataset contains..." %>
+      </div>
+
+      <div class="border-t border-slate-700 pt-6">
+        <h3 class="text-lg font-medium text-gray-100 mb-4">Upload Data (Optional)</h3>
+        <p class="text-sm text-gray-400 mb-4">You can upload a CSV file now, or add it later from the dataset page.</p>
+
+        <div>
+          <%= file_field_tag :file,
+              accept: ".csv",
+              class: "block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700 file:cursor-pointer" %>
+          <p class="text-sm text-gray-400 mt-2">Max file size: 10MB. First row must contain column headers.</p>
+        </div>
       </div>
 
       <div class="bg-blue-900 bg-opacity-30 border-l-4 border-blue-500 p-4 rounded">

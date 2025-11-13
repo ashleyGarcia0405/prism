@@ -1,10 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe QueryValidator do
+  let(:min_group_size) { QueryValidator::MIN_GROUP_SIZE }
+
   describe '.validate' do
     context 'with valid aggregate query' do
       let(:sql) do
-        "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25"
+        "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}"
       end
 
       it 'returns valid: true' do
@@ -25,7 +27,7 @@ RSpec.describe QueryValidator do
 
     context 'with COUNT aggregate' do
       let(:sql) do
-        "SELECT diagnosis, COUNT(*) FROM patients GROUP BY diagnosis HAVING COUNT(*) >= 25"
+        "SELECT diagnosis, COUNT(*) FROM patients GROUP BY diagnosis HAVING COUNT(*) >= #{min_group_size}"
       end
 
       it 'returns valid: true' do
@@ -100,15 +102,15 @@ RSpec.describe QueryValidator do
 
       it 'includes appropriate error message' do
         result = QueryValidator.validate(sql)
-        expect(result[:errors]).to include("Must include HAVING COUNT(*) >= 25 for k-anonymity")
+        expect(result[:errors]).to include("Must include HAVING COUNT(*) >= #{min_group_size} for k-anonymity")
       end
 
       context 'with insufficient k-anonymity threshold' do
         let(:sql) do
-          "SELECT state, COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 5"
+          "SELECT state, COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size - 1}"
         end
 
-        it 'rejects queries with COUNT(*) < 25' do
+        it "rejects queries with COUNT(*) < #{QueryValidator::MIN_GROUP_SIZE}" do
           result = QueryValidator.validate(sql)
           expect(result[:valid]).to be false
         end
@@ -117,7 +119,7 @@ RSpec.describe QueryValidator do
 
     context 'Rule 5: No subqueries' do
       let(:sql) do
-        "SELECT state, (SELECT COUNT(*) FROM patients p2 WHERE p2.state = p1.state) FROM patients p1 GROUP BY state HAVING COUNT(*) >= 25"
+        "SELECT state, (SELECT COUNT(*) FROM patients p2 WHERE p2.state = p1.state) FROM patients p1 GROUP BY state HAVING COUNT(*) >= #{min_group_size}"
       end
 
       it 'rejects queries with subqueries' do
@@ -133,37 +135,37 @@ RSpec.describe QueryValidator do
 
     context 'Rule 6: Only whitelisted aggregates' do
       it 'allows COUNT' do
-        sql = "SELECT state, COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25"
+        sql = "SELECT state, COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}"
         result = QueryValidator.validate(sql)
         expect(result[:valid]).to be true
       end
 
       it 'allows AVG' do
-        sql = "SELECT state, AVG(age) FROM patients GROUP BY state HAVING COUNT(*) >= 25"
+        sql = "SELECT state, AVG(age) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}"
         result = QueryValidator.validate(sql)
         expect(result[:valid]).to be true
       end
 
       it 'allows SUM' do
-        sql = "SELECT state, SUM(income), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25"
+        sql = "SELECT state, SUM(income), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}"
         result = QueryValidator.validate(sql)
         expect(result[:valid]).to be true
       end
 
       it 'allows MIN' do
-        sql = "SELECT state, MIN(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25"
+        sql = "SELECT state, MIN(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}"
         result = QueryValidator.validate(sql)
         expect(result[:valid]).to be true
       end
 
       it 'allows MAX' do
-        sql = "SELECT state, MAX(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25"
+        sql = "SELECT state, MAX(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}"
         result = QueryValidator.validate(sql)
         expect(result[:valid]).to be true
       end
 
       it 'allows STDDEV' do
-        sql = "SELECT state, STDDEV(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25"
+        sql = "SELECT state, STDDEV(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}"
         result = QueryValidator.validate(sql)
         expect(result[:valid]).to be true
       end
@@ -185,25 +187,25 @@ RSpec.describe QueryValidator do
 
     context 'epsilon estimation' do
       it 'estimates 0.1 for COUNT' do
-        sql = "SELECT state, COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25"
+        sql = "SELECT state, COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}"
         result = QueryValidator.validate(sql)
         expect(result[:estimated_epsilon]).to eq(0.1)
       end
 
       it 'estimates 0.5 for AVG' do
-        sql = "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25"
+        sql = "SELECT state, AVG(age), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}"
         result = QueryValidator.validate(sql)
         expect(result[:estimated_epsilon]).to eq(0.6) # AVG=0.5 + COUNT=0.1
       end
 
       it 'estimates 0.5 for SUM' do
-        sql = "SELECT state, SUM(income), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25"
+        sql = "SELECT state, SUM(income), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}"
         result = QueryValidator.validate(sql)
         expect(result[:estimated_epsilon]).to eq(0.6) # SUM=0.5 + COUNT=0.1
       end
 
       it 'sums multiple aggregates correctly' do
-        sql = "SELECT state, AVG(age), SUM(income), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= 25"
+        sql = "SELECT state, AVG(age), SUM(income), COUNT(*) FROM patients GROUP BY state HAVING COUNT(*) >= #{min_group_size}"
         result = QueryValidator.validate(sql)
         expect(result[:estimated_epsilon]).to eq(1.1) # AVG=0.5 + SUM=0.5 + COUNT=0.1
       end
