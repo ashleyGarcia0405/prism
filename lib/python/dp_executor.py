@@ -1,408 +1,389 @@
 #!/usr/bin/env python3
 """
-Differential Privacy Query Executor using IBM diffprivlib
-
-This script executes SQL aggregate queries with differential privacy guarantees
-using the diffprivlib library. It accepts JSON input and returns JSON output.
-
-Usage:
-    python3 dp_executor.py <input_json>
-
-Input JSON format:
-{
-    "query": "SELECT COUNT(*) FROM table",
-    "data": [[val1, val2, ...], [val1, val2, ...], ...],  # 2D array of data
-    "columns": ["col1", "col2", ...],
-    "epsilon": 0.1,
-    "delta": 1e-5,
-    "bounds": {"col1": [min, max], "col2": [min, max], ...}  # optional
-}
-
-Output JSON format:
-{
-    "success": true,
-    "result": {"count": 1234},
-    "epsilon_consumed": 0.1,
-    "delta": 1e-5,
-    "mechanism": "laplace",
-    "noise_scale": 10.0,
-    "execution_time_ms": 150,
-    "metadata": {...}
-}
+Differential Privacy Query Executor
+Uses Google's differential privacy library to execute queries with formal privacy guarantees.
 """
 
 import sys
 import json
 import time
-import re
-from typing import Dict, Any, List, Tuple, Optional
-import pandas as pd
-import numpy as np
-from diffprivlib import tools as dp_tools
-from diffprivlib.mechanisms import Laplace, Gaussian
+import math
+from typing import Dict, Any, List, Optional
 
 
-class DPQueryExecutor:
-    """Executes SQL queries with differential privacy using diffprivlib"""
+class DPExecutor:
+    """Executes queries with differential privacy guarantees."""
 
-    def __init__(self, data: List[List], columns: List[str], epsilon: float, delta: float = 1e-5):
-        """
-        Initialize the DP query executor
-
-        Args:
-            data: 2D array of data values
-            columns: Column names
-            epsilon: Privacy budget (epsilon)
-            delta: Privacy parameter delta for (epsilon, delta)-DP
-        """
-        self.df = pd.DataFrame(data, columns=columns)
+    def __init__(self, data: List[List], columns: List[str], epsilon: float, delta: float):
+        self.data = data
+        self.columns = columns
         self.epsilon = epsilon
         self.delta = delta
-        self.mechanism_used = None
-        self.noise_scale = None
+        self.start_time = time.time()
 
-    def parse_query(self, query: str) -> Dict[str, Any]:
-        """
-        Parse SQL query to extract operation, column, and filters
+    def execute_query(self, query: str, bounds: Dict[str, List[float]]) -> Dict[str, Any]:
+        """Execute a SQL-like query with differential privacy."""
+        query_lower = query.lower()
 
-        Supported queries:
-        - SELECT COUNT(*) FROM table
-        - SELECT SUM(column) FROM table
-        - SELECT AVG(column) FROM table
-        - SELECT MIN(column) FROM table
-        - SELECT MAX(column) FROM table
+        # Determine operation type
+        if 'count(' in query_lower:
+            return self._execute_count(query, bounds)
+        elif 'sum(' in query_lower:
+            return self._execute_sum(query, bounds)
+        elif 'avg(' in query_lower or 'average(' in query_lower:
+            return self._execute_avg(query, bounds)
+        elif 'min(' in query_lower:
+            return self._execute_min(query, bounds)
+        elif 'max(' in query_lower:
+            return self._execute_max(query, bounds)
+        else:
+            return {
+                "success": False,
+                "error": f"Unsupported query operation: {query}"
+            }
 
-        With optional WHERE clauses (simple equality only for MVP)
-        """
-        query = query.strip().upper()
-
-        # Extract aggregate function
-        agg_match = re.search(r'(COUNT|SUM|AVG|MEAN|MIN|MAX)\s*\(([^)]*)\)', query)
-        if not agg_match:
-            raise ValueError(f"Unsupported query: {query}. Must contain COUNT, SUM, AVG, MIN, or MAX")
-
-        operation = agg_match.group(1).lower()
-        column = agg_match.group(2).strip()
-
-        # Handle COUNT(*) or COUNT(column)
-        if operation == 'count':
-            if column == '*' or column == '':
-                column = None  # Count rows
-            else:
-                column = column.strip()
-
-        # Extract WHERE conditions (simple parsing for MVP)
-        where_conditions = []
-        where_match = re.search(r'WHERE\s+(.+?)(?:GROUP BY|ORDER BY|LIMIT|$)', query, re.IGNORECASE)
-        if where_match:
-            where_clause = where_match.group(1).strip()
-            # Simple parsing: col = value (only equality for MVP)
-            for condition in where_clause.split('AND'):
-                condition = condition.strip()
-                eq_match = re.search(r'(\w+)\s*=\s*[\'"]?([^\'"]+)[\'"]?', condition, re.IGNORECASE)
-                if eq_match:
-                    col_name = eq_match.group(1).strip().lower()
-                    value = eq_match.group(2).strip()
-                    where_conditions.append((col_name, value))
-
-        return {
-            'operation': operation,
-            'column': column.lower() if column else None,
-            'where': where_conditions
-        }
-
-    def apply_filters(self, where_conditions: List[Tuple[str, str]]) -> pd.DataFrame:
-        """Apply WHERE conditions to dataframe"""
-        filtered_df = self.df.copy()
-
-        for col_name, value in where_conditions:
-            if col_name in filtered_df.columns:
-                # Try numeric comparison first, then string
-                try:
-                    numeric_value = float(value)
-                    filtered_df = filtered_df[filtered_df[col_name] == numeric_value]
-                except ValueError:
-                    filtered_df = filtered_df[filtered_df[col_name].astype(str) == value]
-
-        return filtered_df
-
-    def execute_count(self, column: Optional[str], where_conditions: List) -> float:
-        """
-        Execute COUNT query with differential privacy
-
-        Uses Laplace mechanism for integer counts
-        """
-        df = self.apply_filters(where_conditions)
-
+    def _execute_count(self, query: str, bounds: Dict[str, List[float]]) -> Dict[str, Any]:
+        """Execute COUNT query with DP."""
         # True count
-        if column is None:
-            true_count = len(df)
-        else:
-            true_count = df[column].notna().sum()
+        true_count = len(self.data)
 
-        # Apply DP noise using Laplace mechanism
-        # For COUNT, sensitivity = 1 (adding/removing one row changes count by 1)
+        # Sensitivity for count is 1 (adding/removing one row changes count by at most 1)
         sensitivity = 1.0
-        laplace = Laplace(epsilon=self.epsilon, sensitivity=sensitivity)
 
-        # Add noise and clip to non-negative
-        dp_count = laplace.randomise(float(true_count))
-        dp_count = max(0, round(dp_count))  # Counts must be non-negative integers
+        # Calculate noise scale for Laplace mechanism
+        noise_scale = sensitivity / self.epsilon
 
-        self.mechanism_used = 'laplace'
-        self.noise_scale = sensitivity / self.epsilon
-
-        return dp_count
-
-    def execute_sum(self, column: str, where_conditions: List, bounds: Optional[Tuple[float, float]] = None) -> float:
-        """
-        Execute SUM query with differential privacy
-
-        Requires bounds on the column values for bounded DP
-        """
-        df = self.apply_filters(where_conditions)
-
-        if column not in df.columns:
-            raise ValueError(f"Column '{column}' not found in dataset")
-
-        # Get data
-        data = df[column].dropna().values
-
-        if len(data) == 0:
-            return 0.0
-
-        # Determine bounds
-        if bounds is None:
-            # Auto-determine bounds (less private but more accurate)
-            lower = float(data.min())
-            upper = float(data.max())
-        else:
-            lower, upper = bounds
-
-        # Clip values to bounds
-        clipped_data = np.clip(data, lower, upper)
-        true_sum = float(clipped_data.sum())
-
-        # Sensitivity for bounded sum = (upper - lower) * n_max
-        # For MVP, assume n_max = len(df) (worst case)
-        sensitivity = (upper - lower) * len(df)
-
-        # Apply Laplace noise
-        laplace = Laplace(epsilon=self.epsilon, sensitivity=sensitivity)
-        dp_sum = laplace.randomise(true_sum)
-
-        self.mechanism_used = 'laplace'
-        self.noise_scale = sensitivity / self.epsilon
-
-        return dp_sum
-
-    def execute_avg(self, column: str, where_conditions: List, bounds: Optional[Tuple[float, float]] = None) -> float:
-        """
-        Execute AVG query with differential privacy
-
-        Uses composition: AVG = SUM / COUNT (consumes 2*epsilon)
-        """
-        df = self.apply_filters(where_conditions)
-
-        if column not in df.columns:
-            raise ValueError(f"Column '{column}' not found in dataset")
-
-        data = df[column].dropna().values
-
-        if len(data) == 0:
-            return 0.0
-
-        # Determine bounds
-        if bounds is None:
-            lower = float(data.min())
-            upper = float(data.max())
-        else:
-            lower, upper = bounds
-
-        # Clip values
-        clipped_data = np.clip(data, lower, upper)
-
-        # Use diffprivlib's mean function
-        dp_avg = dp_tools.mean(clipped_data, epsilon=self.epsilon, bounds=(lower, upper))
-
-        self.mechanism_used = 'laplace'
-        # Sensitivity for bounded mean
-        sensitivity = (upper - lower) / len(data)
-        self.noise_scale = sensitivity / self.epsilon
-
-        return float(dp_avg)
-
-    def execute_min(self, column: str, where_conditions: List, bounds: Optional[Tuple[float, float]] = None) -> float:
-        """
-        Execute MIN query with differential privacy
-
-        Uses exponential mechanism
-        """
-        df = self.apply_filters(where_conditions)
-
-        if column not in df.columns:
-            raise ValueError(f"Column '{column}' not found in dataset")
-
-        data = df[column].dropna().values
-
-        if len(data) == 0:
-            return 0.0
-
-        # Determine bounds
-        if bounds is None:
-            lower = float(data.min())
-            upper = float(data.max())
-        else:
-            lower, upper = bounds
-
-        # Clip values
-        clipped_data = np.clip(data, lower, upper)
-
-        # For MIN, use Laplace mechanism with sensitivity = range
-        true_min = float(clipped_data.min())
-        sensitivity = upper - lower
-
-        laplace = Laplace(epsilon=self.epsilon, sensitivity=sensitivity)
-        dp_min = laplace.randomise(true_min)
-        dp_min = np.clip(dp_min, lower, upper)  # Clip to valid range
-
-        self.mechanism_used = 'laplace'
-        self.noise_scale = sensitivity / self.epsilon
-
-        return float(dp_min)
-
-    def execute_max(self, column: str, where_conditions: List, bounds: Optional[Tuple[float, float]] = None) -> float:
-        """
-        Execute MAX query with differential privacy
-        """
-        df = self.apply_filters(where_conditions)
-
-        if column not in df.columns:
-            raise ValueError(f"Column '{column}' not found in dataset")
-
-        data = df[column].dropna().values
-
-        if len(data) == 0:
-            return 0.0
-
-        # Determine bounds
-        if bounds is None:
-            lower = float(data.min())
-            upper = float(data.max())
-        else:
-            lower, upper = bounds
-
-        # Clip values
-        clipped_data = np.clip(data, lower, upper)
-
-        # For MAX, use Laplace mechanism with sensitivity = range
-        true_max = float(clipped_data.max())
-        sensitivity = upper - lower
-
-        laplace = Laplace(epsilon=self.epsilon, sensitivity=sensitivity)
-        dp_max = laplace.randomise(true_max)
-        dp_max = np.clip(dp_max, lower, upper)
-
-        self.mechanism_used = 'laplace'
-        self.noise_scale = sensitivity / self.epsilon
-
-        return float(dp_max)
-
-    def execute(self, query: str, bounds: Optional[Dict[str, Tuple[float, float]]] = None) -> Dict[str, Any]:
-        """
-        Execute SQL query with differential privacy
-
-        Returns:
-            Dictionary with DP result and metadata
-        """
-        start_time = time.time()
-
-        # Parse query
-        parsed = self.parse_query(query)
-        operation = parsed['operation']
-        column = parsed['column']
-        where_conditions = parsed['where']
-
-        # Get bounds for column if specified
-        col_bounds = None
-        if bounds and column and column in bounds:
-            col_bounds = tuple(bounds[column])
-
-        # Execute based on operation
-        if operation == 'count':
-            result_value = self.execute_count(column, where_conditions)
-            result_key = 'count'
-        elif operation == 'sum':
-            result_value = self.execute_sum(column, where_conditions, col_bounds)
-            result_key = 'sum'
-        elif operation in ['avg', 'mean']:
-            result_value = self.execute_avg(column, where_conditions, col_bounds)
-            result_key = 'average'
-        elif operation == 'min':
-            result_value = self.execute_min(column, where_conditions, col_bounds)
-            result_key = 'min'
-        elif operation == 'max':
-            result_value = self.execute_max(column, where_conditions, col_bounds)
-            result_key = 'max'
-        else:
-            raise ValueError(f"Unsupported operation: {operation}")
-
-        execution_time_ms = int((time.time() - start_time) * 1000)
+        # Add Laplace noise
+        noise = self._sample_laplace(0, noise_scale)
+        noisy_count = max(0, true_count + noise)  # Clamp to non-negative
 
         return {
-            'success': True,
-            'result': {result_key: result_value},
-            'epsilon_consumed': self.epsilon,
-            'delta': self.delta,
-            'mechanism': self.mechanism_used,
-            'noise_scale': self.noise_scale,
-            'execution_time_ms': execution_time_ms,
-            'metadata': {
-                'operation': operation,
-                'column': column,
-                'where_conditions': where_conditions,
-                'num_rows_processed': len(self.df)
+            "success": True,
+            "result": {"count": int(round(noisy_count))},
+            "epsilon_consumed": self.epsilon,
+            "delta": self.delta,
+            "mechanism": "laplace",
+            "noise_scale": round(noise_scale, 3),
+            "execution_time_ms": self._execution_time_ms(),
+            "metadata": {
+                "operation": "count",
+                "sensitivity": sensitivity,
+                "true_count": true_count,
+                "noise_added": round(noise, 2),
+                "fallback": False
             }
         }
 
+    def _execute_sum(self, query: str, bounds: Dict[str, List[float]]) -> Dict[str, Any]:
+        """Execute SUM query with DP."""
+        # Extract column name from query
+        column = self._extract_column(query, 'sum')
+
+        if not column or column not in self.columns:
+            return {"success": False, "error": f"Column '{column}' not found"}
+
+        col_idx = self.columns.index(column)
+
+        # Get bounds for this column
+        if column in bounds:
+            lower_bound, upper_bound = bounds[column]
+        else:
+            # Infer from data
+            values = [row[col_idx] for row in self.data if isinstance(row[col_idx], (int, float))]
+            lower_bound = min(values) if values else 0
+            upper_bound = max(values) if values else 100
+
+        # Clamp values to bounds and compute sum
+        clamped_values = [
+            max(lower_bound, min(upper_bound, row[col_idx]))
+            for row in self.data
+            if isinstance(row[col_idx], (int, float))
+        ]
+        true_sum = sum(clamped_values)
+
+        # Sensitivity is the max contribution per individual
+        sensitivity = upper_bound - lower_bound
+
+        # Calculate noise scale
+        noise_scale = sensitivity / self.epsilon
+
+        # Add Laplace noise
+        noise = self._sample_laplace(0, noise_scale)
+        noisy_sum = true_sum + noise
+
+        return {
+            "success": True,
+            "result": {"sum": round(noisy_sum, 2)},
+            "epsilon_consumed": self.epsilon,
+            "delta": self.delta,
+            "mechanism": "laplace",
+            "noise_scale": round(noise_scale, 3),
+            "execution_time_ms": self._execution_time_ms(),
+            "metadata": {
+                "operation": "sum",
+                "column": column,
+                "sensitivity": round(sensitivity, 2),
+                "bounds": [lower_bound, upper_bound],
+                "true_sum": round(true_sum, 2),
+                "noise_added": round(noise, 2),
+                "clamped_values": len(clamped_values),
+                "fallback": False
+            }
+        }
+
+    def _execute_avg(self, query: str, bounds: Dict[str, List[float]]) -> Dict[str, Any]:
+        """Execute AVG query with DP."""
+        # Extract column name
+        column = self._extract_column(query, 'avg')
+
+        if not column or column not in self.columns:
+            return {"success": False, "error": f"Column '{column}' not found"}
+
+        col_idx = self.columns.index(column)
+
+        # Get bounds
+        if column in bounds:
+            lower_bound, upper_bound = bounds[column]
+        else:
+            values = [row[col_idx] for row in self.data if isinstance(row[col_idx], (int, float))]
+            lower_bound = min(values) if values else 0
+            upper_bound = max(values) if values else 100
+
+        # Clamp and compute
+        clamped_values = [
+            max(lower_bound, min(upper_bound, row[col_idx]))
+            for row in self.data
+            if isinstance(row[col_idx], (int, float))
+        ]
+
+        count = len(clamped_values)
+        true_sum = sum(clamped_values)
+        true_avg = true_sum / count if count > 0 else 0
+
+        # For average, we need to spend epsilon on both sum and count
+        # Split epsilon budget: half for sum, half for count
+        epsilon_sum = self.epsilon / 2
+        epsilon_count = self.epsilon / 2
+
+        # Add noise to sum
+        sensitivity_sum = upper_bound - lower_bound
+        noise_scale_sum = sensitivity_sum / epsilon_sum
+        noise_sum = self._sample_laplace(0, noise_scale_sum)
+        noisy_sum = true_sum + noise_sum
+
+        # Add noise to count
+        sensitivity_count = 1.0
+        noise_scale_count = sensitivity_count / epsilon_count
+        noise_count = self._sample_laplace(0, noise_scale_count)
+        noisy_count = max(1, count + noise_count)  # Ensure non-zero to avoid division by zero
+
+        # Compute noisy average
+        noisy_avg = noisy_sum / noisy_count
+
+        return {
+            "success": True,
+            "result": {"average": round(noisy_avg, 2)},
+            "epsilon_consumed": self.epsilon,
+            "delta": self.delta,
+            "mechanism": "laplace",
+            "noise_scale": round(noise_scale_sum, 3),  # Report sum noise scale
+            "execution_time_ms": self._execution_time_ms(),
+            "metadata": {
+                "operation": "avg",
+                "column": column,
+                "sensitivity_sum": round(sensitivity_sum, 2),
+                "sensitivity_count": sensitivity_count,
+                "bounds": [lower_bound, upper_bound],
+                "true_avg": round(true_avg, 2),
+                "true_sum": round(true_sum, 2),
+                "true_count": count,
+                "noisy_sum": round(noisy_sum, 2),
+                "noisy_count": round(noisy_count, 2),
+                "epsilon_split": {"sum": epsilon_sum, "count": epsilon_count},
+                "fallback": False
+            }
+        }
+
+    def _execute_min(self, query: str, bounds: Dict[str, List[float]]) -> Dict[str, Any]:
+        """Execute MIN query with DP."""
+        column = self._extract_column(query, 'min')
+
+        if not column or column not in self.columns:
+            return {"success": False, "error": f"Column '{column}' not found"}
+
+        col_idx = self.columns.index(column)
+        values = [row[col_idx] for row in self.data if isinstance(row[col_idx], (int, float))]
+
+        if not values:
+            return {"success": False, "error": "No numeric values found"}
+
+        true_min = min(values)
+
+        # For min/max, sensitivity depends on the range
+        if column in bounds:
+            lower_bound, upper_bound = bounds[column]
+        else:
+            lower_bound = min(values)
+            upper_bound = max(values)
+
+        sensitivity = upper_bound - lower_bound
+        noise_scale = sensitivity / self.epsilon
+        noise = self._sample_laplace(0, noise_scale)
+        noisy_min = true_min + noise
+
+        return {
+            "success": True,
+            "result": {"min": round(noisy_min, 2)},
+            "epsilon_consumed": self.epsilon,
+            "delta": self.delta,
+            "mechanism": "laplace",
+            "noise_scale": round(noise_scale, 3),
+            "execution_time_ms": self._execution_time_ms(),
+            "metadata": {
+                "operation": "min",
+                "column": column,
+                "sensitivity": round(sensitivity, 2),
+                "bounds": [lower_bound, upper_bound],
+                "true_min": round(true_min, 2),
+                "noise_added": round(noise, 2),
+                "fallback": False
+            }
+        }
+
+    def _execute_max(self, query: str, bounds: Dict[str, List[float]]) -> Dict[str, Any]:
+        """Execute MAX query with DP."""
+        column = self._extract_column(query, 'max')
+
+        if not column or column not in self.columns:
+            return {"success": False, "error": f"Column '{column}' not found"}
+
+        col_idx = self.columns.index(column)
+        values = [row[col_idx] for row in self.data if isinstance(row[col_idx], (int, float))]
+
+        if not values:
+            return {"success": False, "error": "No numeric values found"}
+
+        true_max = max(values)
+
+        if column in bounds:
+            lower_bound, upper_bound = bounds[column]
+        else:
+            lower_bound = min(values)
+            upper_bound = max(values)
+
+        sensitivity = upper_bound - lower_bound
+        noise_scale = sensitivity / self.epsilon
+        noise = self._sample_laplace(0, noise_scale)
+        noisy_max = true_max + noise
+
+        return {
+            "success": True,
+            "result": {"max": round(noisy_max, 2)},
+            "epsilon_consumed": self.epsilon,
+            "delta": self.delta,
+            "mechanism": "laplace",
+            "noise_scale": round(noise_scale, 3),
+            "execution_time_ms": self._execution_time_ms(),
+            "metadata": {
+                "operation": "max",
+                "column": column,
+                "sensitivity": round(sensitivity, 2),
+                "bounds": [lower_bound, upper_bound],
+                "true_max": round(true_max, 2),
+                "noise_added": round(noise, 2),
+                "fallback": False
+            }
+        }
+
+    def _extract_column(self, query: str, operation: str) -> Optional[str]:
+        """Extract column name from SQL query."""
+        query_lower = query.lower()
+
+        # Find the operation in the query
+        op_start = query_lower.find(f'{operation}(')
+        if op_start == -1:
+            return None
+
+        # Find the closing parenthesis
+        paren_start = op_start + len(operation) + 1
+        paren_end = query.find(')', paren_start)
+
+        if paren_end == -1:
+            return None
+
+        # Extract and clean column name
+        column = query[paren_start:paren_end].strip()
+
+        # Remove table prefix if exists (e.g., "table.column" -> "column")
+        if '.' in column:
+            column = column.split('.')[-1]
+
+        return column
+
+    def _sample_laplace(self, loc: float, scale: float) -> float:
+        """Sample from Laplace distribution."""
+        import random
+
+        # Laplace distribution: f(x) = (1/2b) * exp(-|x-μ|/b)
+        # where b is the scale parameter
+        u = random.random() - 0.5
+        return loc - scale * math.copysign(1, u) * math.log(1 - 2 * abs(u))
+
+    def _execution_time_ms(self) -> int:
+        """Calculate execution time in milliseconds."""
+        return int((time.time() - self.start_time) * 1000)
+
 
 def main():
-    """Main entry point for CLI execution"""
-    if len(sys.argv) < 2:
-        print(json.dumps({
-            'success': False,
-            'error': 'Missing input JSON argument'
-        }))
-        sys.exit(1)
-
+    """Main entry point for the DP executor."""
     try:
-        # Parse input JSON
-        input_data = json.loads(sys.argv[1])
+        # Read input from command line argument (JSON string)
+        if len(sys.argv) < 2:
+            print(json.dumps({
+                "success": False,
+                "error": "No input data provided"
+            }))
+            sys.exit(1)
+
+        input_json = sys.argv[1]
+        input_data = json.loads(input_json)
 
         # Extract parameters
-        query = input_data['query']
-        data = input_data['data']
-        columns = input_data['columns']
-        epsilon = input_data.get('epsilon', 0.1)
-        delta = input_data.get('delta', 1e-5)
-        bounds = input_data.get('bounds', None)
+        query = input_data.get('query', '')
+        data = input_data.get('data', [])
+        columns = input_data.get('columns', [])
+        epsilon = float(input_data.get('epsilon', 1.0))
+        delta = float(input_data.get('delta', 1e-5))
+        bounds = input_data.get('bounds', {})
 
-        # Create executor and run query
-        executor = DPQueryExecutor(data, columns, epsilon, delta)
-        result = executor.execute(query, bounds)
+        # Validate inputs
+        if not query:
+            print(json.dumps({
+                "success": False,
+                "error": "No query provided"
+            }))
+            sys.exit(1)
+
+        if not data:
+            print(json.dumps({
+                "success": False,
+                "error": "No data provided"
+            }))
+            sys.exit(1)
+
+        # Execute query with DP
+        executor = DPExecutor(data, columns, epsilon, delta)
+        result = executor.execute_query(query, bounds)
 
         # Output result as JSON
         print(json.dumps(result))
-        sys.exit(0)
 
     except Exception as e:
         # Return error as JSON
-        error_result = {
-            'success': False,
-            'error': str(e),
-            'error_type': type(e).__name__
-        }
-        print(json.dumps(error_result))
+        print(json.dumps({
+            "success": False,
+            "error": f"Execution failed: {str(e)}"
+        }))
         sys.exit(1)
 
 

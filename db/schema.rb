@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_13_000000) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_01_231032) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -89,6 +89,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_13_000000) do
     t.index ["table_name"], name: "index_datasets_on_table_name", unique: true
   end
 
+  create_table "org1_ds_223cfe4419cf", id: false, force: :cascade do |t|
+    t.integer "id"
+    t.text "name"
+    t.integer "age"
+    t.text "department"
+    t.integer "salary"
+    t.integer "years_employed"
+  end
+
   create_table "org1_ds_5f4c88ec06c2", id: false, force: :cascade do |t|
     t.integer "id"
     t.text "name"
@@ -140,7 +149,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_13_000000) do
   create_table "runs", force: :cascade do |t|
     t.bigint "query_id", null: false
     t.string "status"
-    t.text "result"
+    t.jsonb "result", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "backend_used"

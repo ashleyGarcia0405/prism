@@ -1,0 +1,19 @@
+<div class="min-h-screen bg-slate-900 flex items-center justify-center py-12 px-4">
+  <div class="max-w-md w-full bg-slate-800 rounded-lg shadow-xl p-8 text-center">
+    <svg class="mx-auto h-16 w-16 text-yellow-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+
+    <h1 class="text-2xl font-bold text-white mb-2">Invitation Expired</h1>
+    <p class="text-slate-300 mb-6">
+      This invitation has expired and can no longer be accepted.
+      Please contact the person who invited you if you'd like to receive a new invitation.
+    </p>
+
+    <p class="text-sm text-slate-400 mb-6">
+      Expired on: <%= @invitation.expires_at.strftime("%B %d, %Y at %I:%M %p") %>
+    </p>
+
+    <%= link_to "Return to Dashboard", root_path, class: "inline-block bg-slate-700 hover:bg-slate-600 text-white font-semibold px-6 py-3 rounded-lg transition" %>
+  </div>
+</div>

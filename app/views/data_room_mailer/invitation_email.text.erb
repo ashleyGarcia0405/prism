@@ -1,0 +1,48 @@
+DATA ROOM INVITATION
+====================
+
+Hello <%= @organization.name %> Team,
+
+<%= @invited_by.name %> from <%= @invited_by.organization.name %> has invited you to participate in a secure multi-party computation data room.
+
+DATA ROOM DETAILS
+-----------------
+Name: <%= @data_room.name %>
+<% if @data_room.description.present? %>
+Description: <%= @data_room.description %>
+<% end %>
+Query Type: <%= @data_room.query_type&.upcase || 'Not specified' %>
+<% if @data_room.query_text.present? %>
+Query: <%= @data_room.query_text %>
+<% end %>
+
+ABOUT THIS COLLABORATION
+-------------------------
+This collaboration uses secure multi-party computation to ensure your data remains private while enabling joint analytics. Your data never leaves your control.
+
+INVITATION EXPIRES
+------------------
+This invitation expires on <%= @invitation.expires_at.strftime("%B %d, %Y at %I:%M %p") %>
+
+ACCEPT THIS INVITATION
+----------------------
+To accept this invitation and participate in this data room, please visit:
+
+<%= @accept_url %>
+
+NEXT STEPS
+----------
+1. Click the link above to review the invitation
+2. Select which dataset you'd like to contribute
+3. Attest to the query to confirm your participation
+4. Once all participants attest, the computation will be executed
+
+QUESTIONS?
+----------
+If you have questions about this invitation, please contact <%= @invited_by.email %>.
+
+If you did not expect this invitation, you can safely ignore this email.
+
+---
+Prism - Differential Privacy Platform
+Secure Multi-Party Computation

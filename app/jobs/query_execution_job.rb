@@ -64,7 +64,7 @@ class QueryExecutionJob < ApplicationJob
     run.update!(
       status: "completed",
       backend_used: query.backend,
-      result: result[:data],
+      result: result[:data] || result[:result],  # Support both :data and :result keys
       epsilon_consumed: result[:epsilon_consumed],
       delta_consumed: result[:delta],
       execution_time_ms: result[:execution_time_ms] || execution_time,
@@ -95,7 +95,8 @@ class QueryExecutionJob < ApplicationJob
 
     run.update!(
       status: "failed",
-      error_message: e.message
+      error_message: e.message,
+      result: nil  # Clear any invalid result data
     )
     AuditLogger.log(
       user: user || query&.user,
