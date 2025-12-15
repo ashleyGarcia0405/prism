@@ -1,0 +1,159 @@
+<div class="min-h-screen bg-slate-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-3xl w-full">
+    <!-- Header Card -->
+    <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-t-lg px-8 py-6 shadow-xl">
+      <div class="flex items-center">
+        <svg class="h-12 w-12 text-white mr-4" fill="none" viewBox="0 0 24 24" stroke="currentWidth">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        </svg>
+        <div>
+          <h1 class="text-3xl font-bold text-white">Data Room Invitation</h1>
+          <p class="text-blue-100 mt-1">Secure Multi-Party Computation Collaboration</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="bg-slate-800 rounded-b-lg px-8 py-8 shadow-xl">
+      <!-- Invitation Details -->
+      <div class="mb-8">
+        <h2 class="text-2xl font-semibold text-white mb-4"><%= @data_room.name %></h2>
+
+        <% if @data_room.description.present? %>
+          <p class="text-slate-300 mb-6 leading-relaxed"><%= @data_room.description %></p>
+        <% end %>
+
+        <div class="bg-slate-900 border-l-4 border-blue-500 rounded p-6 mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm text-slate-400 mb-1">Invited By</p>
+              <p class="text-white font-medium"><%= @invited_by.name %></p>
+              <p class="text-sm text-slate-400"><%= @invited_by.organization.name %></p>
+            </div>
+            <div>
+              <p class="text-sm text-slate-400 mb-1">Your Organization</p>
+              <p class="text-white font-medium"><%= @organization.name %></p>
+            </div>
+            <% if @data_room.query_type.present? %>
+              <div>
+                <p class="text-sm text-slate-400 mb-1">Query Type</p>
+                <p class="text-white font-medium uppercase"><%= @data_room.query_type %></p>
+              </div>
+            <% end %>
+            <div>
+              <p class="text-sm text-slate-400 mb-1">Invitation Expires</p>
+              <p class="text-white font-medium"><%= @invitation.expires_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Notice -->
+        <div class="bg-green-900/30 border border-green-700 rounded-lg p-4 mb-6">
+          <div class="flex">
+            <svg class="h-6 w-6 text-green-400 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <div>
+              <p class="font-medium text-green-400 mb-1">Your Data Stays Private</p>
+              <p class="text-sm text-slate-300">
+                This collaboration uses secure multi-party computation. Your data never leaves your control,
+                and only aggregate results are computed without revealing individual records.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Login/Wrong Org Warning -->
+      <% if @needs_login %>
+        <div class="bg-yellow-900/30 border border-yellow-700 rounded-lg p-6 mb-6">
+          <div class="flex items-start">
+            <svg class="h-6 w-6 text-yellow-400 mr-3 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div class="flex-1">
+              <p class="font-medium text-yellow-400 mb-2">Login Required</p>
+              <p class="text-sm text-slate-300 mb-4">
+                You need to be logged in as a member of <%= @organization.name %> to accept this invitation.
+              </p>
+              <%= link_to "Log In to Continue", login_path, class: "inline-block bg-yellow-600 hover:bg-yellow-700 text-white font-semibold px-6 py-2 rounded-lg transition" %>
+            </div>
+          </div>
+        </div>
+      <% elsif @wrong_organization %>
+        <div class="bg-red-900/30 border border-red-700 rounded-lg p-6 mb-6">
+          <div class="flex items-start">
+            <svg class="h-6 w-6 text-red-400 mr-3 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div>
+              <p class="font-medium text-red-400 mb-2">Wrong Organization</p>
+              <p class="text-sm text-slate-300">
+                This invitation is for <%= @organization.name %>, but you're logged in as a member of <%= current_user.organization.name %>.
+                Please log out and log in with an account from the invited organization.
+              </p>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <!-- Dataset Selection Form -->
+        <%= form_with url: submit_data_room_invitation_path(@invitation.invitation_token), method: :post, class: "space-y-6" do |f| %>
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2">
+              Select Your Dataset
+            </label>
+            <p class="text-sm text-slate-400 mb-3">
+              Choose which dataset from your organization you'd like to contribute to this collaboration.
+            </p>
+            <%= select_tag :dataset_id,
+                options_from_collection_for_select(@datasets, :id, :name),
+                class: "block w-full px-4 py-3 bg-slate-900 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent",
+                required: true %>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex gap-4 pt-4">
+            <%= f.submit "Accept Invitation",
+                class: "flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition transform hover:scale-105" %>
+
+            <%= button_to "Decline",
+                decline_data_room_invitation_path(@invitation.invitation_token),
+                method: :post,
+                class: "flex-1 bg-slate-700 hover:bg-slate-600 text-white font-semibold py-3 px-6 rounded-lg transition",
+                data: { confirm: "Are you sure you want to decline this invitation?" } %>
+          </div>
+        <% end %>
+      <% end %>
+
+      <!-- Next Steps -->
+      <div class="mt-8 pt-6 border-t border-slate-700">
+        <h3 class="text-lg font-semibold text-white mb-3">What Happens Next?</h3>
+        <ol class="space-y-3">
+          <li class="flex items-start">
+            <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-600 text-white rounded-full text-sm font-bold mr-3">1</span>
+            <p class="text-slate-300">Accept this invitation and select your dataset</p>
+          </li>
+          <li class="flex items-start">
+            <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-600 text-white rounded-full text-sm font-bold mr-3">2</span>
+            <p class="text-slate-300">Review and attest to the query to confirm your participation</p>
+          </li>
+          <li class="flex items-start">
+            <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-600 text-white rounded-full text-sm font-bold mr-3">3</span>
+            <p class="text-slate-300">Once all participants attest, the MPC computation will execute</p>
+          </li>
+          <li class="flex items-start">
+            <span class="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-600 text-white rounded-full text-sm font-bold mr-3">4</span>
+            <p class="text-slate-300">View the privacy-preserving aggregate results</p>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Footer -->
+      <div class="mt-8 pt-6 border-t border-slate-700 text-center">
+        <p class="text-sm text-slate-400">
+          Questions about this invitation? Contact <%= mail_to @invited_by.email, @invited_by.email, class: "text-blue-400 hover:text-blue-300" %>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

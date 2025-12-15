@@ -139,6 +139,77 @@ module Api
         }, status: :created
       end
 
+      # POST /api/v1/data_rooms/:id/accept_invitation
+      def accept_invitation
+        data_room = DataRoom.find(params[:id])
+        invitation_token = params[:invitation_token]
+        dataset_id = params[:dataset_id]
+
+        unless invitation_token
+          return render json: { error: "invitation_token is required" }, status: :bad_request
+        end
+
+        unless dataset_id
+          return render json: { error: "dataset_id is required" }, status: :bad_request
+        end
+
+        # Find invitation by token
+        invitation = data_room.invitations.find_by(invitation_token: invitation_token)
+
+        unless invitation
+          return render json: { error: "Invalid invitation token" }, status: :not_found
+        end
+
+        # Check if invitation is for current user's organization
+        unless invitation.organization_id == current_user.organization_id
+          return render json: { error: "This invitation is not for your organization" }, status: :forbidden
+        end
+
+        # Check if expired
+        if invitation.expired?
+          return render json: { error: "Invitation has expired" }, status: :unprocessable_entity
+        end
+
+        # Check if already accepted or declined
+        if invitation.status != "pending"
+          return render json: {
+            error: "Invitation already #{invitation.status}",
+            status: invitation.status
+          }, status: :unprocessable_entity
+        end
+
+        # Verify dataset belongs to user's organization
+        dataset = Dataset.find(dataset_id)
+        unless dataset.organization_id == current_user.organization_id
+          return render json: { error: "Dataset does not belong to your organization" }, status: :forbidden
+        end
+
+        # Accept the invitation (creates participant with status "invited")
+        participant = invitation.accept!(dataset)
+
+        AuditLogger.log(
+          user: current_user,
+          action: "data_room_invitation_accepted",
+          target: data_room,
+          metadata: {
+            invitation_id: invitation.id,
+            organization_id: invitation.organization_id,
+            dataset_id: dataset.id,
+            participant_id: participant.id
+          }
+        )
+
+        render json: {
+          id: participant.id,
+          data_room_id: data_room.id,
+          organization_id: participant.organization_id,
+          dataset_id: participant.dataset_id,
+          status: participant.status,
+          invitation_status: invitation.status,
+          message: "Invitation accepted successfully. You can now attest to participate."
+        }, status: :ok
+      end
+
       # POST /api/v1/data_rooms/:id/attest
       def attest
         data_room = find_data_room

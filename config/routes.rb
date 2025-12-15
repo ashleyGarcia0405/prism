@@ -41,6 +41,11 @@ Rails.application.routes.draw do
     end
   end
 
+  # Public invitation acceptance routes (no auth required - token is auth)
+  get  "data_rooms/invitations/:token/accept", to: "data_rooms#show_invitation", as: :accept_data_room_invitation
+  post "data_rooms/invitations/:token/accept", to: "data_rooms#accept_invitation", as: :submit_data_room_invitation
+  post "data_rooms/invitations/:token/decline", to: "data_rooms#decline_invitation", as: :decline_data_room_invitation
+
   # API Routes
   namespace :api do
     namespace :v1 do
@@ -68,6 +73,7 @@ Rails.application.routes.draw do
       resources :data_rooms, only: [ :create, :index, :show ] do
         member do
           post :invite
+          post :accept_invitation
           post :attest
           post :validate_query
           post :execute

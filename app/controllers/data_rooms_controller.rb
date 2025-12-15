@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class DataRoomsController < ApplicationController
+  skip_before_action :authenticate_web_user!, only: [ :show_invitation, :accept_invitation, :decline_invitation ]
+  skip_before_action :ensure_api_auth_token, only: [ :show_invitation, :accept_invitation, :decline_invitation ]
   def index
     @data_rooms = fetch_data_rooms
   end
@@ -44,8 +46,12 @@ class DataRoomsController < ApplicationController
     )
 
     if response[:success]
+      # Send invitation email
+      invitation = DataRoomInvitation.find(response[:data]["id"])
+      DataRoomMailer.invitation_email(invitation).deliver_later
+
       redirect_to data_room_path(params[:id]),
-                  notice: "Organization invited successfully!"
+                  notice: "Organization invited successfully! Invitation email sent."
     else
       redirect_to data_room_path(params[:id]),
                   alert: response[:error] || "Failed to invite organization"
@@ -84,6 +90,98 @@ class DataRoomsController < ApplicationController
     end
   end
 
+  # GET /data_rooms/invitations/:token/accept
+  def show_invitation
+    @invitation = find_invitation_by_token(params[:token])
+
+    if @invitation.nil?
+      render :invitation_not_found, status: :not_found
+      return
+    end
+
+    if @invitation.expired?
+      render :invitation_expired, status: :gone
+      return
+    end
+
+    if @invitation.status != "pending"
+      render :invitation_already_processed, status: :unprocessable_entity
+      return
+    end
+
+    @data_room = @invitation.data_room
+    @invited_by = @invitation.invited_by
+    @organization = @invitation.organization
+
+    # Check if user is logged in and from the right org
+    if logged_in?
+      if current_user.organization_id == @organization.id
+        @datasets = @organization.datasets.where.not(table_name: nil).order(:name)
+      else
+        @wrong_organization = true
+      end
+    else
+      @needs_login = true
+    end
+  end
+
+  # POST /data_rooms/invitations/:token/accept
+  def accept_invitation
+    invitation = find_invitation_by_token(params[:token])
+
+    if invitation.nil?
+      redirect_to accept_data_room_invitation_path(params[:token]),
+                  alert: "Invalid invitation token"
+      return
+    end
+
+    unless logged_in?
+      session[:invitation_token] = params[:token]
+      session[:invitation_dataset_id] = params[:dataset_id]
+      redirect_to login_path, alert: "Please log in to accept this invitation"
+      return
+    end
+
+    unless current_user.organization_id == invitation.organization_id
+      redirect_to accept_data_room_invitation_path(params[:token]),
+                  alert: "This invitation is not for your organization"
+      return
+    end
+
+    # Call API to accept invitation
+    response = make_api_request_with_token(
+      :post,
+      "/api/v1/data_rooms/#{invitation.data_room_id}/accept_invitation",
+      {
+        invitation_token: params[:token],
+        dataset_id: params[:dataset_id]
+      },
+      session[:auth_token]
+    )
+
+    if response[:success]
+      redirect_to data_room_path(invitation.data_room_id),
+                  notice: "Invitation accepted! You can now attest to participate in this data room."
+    else
+      redirect_to accept_data_room_invitation_path(params[:token]),
+                  alert: response[:error] || "Failed to accept invitation"
+    end
+  end
+
+  # POST /data_rooms/invitations/:token/decline
+  def decline_invitation
+    invitation = find_invitation_by_token(params[:token])
+
+    if invitation.nil?
+      redirect_to root_path, alert: "Invalid invitation token"
+      return
+    end
+
+    invitation.decline!
+
+    render :invitation_declined
+  end
+
   private
 
   def data_room_params
@@ -100,7 +198,15 @@ class DataRoomsController < ApplicationController
     response[:success] ? response[:data] : nil
   end
 
+  def find_invitation_by_token(token)
+    DataRoomInvitation.find_by(invitation_token: token)
+  end
+
   def make_api_request(method, path, body = nil)
+    make_api_request_with_token(method, path, body, session[:auth_token])
+  end
+
+  def make_api_request_with_token(method, path, body, token)
     require "net/http"
     require "uri"
 
@@ -120,9 +226,9 @@ class DataRoomsController < ApplicationController
     request["Content-Type"] = "application/json"
     request["Accept"] = "application/json"
 
-    # Add authentication token from session
-    if session[:auth_token]
-      request["Authorization"] = "Bearer #{session[:auth_token]}"
+    # Add authentication token
+    if token
+      request["Authorization"] = "Bearer #{token}"
     end
 
     request.body = body.to_json if body

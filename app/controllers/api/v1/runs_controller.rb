@@ -11,7 +11,7 @@ module Api
           query_id: run.query_id,
           status: run.status,
           backend_used: run.backend_used,
-          result: run.result,
+          result: run.completed? ? run.result : nil,
           epsilon_consumed: run.epsilon_consumed,
           execution_time_ms: run.execution_time_ms,
           proof_artifacts: run.proof_artifacts,
