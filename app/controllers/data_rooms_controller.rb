@@ -4,11 +4,58 @@ class DataRoomsController < ApplicationController
   skip_before_action :authenticate_web_user!, only: [ :show_invitation, :accept_invitation, :decline_invitation ]
   skip_before_action :ensure_api_auth_token, only: [ :show_invitation, :accept_invitation, :decline_invitation ]
   def index
-    @data_rooms = fetch_data_rooms
+    # Get data rooms where user is creator or their org is a participant
+    created_ids = DataRoom.where(creator: current_user).pluck(:id)
+    participant_ids = DataRoom.joins(:participants)
+                             .where(data_room_participants: { organization_id: current_user.organization_id })
+                             .pluck(:id)
+    all_ids = (created_ids + participant_ids).uniq
+
+    data_rooms = DataRoom.where(id: all_ids).includes(:creator, :participants).order(created_at: :desc)
+
+    @data_rooms = data_rooms.map { |dr|
+      {
+        "id" => dr.id,
+        "name" => dr.name,
+        "description" => dr.description,
+        "status" => dr.status,
+        "query_type" => dr.query_type,
+        "creator_id" => dr.creator_id,
+        "creator_name" => dr.creator.name,
+        "participant_count" => dr.participants.count,
+        "created_at" => dr.created_at
+      }
+    }
   end
 
   def show
-    @data_room = fetch_data_room(params[:id])
+    data_room = DataRoom.includes(:creator, participants: [:organization, :dataset]).find(params[:id])
+
+    @data_room = {
+      "id" => data_room.id,
+      "name" => data_room.name,
+      "description" => data_room.description,
+      "status" => data_room.status,
+      "query_text" => data_room.query_text,
+      "query_type" => data_room.query_type,
+      "creator_id" => data_room.creator_id,
+      "result" => data_room.result,
+      "executed_at" => data_room.executed_at,
+      "created_at" => data_room.created_at,
+      "participants" => data_room.participants.map { |p|
+        {
+          "id" => p.id,
+          "organization_id" => p.organization_id,
+          "organization_name" => p.organization.name,
+          "dataset_id" => p.dataset_id,
+          "dataset_name" => p.dataset&.name,
+          "status" => p.status,
+          "attested_at" => p.attested_at,
+          "computed_at" => p.computed_at
+        }
+      }
+    }
+
     @my_organization_id = current_user.organization_id
     @is_creator = @data_room["creator_id"] == current_user.id
     @my_participant = @data_room["participants"]&.find { |p| p["organization_id"] == @my_organization_id }
@@ -21,19 +68,24 @@ class DataRoomsController < ApplicationController
   end
 
   def create
-    response = make_api_request(
-      :post,
-      "/api/v1/data_rooms",
-      { data_room: data_room_params }
-    )
+    @data_room = DataRoom.new(data_room_params.merge(creator: current_user, status: "pending"))
 
-    if response[:success]
-      redirect_to data_room_path(response[:data]["id"]),
+    if @data_room.save
+      AuditLogger.log(
+        user: current_user,
+        action: "data_room_created",
+        target: @data_room,
+        metadata: {
+          name: @data_room.name,
+          query_type: @data_room.query_type
+        }
+      )
+
+      redirect_to data_room_path(@data_room.id),
                   notice: "Data room created successfully!"
     else
-      @data_room = DataRoom.new(data_room_params)
       @datasets = current_user.organization.datasets.where.not(table_name: nil).order(:name)
-      flash.now[:alert] = response[:errors]&.join(", ") || "Failed to create data room"
+      flash.now[:alert] = @data_room.errors.full_messages.join(", ")
       render :new, status: :unprocessable_entity
     end
   end
@@ -203,7 +255,11 @@ class DataRoomsController < ApplicationController
   end
 
   def make_api_request(method, path, body = nil)
-    make_api_request_with_token(method, path, body, session[:auth_token])
+    token = session[:auth_token]
+    Rails.logger.debug("=== API Request Debug ===")
+    Rails.logger.debug("Session auth_token present: #{token.present?}")
+    Rails.logger.debug("Token value: #{token&.first(20)}...")
+    make_api_request_with_token(method, path, body, token)
   end
 
   def make_api_request_with_token(method, path, body, token)
