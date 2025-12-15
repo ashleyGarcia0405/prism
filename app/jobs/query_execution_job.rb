@@ -50,6 +50,7 @@ class QueryExecutionJob < ApplicationJob
       raise "Unknown backend: #{query.backend}"
     end
     execution_time = ((Time.now - start_time) * 1000).to_i
+    execution_time = 1 if execution_time == 0
 
     # commit budget (only for DP backend)
     if query.backend == "dp_sandbox" && reservation && reservation[:success]
