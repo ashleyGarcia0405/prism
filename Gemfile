@@ -81,7 +81,7 @@ end
 
 
 # Testing
-gem "rspec-rails", "~> 6.0"
+gem "rspec-rails", "~> 8.0"
 gem "cucumber-rails", require: false
 gem "database_cleaner-active_record"
 
