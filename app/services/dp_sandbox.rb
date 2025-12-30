@@ -174,7 +174,7 @@ class DpSandbox
     end
 
     # Ensure execution time is at least 1ms to avoid test flakiness
-    simulated_time = [rand(50..200), 1].max
+    simulated_time = [ rand(50..200), 1 ].max
 
     {
       data: result_data,

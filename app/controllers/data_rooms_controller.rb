@@ -29,7 +29,7 @@ class DataRoomsController < ApplicationController
   end
 
   def show
-    data_room = DataRoom.includes(:creator, participants: [:organization, :dataset]).find(params[:id])
+    data_room = DataRoom.includes(:creator, participants: [ :organization, :dataset ]).find(params[:id])
 
     @data_room = {
       "id" => data_room.id,
