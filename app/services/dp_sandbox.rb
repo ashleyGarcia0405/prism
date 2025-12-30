@@ -173,13 +173,16 @@ class DpSandbox
                     { "value" => rand(1..1000) }
     end
 
+    # Ensure execution time is at least 1ms to avoid test flakiness
+    simulated_time = [rand(50..200), 1].max
+
     {
       data: result_data,
       epsilon_consumed: epsilon,
       delta: 1e-5,
       mechanism: "laplace",
       noise_scale: (epsilon * 2.0).round(3),
-      execution_time_ms: rand(50..200),
+      execution_time_ms: simulated_time,
       metadata: {
         "operation" => infer_operation(@query.sql),
         "fallback"  => true,
